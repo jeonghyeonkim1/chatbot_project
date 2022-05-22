@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block src %}
+
+{% endblock %}
+
+{% block contents %}
+    <body class="container bg-dark">
+        <div class="rounded vh-100 m-3 p-3 d-flex justify-content-center align-items-center bg-light">
+            <table class="table table-striped table-dark text-center">
+                <thead>
+                    <tr>
+                        <th colspan='3'>
+                            <i class="display-3 fa-brands fa-bots"></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:test' %}'">
+                                <i class="display-5 fa-solid fa-robot p-3 fa-spin"></i>
+                                <h5>TEST</h5>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:kakao' %}'">
+                                <i class="display-5 fa-solid fa-robot p-3 fa-beat"></i>
+                                <h5>KAKAO</h5>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:naver' %}'">
+                                <i class="display-5 fa-solid fa-robot p-3 fa-fade"></i>
+                                <h5>NAVER</h5>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="display-5 fa-solid fa-robot p-3 fa-beat-fade"></i>
+                            <h5>Test</h5>
+                        </td>
+                        <td>
+                            <i class="display-5 fa-solid fa-robot p-3 fa-bounce"></i>
+                            <h5>Test</h5>
+                        </td>
+                        <td>
+                            <i class="display-5 fa-solid fa-robot p-3 fa-flip"></i>
+                            <h5>Test</h5>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <i class="display-5 fa-solid fa-robot p-3 fa-shake"></i>
+                            <h5>Test</h5>
+                        </td>
+                        <td>
+                            <i class="display-5 fa-solid fa-robot p-3 fa-spin" style="--fa-animation-duration: 30s; --fa-animation-iteration-count: 1;"></i>
+                            <h5>Test</h5>
+                        </td>
+                        <td>
+                            <i class="display-5 fa-solid fa-robot p-3 fa-flip" style="--fa-flip-x: 1; --fa-flip-y: 0;"></i>
+                            <h5>Test</h5>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+{% endblock %}

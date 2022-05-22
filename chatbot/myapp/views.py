@@ -1,5 +1,14 @@
 from django.shortcuts import render
 
 
-def chatmain(request):
-    return render(request, 'chat_main.html')
+def home(request):
+    return render(request, 'home.html')
+
+def test(request):
+    return render(request, 'test.html')
+
+def kakao(request):
+    return render(request, 'kakao.html')
+
+def naver(request):
+    return render(request, 'naver.html')
