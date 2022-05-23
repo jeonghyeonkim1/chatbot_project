@@ -11,14 +11,22 @@ from utils.FindAnswer import FindAnswer
 
 
 # 전처리 객체 생성
-p = Preprocess(word2index_dic='train_tools/dict/chatbot_dict.bin',
-               userdic='utils/user_dic.tsv')
+p = Preprocess(
+    word2index_dic='train_tools/dict/chatbot_dict.bin',
+    userdic='utils/user_dic.tsv'
+)
 
 # 의도 파악 모델
-intent = IntentModel(model_name='models/intent/intent_model.h5', preprocess=p)
+intent = IntentModel(
+    model_name='models/intent/intent_model.h5',
+    preprocess=p
+)
 
 # 개체명 인식 모델
-ner = NerModel(model_name='models/ner/ner_model.h5', preprocess=p)
+ner = NerModel(
+    model_name='models/ner/ner_model.h5',
+    preprocess=p
+)
 
 
 # 클라이언트 요청을 수행하는 함수 (쓰레드에 담겨 실행될거임)
@@ -27,7 +35,6 @@ def to_client(conn, addr, params):
     
     try:
         db.connect()  # DB 연결
-        
         
         # 데이터 수신 (클라이언트로부터 데이터를 받기 위함)
         # conn 은 챗봇 클라이언트 소켓 객체 ( 이 객체를 통해 클라이언트 데이터 주고 받는다 )
@@ -87,10 +94,7 @@ def to_client(conn, addr, params):
         conn.close()   # 클라이언트와의 연결도 끊음
         
     # 함수가 종료되면 쓰레드고 끝남
-           
-    
-
-
+        
 if __name__ == '__main__':
     # 질문/답변 학습 디비 연결 객체 생성
     db = Database(

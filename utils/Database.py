@@ -4,10 +4,7 @@ import logging
 
 
 class Database:
-    '''
-    database 제어
-    '''
-
+    # database 제어
     def __init__(self, host, user, password, db_name, charset='utf8'):
         self.host = host
         self.user = user
