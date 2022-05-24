@@ -12,3 +12,21 @@ def kakao(request):
 
 def naver(request):
     return render(request, 'naver.html')
+
+def login(request):
+    return render(request, 'login.html')
+    
+def join(request):
+    return render(request, 'join.html')
+
+def search(request):
+    return render(request, 'search.html')
+
+def notice(request):
+    return render(request, 'notice.html')
+
+def service(request):
+    return render(request, 'service.html')
+
+def mypage(request):
+    return render(request, 'mypage.html')

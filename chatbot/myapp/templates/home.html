@@ -38,22 +38,28 @@
                     </tr>
                     <tr>
                         <td>
-                            <i class="display-5 fa-solid fa-robot p-3 fa-beat-fade"></i>
-                            <h5>Test</h5>
+                            <div style="border: none;" class="linker btn btn-outline-light">
+                                <i class="display-5 fa-solid fa-user p-3 fa-beat-fade" onclick="location.href='{% url 'myapp:login' %}'"></i>
+                                <h5>Login</h5>
+                            </div>             
                         </td>
                         <td>
-                            <i class="display-5 fa-solid fa-robot p-3 fa-bounce"></i>
-                            <h5>Test</h5>
+                            <div style="border: none;" class="linker btn btn-outline-light">
+                                <i class="display-5 fa-solid fa-bell p-3 fa-bounce" onclick="location.href='{% url 'myapp:notice' %}'"></i>
+                                <h5>Notice</h5>
+                            </div>
                         </td>
                         <td>
-                            <i class="display-5 fa-solid fa-robot p-3 fa-flip"></i>
-                            <h5>Test</h5>
+                            <div style="border: none;" class="linker btn btn-outline-light">
+                                <i class="display-5 fa-solid fa-users p-3 fa-spin" style="--fa-animation-duration: 30s; --fa-animation-iteration-count: 1;" onclick="location.href='{% url 'myapp:service' %}'"></i>
+                                <h5>About us</h5>
+                            </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <i class="display-5 fa-solid fa-robot p-3 fa-shake"></i>
-                            <h5>Test</h5>
+                            <i class="display-5 fa-solid fa-robot p-3 fa-shake" onclick="location.href='{% url 'myapp:mypage' %}'"></i>
+                            <h5>Mypage</h5>
                         </td>
                         <td>
                             <i class="display-5 fa-solid fa-robot p-3 fa-spin" style="--fa-animation-duration: 30s; --fa-animation-iteration-count: 1;"></i>
@@ -67,5 +73,85 @@
                 </tbody>
             </table>
         </div>
+        <footer class="bg-dark text-center text-white">
+            <div class="container p-4">
+                <section class="mb-4">
+                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.facebook.com" role="button" target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.twitter.com" role="button" target="_blank">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.google.com" role="button" target="_blank">
+                        <i class="fab fa-google"></i>
+                    </a>
+                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.instagram.com" role="button" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.youtube.com" role="button" target="_blank">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.github.com" role="button" target="_blank">
+                        <i class="fab fa-github"></i>
+                    </a>
+                </section>
+                <section>
+                    
+                </section>
+                <section class="mb-4">
+                    <h1>{{ config.site_name }}</h1>
+                    <h6>
+                        {{ config.sale_time }}<br>
+                        {{ config.lunch_time }}<br>
+                        {{ config.holiday }}
+                    </h6>
+                </section>
+                <section class="">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                            <h5 class="text-uppercase">ABOUT</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="#!" class="text-white text-decoration-none">설립</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">주소</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">지도</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">스태프</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                            <h5 class="text-uppercase">SUPPORT</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="#!" class="text-white text-decoration-none">다운로드</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">매뉴얼</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">자주묻는질문</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">문의</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                            <h5 class="text-uppercase">POLICY</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="#!" class="text-white text-decoration-none">이용약관</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">개인정보처리방침</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">이용안내</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">제휴입점문의</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
+                            <h5 class="text-uppercase">SOULMATE</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li><a href="#!" class="text-white text-decoration-none">서희</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">도희</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">동완</a></li>
+                                <li><a href="#!" class="text-white text-decoration-none">윤직</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="text-center p-3" style="background-color: #fff; color:#000; border-radius:3px">
+                Copyright © {{ config.site_name }} Corp. 2022-2023 All Rights Reserved.
+            </div>
+        </footer>
+
     </body>
+
 {% endblock %}

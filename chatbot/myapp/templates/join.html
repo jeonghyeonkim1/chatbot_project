@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block src %}
+
+{% endblock %}
+
+{% block contents %}
+ 
+<style>
+        *{
+            margin: 0px;
+            padding: 0px;
+            text-decoration: none;
+            font-family: sans-serif;
+        }
+        body{
+            background-image: #34495e;
+        }
+        
+        .loginForm {
+            position:absolute;
+            width:300px;
+            height:400px;
+            padding: 30px, 20px;
+            background-color:#FFFFFF;
+            text-align:center;
+            top:50%;
+            left:50%;
+            transform: translate(-50%,-50%);
+            border-radius: 15px;
+          }
+          
+          .loginForm h2{
+            text-align: center;
+            margin: 30px;
+          }
+          
+          
+          .btn {
+            position:relative;
+            left:40%;
+            transform: translateX(-50%);
+            margin-bottom: 10px;
+            width:80%;
+            height:40px;
+            background: linear-gradient(125deg,#5a5a5a96,#3b4050,#838383);
+            background-position: left;
+            background-size: 200%;
+            color:white;
+            font-weight: bold;
+            border:none;
+            cursor:pointer;
+            transition: 0.4s;
+            display:inline;
+          }
+          .btn2{
+            position:relative;
+            left:40%;
+            transform: translateX(-50%);
+            margin-bottom: 10px;
+            width:80%;
+            height:40px;
+            background: linear-gradient(125deg,#e6e4e496,#a3a3a3,#dfdfdf);
+            background-position: left;
+            background-size: 200%;
+            color:white;
+            font-weight: bold;
+            border:none;
+            cursor:pointer;
+            transition: 0.4s;
+            display:inline;
+            border-radius: 3px;
+          }
+          
+          .btn:hover {
+            background-position: right;
+            color:gray;
+          }
+          .btn2:hover {
+            background-position: right;
+            color:gray;
+          }
+          .la{
+            padding-right: 20px;
+          }
+    </style>
+    <body>
+        <form action="index.html" method="post" class="loginForm">
+            <h2>Join</h2>
+            <div class='input-group input-group-sm mb-3'>
+              <span class='input-group-text' id='inputGroup-sizing-sm'>ID</span>
+              <input type="text" class='form-control'>
+            </div>
+            <div class='input-group input-group-sm mb-3'>
+              <span class='input-group-text' id='inputGroup-sizing-sm'>Email</span>
+              <input type="text" class='form-control'>
+            </div>
+            <div class='input-group input-group-sm mb-3'>
+              <span class='input-group-text' id='inputGroup-sizing-sm'>PW</span>
+              <input type="text" class='form-control'>
+            </div>
+            <div class='input-group input-group-sm mb-3'>
+              <span class='input-group-text' id='inputGroup-sizing-sm'>확인</span>
+              <input type="text" class='form-control'>
+            </div>
+            <button type="button" class="btn" onclick="login();">
+              Join
+            </button>
+            <button type="button" class="btn2" onclick="location.href='{% url 'myapp:login' %}'" >
+              cancel
+            </button>
+        </form>
+    </body>
+{% endblock %}

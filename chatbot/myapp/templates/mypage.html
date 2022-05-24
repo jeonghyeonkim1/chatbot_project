@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block src %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock %}
+
+{% block contents %}
+<style>
+    .rounded{
+        position: static;
+    }
+    .contents{
+
+        height:100%;
+        width: 100%;
+    }
+    .menu ::before{
+        font-family: 'Material Icons';
+        font-size: 1.5em;
+        float: left;
+        clear: left;
+    }
+    .menu label{
+        padding-bottom:10%;
+    }
+    
+    .menu label::before{ content: '\e5d2'; }
+    .menu li:nth-child(1) a::before{ content: '\f02e'; }
+    .menu li:nth-child(2) a::before{ content: '\e8d6'; }
+    .menu li:nth-child(3) a::before{ content: '\e87d'; }
+
+    #expand-menu { /* 체크박스 폼 요소 감춤 */
+        display: none;
+    }
+    #expand-menu:checked ~ ul { /* 체크박스 체크되었으면 메뉴 목록 표시 - 반응형 표시용 */
+        display: block;
+        height: auto;
+    }
+    .menu {
+        display: block;
+        width: 200px;
+        background-color: #000;
+        color: #fff;
+        border-radius: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow: hidden; /* 반응형 애니메이션용 */
+        transition: all 0.5s ease; /* 반응형 애니메이션 */
+        margin-right:13%;
+    }
+    li{
+        margin-top:13%;
+        padding-bottom:10%;
+    }
+    .menu ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .menu a, .menu > label {
+        display: block;
+        height: 25px;
+        padding: 8px;
+        cursor: pointer;
+        color: #fff;
+        text-decoration: none;
+    }
+    .menu a:hover {
+        color: #000;
+    }
+    .menu ul li:hover{
+        background-color: #fff;
+        color: #000;
+        border-radius: 10px;
+    }
+    .menu div {
+        line-height: 1.5;
+        font-size: 1em;
+        font-family: 'Noto Sans KR';
+        padding: 0 0 0 50px; /* 아이콘과 텍스트 사이 여백 */
+    }
+    @media screen and (max-width:900px) {
+        .menu { /* 1단계 */
+            width: 60px;
+        }
+        .menu ul li:hover, .menu > label:hover {
+            background-color: #000;
+            border-radius: 10px;
+        }
+        .menu a:hover{
+            color: gray;
+            background-color: #000;
+        }
+        .userinput, .usercontain{
+            display: none;
+        }
+    }
+    @media screen and (max-width:560px) {
+        .menu #expand-menu:not(:checked) ~ ul { /* 2단계 */
+            display: none;
+        }
+    }
+    .menu div {
+        position: relative; /* 절대 위치로 텍스트 고정 */
+        font-size: 1em;
+        font-family: 'Noto Sans KR';
+    }
+    .c-contain{
+        margin-top:40px;
+        display: flex;
+    }
+    i{
+        padding:4px;
+        border-radius: 5px;
+    }
+    i:hover{
+        background-color: #000;
+        color:#fff;
+    }
+    .userinput{
+        width: auto;
+        height: auto;
+        border: none; 
+        background: transparent;
+        text-align:center;
+    }
+    .detail-container{
+        width:80%;
+        height:90%;
+        float: right;
+        border: 1px solid black;
+        transition-duration:1s;
+    }
+    #m1{
+        width:95%;
+        height:88%;
+    }
+    .detail{
+        width:80%;
+        height:550px;
+    }
+    .item.click ~ .detail-container{
+        width:100%;
+    }
+    @media screen and (max-width:1060px) {
+        .detail{
+            max-height:400px;
+        }
+        .detail-container{
+            max-height:80%;
+        }
+    }
+
+</style>
+<body class="container bg-dark">
+    <div class="rounded vh-100 m-3 p-3 d-flex justify-content-center align-items-center bg-light">
+        
+        <div class='contents'>
+            <div style='padding:20px; display: flex;'>
+                <div class='usercontain' style='margin-right:60%;'>
+                    <i class="display-7 fa-solid fa-quote-left fa-bounce" ></i>  
+                    <input class='userinput' type='text' disabled  value='주린이 님 Mypage'></input>
+                    <i class="fa-solid fa-quote-right fa-bounce"></i>
+                </div>
+                <div style='padding-left:10%;'>
+                    <i class="fa-solid fa-house fa-2x" onclick="location.href='{% url 'myapp:home' %}'"></i>
+                </div>
+            </div>
+            <div class='c-contain'>
+                <div>
+                    <div class="menu">
+                        <label for="expand-menu"><div></div></label>
+                        <input type="checkbox" id="expand-menu" name="expand-menu">
+                        <ul>
+                            <li><a href="#" class="item" id='b1'><div>프로필</div></a></li>
+                            <li><a href="#" class="item" id='b2'><div>저장</div></a></li>
+                            <li><a href="#" class="item" id='b3'><div>관심종목</div></a></li>
+                        </ul>
+                    </div>
+                </div>  
+                <div class='detail'>
+                    <div class='detail-container' id='m1'>
+                        <h3>내용들어가는 곳1</h3>
+                    </div>
+                    <div class='detail-container' id='m2' style='display:none;'>
+                        <h3>내용들어가는 곳2</h3>
+                    </div>
+                    <div class='detail-container' id='m3' style='display:none;'>
+                        <h3>내용들어가는 곳3</h3>
+                    </div>
+                </div>             
+            </div>
+        </div>
+    </div>
+    <footer class="bg-dark text-center text-white">
+        <div class="container p-4">
+            <section class="mb-4">
+                <a class="btn btn-outline-light btn-floating m-1" href="http://www.facebook.com" role="button" target="_blank">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a class="btn btn-outline-light btn-floating m-1" href="http://www.twitter.com" role="button" target="_blank">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a class="btn btn-outline-light btn-floating m-1" href="http://www.google.com" role="button" target="_blank">
+                    <i class="fab fa-google"></i>
+                </a>
+                <a class="btn btn-outline-light btn-floating m-1" href="http://www.instagram.com" role="button" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a class="btn btn-outline-light btn-floating m-1" href="http://www.youtube.com" role="button" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a class="btn btn-outline-light btn-floating m-1" href="http://www.github.com" role="button" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
+            </section>
+            <section>
+                
+            </section>
+            <section class="mb-4">
+                <h1>{{ config.site_name }}</h1>
+                <h6>
+                    {{ config.sale_time }}<br>
+                    {{ config.lunch_time }}<br>
+                    {{ config.holiday }}
+                </h6>
+            </section>
+            <section class="">
+        
+            </section>
+        </div>
+        <div class="text-center p-3" style="background-color: #fff; color:#000; border-radius:3px">
+            Copyright © {{ config.site_name }} Corp. 2022-2023 All Rights Reserved.
+        </div>
+    </footer>
+</body>
+<script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
+<script>
+    $('#b1').click(function(){
+        $('#m1').css('display','block')
+        $('#m2').css('display','none')
+        $('#m3').css('display','none')
+        $('#m1').animate({
+            width:'95%'
+        });
+    })
+    $('#b2').click(function(){
+        $('#m1').css('display','none')
+        $('#m2').css('display','block')
+        $('#m3').css('display','none')
+        $('#m2').animate({
+            width:'95%'
+        });
+    })
+    $('#b3').click(function(){
+        $('#m1').css('display','none')
+        $('#m2').css('display','none')
+        $('#m3').css('display','block')
+        $('#m3').animate({
+            width:'95%'
+        });
+    })
+</script>
+{% endblock %}
