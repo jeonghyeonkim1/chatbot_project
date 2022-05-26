@@ -25,10 +25,10 @@
     }
     
     .menu label::before{ content: '\e5d2'; }
-    .menu li:nth-child(1) a::before{ content: '\f06c'; }
-    .menu li:nth-child(2) a::before{ content: '\e7f7'; }
-    .menu li:nth-child(3) a::before{ content:"\e311"; }
-
+    .menu li:nth-child(1) a::before{ content: '\e8cb'; }
+    .menu li:nth-child(2) a::before{ content: '\ea9b'; }
+    .menu li:nth-child(3) a::before{ content: "\e6b1"; }
+    .menu li:nth-child(4) a::before{ content: "\e263"; }
     #expand-menu { /* 체크박스 폼 요소 감춤 */
         display: none;
     }
@@ -49,8 +49,8 @@
         margin-right:13%;
     }
     li{
-        margin-top:13%;
-        padding-bottom:10%;
+        margin-top:10%;
+        padding-bottom:15%;
     }
     .menu ul {
         list-style: none;
@@ -60,7 +60,7 @@
     .menu a, .menu > label {
         display: block;
         height: 25px;
-        padding: 8px;
+        padding: 5px;
         cursor: pointer;
         color: #fff;
         text-decoration: none;
@@ -104,6 +104,7 @@
         position: relative; /* 절대 위치로 텍스트 고정 */
         font-size: 1em;
         font-family: 'Noto Sans KR';
+        padding-top: 6px;
     }
     .c-contain{
         margin-top:40px;
@@ -151,7 +152,7 @@
         
         <div class='contents'>
             <div style='padding:20px; display: flex;'>  
-              <h3 style='padding:4% 70% 0 4%;'>Notice</h3>
+              <h3 style='padding:4% 70% 0 4%;'>Search</h3>
               <i class="fa-solid fa-house fa-2x" onclick="location.href='{% url 'myapp:home' %}'"></i>
             </div>
             <div class='c-contain'>
@@ -160,9 +161,10 @@
                         <label for="expand-menu"><div></div></label>
                         <input type="checkbox" id="expand-menu" name="expand-menu">
                         <ul>
-                            <li><a href="#" class="item" id='b1'><div>Our Bots</div></a></li>
-                            <li><a href="#" class="item" id='b2'><div>공지</div></a></li>
-                            <li><a href="#" class="item" id='b3'><div>자주묻는 질문</div></a></li>
+                            <li><a href="#" class="item" id='b1'><div>보유주식</div></a></li>
+                            <li><a href="#" class="item" id='b2'><div>조회주식</div></a></li>
+                            <li><a href="#" class="item" id='b3'><div>거래목록</div></a></li>
+                            <li><a href="#" class="item" id='b4'><div>날짜별 환율</div></a></li>
                         </ul>
                     </div>
                 </div>                
@@ -175,6 +177,9 @@
                     </div>
                     <div class='detail-container' id='m3' style='display:none;'>
                         <h3>내용들어가는 곳3</h3>
+                    </div>
+                    <div class='detail-container' id='m4' style='display:none;'>
+                        <h3>내용들어가는 곳2</h3>
                     </div>
                 </div>
             </div>
@@ -228,6 +233,7 @@
         $('#m1').css('display','block')
         $('#m2').css('display','none')
         $('#m3').css('display','none')
+        $('#m4').css('display','none')
         $('#m1').animate({
             width:'95%'
         });
@@ -236,6 +242,7 @@
         $('#m1').css('display','none')
         $('#m2').css('display','block')
         $('#m3').css('display','none')
+        $('#m4').css('display','none')
         $('#m2').animate({
             width:'95%'
         });
@@ -244,7 +251,17 @@
         $('#m1').css('display','none')
         $('#m2').css('display','none')
         $('#m3').css('display','block')
+        $('#m4').css('display','none')
         $('#m3').animate({
+            width:'95%'
+        });
+    })
+    $('#b4').click(function(){
+        $('#m1').css('display','none')
+        $('#m2').css('display','none')
+        $('#m3').css('display','none')
+        $('#m4').css('display','block')
+        $('#m4').animate({
             width:'95%'
         });
     })

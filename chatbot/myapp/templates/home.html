@@ -6,6 +6,20 @@
 
 {% block contents %}
     <body class="container bg-dark">
+        {% comment %} <div class='modal fade'  id='modal_con' style='display: none;'>
+            <div class='modal-dialog'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h4 class='modal-title'>타이틀</h4>
+                        <button type="button">x</button>
+                    </div>
+                    <div class='modal-body'>    
+                        <button type="button">Search</button>
+                        <button type="button">Chatting</button>
+                    </div>
+                </div>
+            </div>
+        </div> {% endcomment %}
         <div class="rounded vh-100 m-3 p-3 d-flex justify-content-center align-items-center bg-light">
             <table class="table table-striped table-dark text-center">
                 <thead>
@@ -20,46 +34,46 @@
                         <td>
                             <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:test' %}'">
                                 <i class="display-5 fa-solid fa-robot p-3 fa-spin"></i>
-                                <h5>TEST</h5>
+                                <h5>우람 Bot</h5>
                             </div>
                         </td>
                         <td>
-                            <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:kakao' %}'">
+                            <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:kakao' %}'" id='r-bot'>
                                 <i class="display-5 fa-solid fa-robot p-3 fa-beat"></i>
-                                <h5>KAKAO</h5>
+                                <h5>Ruby Bot</h5>
                             </div>
                         </td>
                         <td>
                             <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:naver' %}'">
                                 <i class="display-5 fa-solid fa-robot p-3 fa-fade"></i>
-                                <h5>NAVER</h5>
+                                <h5>뿌꾸 Bot</h5>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
                             <div style="border: none;" class="linker btn btn-outline-light">
-                                <i class="display-5 fa-solid fa-user p-3 fa-beat-fade" onclick="location.href='{% url 'myapp:login' %}'"></i>
-                                <h5>Login</h5>
+                                <i class="display-5 fa-solid fa-user p-3 fa-beat-fade"></i>
+                                <h5>X</h5>
                             </div>             
                         </td>
                         <td>
                             <div style="border: none;" class="linker btn btn-outline-light">
                                 <i class="display-5 fa-solid fa-bell p-3 fa-bounce" onclick="location.href='{% url 'myapp:notice' %}'"></i>
-                                <h5>Notice</h5>
+                                <h5>Search</h5>
                             </div>
                         </td>
                         <td>
                             <div style="border: none;" class="linker btn btn-outline-light">
-                                <i class="display-5 fa-solid fa-users p-3 fa-spin" style="--fa-animation-duration: 30s; --fa-animation-iteration-count: 1;" onclick="location.href='{% url 'myapp:service' %}'"></i>
-                                <h5>About us</h5>
+                                <i class="display-5 fa-solid fa-users p-3 fa-spin" style="--fa-animation-duration: 30s; --fa-animation-iteration-count: 1;"></i>
+                                <h5>X</h5>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <i class="display-5 fa-solid fa-robot p-3 fa-shake" onclick="location.href='{% url 'myapp:mypage' %}'"></i>
-                            <h5>Mypage</h5>
+                            <i class="display-5 fa-solid fa-robot p-3 fa-shake"></i>
+                            <h5>Test</h5>
                         </td>
                         <td>
                             <i class="display-5 fa-solid fa-robot p-3 fa-spin" style="--fa-animation-duration: 30s; --fa-animation-iteration-count: 1;"></i>
@@ -153,5 +167,9 @@
         </footer>
 
     </body>
-
+<script>
+    {% comment %} $('#r-bot').click(function(){
+        $('#modal_con').css('display','block')
+    }) {% endcomment %}
+</script>
 {% endblock %}
