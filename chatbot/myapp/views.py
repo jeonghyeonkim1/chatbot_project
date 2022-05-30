@@ -12,3 +12,6 @@ def kakao(request):
 
 def naver(request):
     return render(request, 'naver.html')
+
+def notice(request):
+    return render(request, 'notice.html')
