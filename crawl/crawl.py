@@ -92,3 +92,30 @@ class Crawl:
             return dic
         except:
             return "옳바르지 않은 종목명이거나 정보가 없습니다."
+
+    def eor():
+        url = 'https://finance.naver.com/marketindex/exchangeDetail.naver?marketindexCd=FX_USDKRW'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers)
+        dom = BeautifulSoup(response.text, 'html.parser')
+        elements = dom.select(
+            '#content > div.section_calculator > table:nth-child(4) > tbody > tr > td:nth-child(1)')
+        usd = elements[0].text.strip()
+        usd = usd.replace(',', '')
+        return float(usd)
+
+    # 환율 계산 함수
+
+
+    def K_to_U(dollor):
+        usd = Crawl().eor()
+        krw = usd * dollor
+        print(krw)
+
+
+    def U_to_K(won):
+        usd = Crawl().eor()
+        dollor = f'{won / usd:.2f}'
+        print(dollor)
