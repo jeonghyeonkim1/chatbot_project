@@ -43,10 +43,27 @@ class Crawl:
 
         return dic
 
-    def search_korea(self, query):
-        try:
-            url = self.url + f'item/main.naver?code={query}'
+    def search_engine(self, query):
+        if query in self.number:
+            return Crawl().search_korea(f'https://finance.naver.com/item/main.naver?code={query}')
+        else:
+            query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
+            url = f'https://finance.naver.com/search/searchList.naver?query={query}'
+            response = requests.get(url)
+            dom = BeautifulSoup(response.text, 'html.parser')
 
+            search_list = [(i.text.strip(), i.attrs['href'])
+                           for i in dom.select('td.tit a')]
+
+            if len(search_list) == 0:
+                return '검색 결과가 존재하지 않습니다.'
+            elif len(search_list) == 1:
+                return Crawl().search_korea(self.url + search_list[0][-1])
+
+            return search_list
+
+    def search_korea(self, url):
+        try:
             res = BeautifulSoup(requests.get(url).text, 'html.parser')
 
             rate_info = res.select('.rate_info td span.blind')
@@ -62,12 +79,12 @@ class Crawl:
                 '저가': rate_info[5].text.strip(),
                 '하한가': ''.join([i.text.strip() for i in res.select('.rate_info td .sp_txt7 ~ em span')]),
                 '거래대금': rate_info[6].text.strip(),
-                '날짜': datetime.now()
+                '날짜': datetime.datetime.now()
             }
 
             return dic
         except:
-            return "옳바르지 않은 종목명 혹은 지수명이거나 정보가 없습니다."
+            return "옳바르지 않은 종목명이거나 정보가 없습니다."
 
     def search_foriegn(self, query):
         try:
@@ -92,3 +109,30 @@ class Crawl:
             return dic
         except:
             return "옳바르지 않은 종목명이거나 정보가 없습니다."
+
+    def eor():
+        url = 'https://finance.naver.com/marketindex/exchangeDetail.naver?marketindexCd=FX_USDKRW'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers)
+        dom = BeautifulSoup(response.text, 'html.parser')
+        elements = dom.select(
+            '#content > div.section_calculator > table:nth-child(4) > tbody > tr > td:nth-child(1)')
+        usd = elements[0].text.strip()
+        usd = usd.replace(',', '')
+        return float(usd)
+
+    # 환율 계산 함수
+
+
+    def K_to_U(dollor):
+        usd = Crawl().eor()
+        krw = usd * dollor
+        print(krw)
+
+
+    def U_to_K(won):
+        usd = Crawl().eor()
+        dollor = f'{won / usd:.2f}'
+        print(dollor)
