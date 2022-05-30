@@ -7,11 +7,11 @@ def home(request):
 def test(request):
     return render(request, 'test.html')
 
-def kakao(request):
-    return render(request, 'kakao.html')
+def rubybot(request):
+    return render(request, 'rubybot.html')
 
 def naver(request):
     return render(request, 'naver.html')
 
-def notice(request):
-    return render(request, 'notice.html')
+def storage(request):
+    return render(request, 'storage.html')

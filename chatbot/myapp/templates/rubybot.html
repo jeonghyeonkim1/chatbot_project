@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block src %}
+    {% load static %}
+    <script>
+        $(function() {
+            // SEND 버튼을 누르거나
+            $("#sendbtn").click(function() {
+                send_message();
+            }); 
+
+            // ENTER key 가 눌리면
+            $("#chattext").keyup(function(event) {
+                if(event.keyCode == 13) {
+                    send_message();
+                }
+            })
+        })
+
+        function send_message() {
+            const chattext = $("#chattext").val().trim();
+
+            // 입력한 메세지가 없으면 리턴
+            if(chattext == "") {
+                $("#chattext").focus();
+                return;
+            }
+
+            // 입력한 채팅 화면에 출력
+            const addtext = "<div style='margin:15px 0;text-align:right;'> <span style='padding:3px 10px;background-color:#3388cc;border-radius:3px;'>" + chattext + "</span></div>";
+            $("#chatbox").append(addtext);
+
+            // 먼저 입력했던 것은 지우기
+            $("#chattext").val("");
+            $("#chattext").focus();
+
+            // API 서버에 요청할 데이터
+            const jsonData = {
+                query: chattext
+            }
+
+            $.ajax({
+                url: 'http://127.0.0.10:5000/query/TEST',
+                type: "POST",
+                data: JSON.stringify(jsonData),
+                dataType: "JSON",   // 응답받을 데이터 타입
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+
+                success: function(response){
+                    // 답변텍스트는 response.Answer 에 담겨 있다
+
+                    $chatbox = $("#chatbox");
+
+                    // 답변출력
+                    const bottext = "<div style='margin:15px 0;text-align:left;'><span style='padding:3px 10px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span></div>";
+                    $chatbox.append(bottext);
+
+                    // 스크롤 조정하기
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
+                }
+            });
+        }
+    </script>
+    <style>
+        .chatheader {
+            left: 0;
+            top: 0;
+            width: 100%;
+            color: #000;
+            text-align: center;
+            height:80%;
+            margin-top:10px;
+            padding-top:10px;
+            border-radius: 7px;
+        }
+        .chatfooter {
+            left: 0;
+            bottom: 0;
+            width: 93%;
+            padding:10px 0;
+            margin: 10px 0 45px 28px;
+            color: #000;
+            text-align: center;
+            background-color:#fff;
+            border-radius: 7px;
+        }
+        .con{
+            width:70%; 
+            margin:0 auto;
+            border-radius: 7px;
+            box-shadow: 2px 2px 2px 2px gray
+        }
+        body{
+            margin-top:2%;
+            text_align: center;
+            padding: 30px;
+        }
+        #chatbox{
+            border-radius: 7px;
+            background-color: #fff;
+            margin:30px;
+        }
+        #chattext{
+            padding:30px;
+        }
+        .icon{
+            text-align: center;
+            font-size:20px; 
+            padding: 10px; 
+            background-color:#fff;
+            width: 50px;
+            border-radius: 50%;
+        }
+        #chattext:focus {
+            margin-left:10px;
+            outline: none;
+            border: none;
+        }
+        .line-box {
+            position: relative;
+            width: 97%;
+            height: 2px;
+          }
+          .line {
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(37, 37, 37, 0.295);
+            transition: ease .6s;
+          }
+          input:focus + .line-box .line {
+            width: 97%;
+          }
+         
+          
+    </style>
+{% endblock %}
+
+{% block contents %}
+    
+    <body class='container'>
+        <div style='position: relative;'>
+            <nav class='menu'>
+                <ul class="drop-down closed" style='position: fixed;'>
+                  <li><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
+                  <li><a href="{% url 'myapp:home' %}">Home</a></li>
+                  <li><a href="{% url 'myapp:storage' %}">My Storage</a></li>
+                </ul>
+              </nav>
+        </div>
+    
+        <div style="padding:5px; background-color:rgba(94, 94, 94, 0.164);" class='con'>
+            <div class="chatheader">
+                <div width="100%" border="0">
+                    <div style='padding-left: 47%;'>
+                        <div width="50%" align="left" class='icon'>
+                            <i class="fa-solid fa-robot fa-bounce"></i>
+                        </div>
+                        <div class='dotcon'>
+                            <div class="dot-elastic"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="chatbox"
+                style="height:620px;margin-top:20px;padding:5px; overflow-y:scroll;overflow-x:hidden;max-height:100vh;">
+            </div>
+            <div class="chatfooter">
+                <table width="100%">
+                    <tr>
+                        <td width="88%">
+                            <input type='text' id="chattext" style="padding:5px 0;width:100%;border:none;">
+                            <div class="line-box">
+                                <div class="line"></div>
+                              </div>
+                        </td>
+                        <td width="10%" style='padding-right:10px;'>
+                            <button type='button' class="btn btn-dark" id="sendbtn" style="padding:5px 0;width:100%;" >send</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>       
+    </body>
+    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
+    <script>
+        $(function() {
+            $(".nav-button").click(function() {
+              $(this).parent().parent().toggleClass("closed");
+            });
+          
+          });
+    </script>
+{% endblock %}
