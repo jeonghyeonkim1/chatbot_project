@@ -1,5 +1,6 @@
 import threading
 import json
+import re
 
 from config.DatabaseConfig import *
 from utils.Database import Database
@@ -11,21 +12,26 @@ from utils.FindAnswer import FindAnswer
 
 
 # 전처리 객체 생성
-p = Preprocess(
-    word2index_dic='train_tools/dict/chatbot_dict.bin',
+p1 = Preprocess(
+    word2index_dic='train_tools/dict/chatbot_dict_intent.bin',
+    userdic='utils/user_dic.tsv'
+)
+
+p2 = Preprocess(
+    word2index_dic='train_tools/dict/chatbot_dict_ner.bin',
     userdic='utils/user_dic.tsv'
 )
 
 # 의도 파악 모델
 intent = IntentModel(
     model_name='models/intent/intent_model.h5',
-    preprocess=p
+    preprocess=p1
 )
 
 # 개체명 인식 모델
 ner = NerModel(
     model_name='models/ner/ner_model.h5',
-    preprocess=p
+    preprocess=p2
 )
 
 
@@ -53,19 +59,25 @@ def to_client(conn, addr, params):
         recv_json_data = json.loads(read.decode())
         print("데이터 수신 :", recv_json_data)
         query = recv_json_data['Query']
+        persona = recv_json_data['BotType']
         
         # 의도 파악
         intent_predict = intent.predict_class(query)
         intent_name = intent.labels[intent_predict]
+
+        print("의도 :", intent_name)
         
         # 개체명 파악
         ner_predicts = ner.predict(query)
         ner_tags = ner.predict_tags(query)
 
+        print("개체명 :", ner_tags)
+
         # 답변 검색, 분석된 의도와 개체명을 이용해 학습 DB 에서 답변을 검색
         try:
             f = FindAnswer(db)
-            answer_text, answer_image = f.search(intent_name, ner_tags)
+            answer_text, answer_image = f.search(
+                intent_name, ner_tags, persona)
             answer = f.tag_to_word(ner_predicts, answer_text)
 
         except:
@@ -100,7 +112,7 @@ if __name__ == '__main__':
     db = Database(
         host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db_name=DB_NAME
     )
-    print("DB 접속")    
+    print("DB 접속")
     
     port = 5050
     listen = 100
@@ -112,7 +124,7 @@ if __name__ == '__main__':
 
     # 무한루프를 돌면서 챗봇 클라이언트의 요청(연결)을 기다린다(리스닝!)
     while True:
-        conn, addr = bot.ready_for_client()  # 서버 연결 요청이 서버에서 수락되면, 
+        conn, addr = bot.ready_for_client()  # 서버 연결 요청이 서버에서 수락되면,
         # ↓ 곧바로 챗봇 클라이언트 서비스 요청 처리하는 쓰레드 생성
     
         params = {

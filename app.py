@@ -40,23 +40,24 @@ def get_answer_from_engine(bottype, query):
     return ret_data
 
 
-# 챗봇 에진 query 전송 API
+# 챗봇 query 전송 API
 @app.route('/query/<bot_type>', methods=['POST'])
 def query(bot_type):
 
     data = request.get_json()
     try:        
-        if bot_type == 'TEST':
-            ret = get_answer_from_engine(bottype=bot_type, query=data['query'])
+        if bot_type == 'ruby':
+            ret = get_answer_from_engine(bottype='루비', query=data['query'])
             return jsonify(ret)
 
-        elif bot_type == "KAKAO":
-            # 카카오톡 스킬 처리
-            pass
+        elif bot_type == '우람':
+            ret = get_answer_from_engine(bottype='우람', query=data['query'])
+            return jsonify(ret)
 
-        elif bot_type == "NAVER":
-            # 네이버톡톡 Web hook 처리
-            pass
+        elif bot_type == "뿌꾸":
+            ret = get_answer_from_engine(bottype='뿌꾸', query=data['query'])
+            return jsonify(ret)
+
         else:
             # 정의되지 않은 bot type인 경우 404 오류
             abort(404)

@@ -51,7 +51,7 @@ class Preprocess:
         w2i = []
         for word in keywords:
             try:
-                w2i.append(self.word_index[word])
+                w2i.append(self.word_index.get(word, 1))
             except KeyError:
                 # 해당 단어가 사전에 없는 경우, OOV 처리
                 w2i.append(self.word_index['OOV'])

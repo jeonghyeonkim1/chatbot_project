@@ -6,29 +6,31 @@ class FindAnswer:
         
     # ② 답변 검색
     # 의도명(intent_name) 과 개체명 태그 리스트(ner_tags) 를 이용해 질문의 답변을 검색
-    def search(self, intent_name, ner_tags):  
+    def search(self, intent_name, ner_tags, persona_name):
         # 의도명, 개체명으로 답변 검색
-        sql = self._make_query(intent_name, ner_tags)
+        sql = self._make_query(intent_name, ner_tags, persona_name)
         answer = self.db.select_one(sql)
         
         # 검색되는 답변이 없었으면 의도명만 이용하여 답변 검색
         # 챗봇이 찾는 정확한 조건의 답변이 없는 경우 차선책으로 동일한 의도를 가지는 답변을 검색
         # (의도가 동일한 경우 답변도 유사할 확률이 높다!)      
         if answer is None:
-            sql = self._make_query(intent_name, None)
+            sql = self._make_query(intent_name, None, persona_name)
             answer = self.db.select_one(sql)
             
         return (answer['answer'], answer['answer_image'])
     
     # ③ 검색 쿼리 생성
     # '의도명' 만 검색할지, 여러종류의 개체명 태그와 함께 검색할지 결정하는 '조건'을 만드는 간단한 함수
-    def _make_query(self, intent_name, ner_tags):
-        sql = "select * from chatbot_train_data"
+    # f'select * from chatbot_query where name = (select name from persona where name={name}) and intent = (select intent from chatbot where intent={intent_name} and ner={ner_tags})'
+    def _make_query(self, intent_name, ner_tags, persona_name):
+        sql = "select * from chatbot_query"
         if intent_name != None and ner_tags == None:
-            sql = sql + " where intent='{}' ".format(intent_name)
+            sql = sql + \
+                f" where name = '{persona_name}' and intent = (select intent from chatbot where intent='{intent_name}') "
 
         elif intent_name != None and ner_tags != None:
-            where = ' where intent="%s" ' % intent_name
+            where = f" where name = '{persona_name}' and intent = (select intent from chatbot where intent='{intent_name}' and ner='{ner_tags}') "
             if (len(ner_tags) > 0):
                 where += 'and ('
                 for ne in ner_tags:
@@ -52,9 +54,9 @@ class FindAnswer:
         for word, tag in ner_predicts:
 
             # 변환해야하는 태그가 있는 경우 추가
-            if tag == 'B_FOOD' or tag == 'B_DT' or tag == 'B_TI':
+            if tag == 'B_STOCK' or tag == 'B_COUNT':
                 answer = answer.replace(tag, word)
 
         answer = answer.replace('{', '')
         answer = answer.replace('}', '')
-        return answer        
+        return answer
