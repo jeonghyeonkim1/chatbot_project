@@ -1,18 +1,33 @@
 from bs4 import BeautifulSoup
-import requests
-from datetime import datetime
+import requests, os, datetime, pickle
+import pandas as pd
 
 class Crawl:
     def __init__(self):
         self.url = 'https://finance.naver.com/'
+        
+        with open(r'./data/re.bin', 'rb') as f:
+            event_to_code = pickle.load(f)
+        self.event_to_code = event_to_code
+        self.code_to_event = {j:i for i, j in self.event_to_code.items()}
+        
+        path = r'./data/종목.xlsx'
+        data = os.path.join(path)
+        df = pd.read_excel(data, index_col=0)
 
+        self.korea = (df[df['type'] == '국내주식']['name'].tolist() + df[df['type'] == '국내주식']['id'].tolist())
+        self.foreign = (df[df['type'] == '해외주식']['name'].tolist() + df[df['type'] == '해외주식']['id'].tolist())
+        self.foreign_name = df[df['type'] == '해외주식']['name'].tolist()
+        self.foreign_id = df[df['type'] == '해외주식']['id'].tolist()
+        
+        
     def stock_today(self):
         kospi = BeautifulSoup(requests.get(self.url).text,
                               'html.parser').select_one(".kospi_area")
-        kosdaq = BeautifulSoup(requests.get(
-            self.url).text, 'html.parser').select_one(".kosdaq_area")
-        kospi200 = BeautifulSoup(requests.get(
-            self.url).text, 'html.parser').select_one(".kospi200_area")
+        kosdaq = BeautifulSoup(requests.get(self.url).text,
+                               'html.parser').select_one(".kosdaq_area")
+        kospi200 = BeautifulSoup(requests.get(self.url).text,
+                                 'html.parser').select_one(".kospi200_area")
 
         dic = {
             'kospi': {
@@ -44,9 +59,8 @@ class Crawl:
         return dic
 
     def search_engine(self, query):
-        if query in self.number:
-            return Crawl().search_korea(f'https://finance.naver.com/item/main.naver?code={query}')
-        else:
+        
+        if query in self.korea:      
             query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
             url = f'https://finance.naver.com/search/searchList.naver?query={query}'
             response = requests.get(url)
@@ -62,10 +76,46 @@ class Crawl:
 
             return search_list
 
+        elif query in self.foreign:
+            alpa = query.replace(" ", "")
+            url = f'https://search.naver.com/search.naver?query={alpa}+주가'
+            response = requests.get(url)
+            dom = BeautifulSoup(response.text, 'html.parser')
+                        
+            if not dom.find('div', id = '_cs_root'):
+                if not query in self.foreign_name or query in self.foreign_id:
+
+                    return '검색 결과가 존재하지 않습니다.'
+              
+                else:
+                    query = a.event_to_code[query]
+                    url = f'https://search.naver.com/search.naver?query={query}+주가'
+
+                    return Crawl().search_foriegn(url)
+                
+            else:
+                return Crawl().search_foriegn(url)
+
+        else :
+            query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
+            url = f'https://finance.naver.com/search/searchList.naver?query={query}'
+            response = requests.get(url)
+            dom = BeautifulSoup(response.text, 'html.parser')
+
+            search_list = [(i.text.strip(), i.attrs['href'])
+                           for i in dom.select('td.tit a')]
+
+            if len(search_list) == 0:
+                return print('검색 결과가 존재하지 않습니다.')
+            elif len(search_list) == 1:
+                return Crawl().search_korea(self.url + search_list[0][-1])
+
+            return search_list
+            
     def search_korea(self, url):
         try:
             res = BeautifulSoup(requests.get(url).text, 'html.parser')
-
+            
             rate_info = res.select('.rate_info td span.blind')
 
             dic = {
@@ -85,14 +135,13 @@ class Crawl:
             return dic
         except:
             return "옳바르지 않은 종목명이거나 정보가 없습니다."
-
-    def search_foriegn(self, query):
-        try:
-            url = f'https://search.naver.com/search.naver?query={query}+주가'
-
-            res = BeautifulSoup(requests.get(url).text, 'html.parser').select_one(
-                'body .api_subject_bx')
-
+        
+    def search_foriegn(self, url):
+        try:                
+            response = requests.get(url)
+            dom = BeautifulSoup(response.text, 'html.parser')
+            res = dom.find('div', id = '_cs_root')
+            
             dic = {
                 '종목': res.select_one('span.stk_nm').text.strip(),
                 '가격': res.select_one('span.spt_con strong').text.strip(),
@@ -103,7 +152,7 @@ class Crawl:
                 '거래대금': res.select_one('li.frr dd').text.strip(),
                 '시가총액': res.select_one('li.cp strong').text.strip(),
                 '그래프': res.select_one('img._stock_chart').attrs['src'],
-                '날짜': datetime.now()
+                '날짜': datetime.datetime.now()
             }
 
             return dic
