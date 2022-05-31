@@ -3,6 +3,11 @@
 {% block src %}
     {% load static %}
     <script>
+        window.onload = function() {
+            $chatbox = $("#chatbox");
+            const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + '안냥 :D 내가 너의 주식라이프에 도움을 줄꺼다냥~' + "</span></div></div>";
+            $chatbox.append(bottext);
+        }
         $(function() {
             // SEND 버튼을 누르거나
             $("#sendbtn").click(function() {
@@ -27,7 +32,7 @@
             }
 
             // 입력한 채팅 화면에 출력
-            const addtext = "<div style='margin:15px 0;text-align:right;'> <span style='padding:3px 10px;background-color:#3388cc;border-radius:3px;'>" + chattext + "</span></div>";
+            const addtext = "<div style='margin:15px 0;text-align:right;'><span style='padding:5px 10px;background-color:#b8d7ff88;border-radius:3px;'>" + chattext + "</span></div>";
             $("#chatbox").append(addtext);
 
             // 먼저 입력했던 것은 지우기
@@ -53,7 +58,7 @@
                     $chatbox = $("#chatbox");
 
                     // 답변출력
-                    const bottext = "<div style='margin:15px 0;text-align:left;'><span style='padding:3px 10px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span></div>";
+                    const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span></div></div>";
                     $chatbox.append(bottext);
 
                     // 스크롤 조정하기
@@ -63,6 +68,24 @@
         }
     </script>
     <style>
+
+        .textcon{
+            padding: 20px 0 0 26px;
+        }
+        .imgcon{
+            width: 70px;
+            height: 70px; 
+            border-radius: 70%;
+            overflow: hidden;
+            float: left;
+            padding:5px;
+            margin-right: 15px;
+        }
+        img{
+            width: 90%;
+            height: 90%;
+            object-fit: cover;
+        }
         .chatheader {
             left: 0;
             top: 0;

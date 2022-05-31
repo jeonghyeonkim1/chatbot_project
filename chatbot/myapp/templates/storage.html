@@ -153,7 +153,7 @@
         
         <div class='contents'>
             <div style='padding:20px; display: flex;'>  
-              <h3 style='padding:4% 70% 0 4%;'>Search</h3>
+              <h4 style='padding:4% 65% 0 4%;'>My Storage</h4>
               <i class="fa-solid fa-house fa-2x" onclick="location.href='{% url 'myapp:home' %}'"></i>
             </div>
             <div class='c-contain'>
@@ -162,10 +162,10 @@
                         <label for="expand-menu"><div></div></label>
                         <input type="checkbox" id="expand-menu" name="expand-menu">
                         <ul>
-                            <li><a href="#" class="item" id='b1'><div>보유주식</div></a></li>
-                            <li><a href="#" class="item" id='b2'><div>조회주식</div></a></li>
-                            <li><a href="#" class="item" id='b3'><div>거래목록</div></a></li>
-                            <li><a href="#" class="item" id='b4'><div>날짜별 환율</div></a></li>
+                            <li id='b1'><a href="#" class="item"><div>보유주식</div></a></li>
+                            <li id='b2'><a href="#" class="item"><div>조회주식</div></a></li>
+                            <li id='b3'><a href="#" class="item"><div>거래목록</div></a></li>
+                            <li id='b4'><a href="#" class="item"><div>날짜별 환율</div></a></li>
                         </ul>
                     </div>
                 </div>                
