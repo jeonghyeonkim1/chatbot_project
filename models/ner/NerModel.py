@@ -56,8 +56,6 @@ class NerModel:
         padded_seqs = preprocessing.sequence.pad_sequences(sequences, padding="post", value=0, maxlen=max_len)
 
         predict = self.model.predict(np.array([padded_seqs[0]]))
-
-        print(padded_seqs)
         
         predict_class = tf.math.argmax(predict, axis=-1)
 

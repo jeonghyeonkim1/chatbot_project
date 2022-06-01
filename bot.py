@@ -1,6 +1,5 @@
 import threading
 import json
-import re
 
 from config.DatabaseConfig import *
 from utils.Database import Database
@@ -9,6 +8,7 @@ from utils.Preprocess import Preprocess
 from models.intent.IntentModel import IntentModel
 from models.ner.NerModel import NerModel
 from utils.FindAnswer import FindAnswer
+from crawl.crawl import Crawl
 
 
 # 전처리 객체 생성
@@ -33,6 +33,8 @@ ner = NerModel(
     model_name='models/ner/ner_model.h5',
     preprocess=p2
 )
+
+crawl = Crawl()
 
 
 # 클라이언트 요청을 수행하는 함수 (쓰레드에 담겨 실행될거임)
@@ -64,14 +66,13 @@ def to_client(conn, addr, params):
         # 의도 파악
         intent_predict = intent.predict_class(query)
         intent_name = intent.labels[intent_predict]
-
-        print("의도 :", intent_name)
         
         # 개체명 파악
         ner_predicts = ner.predict(query)
         ner_tags = ner.predict_tags(query)
 
-        print("개체명 :", ner_tags)
+        print("의도 :", intent_name)
+        print("개체명 :", ner_predicts)
 
         # 답변 검색, 분석된 의도와 개체명을 이용해 학습 DB 에서 답변을 검색
         try:
@@ -84,7 +85,12 @@ def to_client(conn, addr, params):
             answer = "죄송해요 무슨 말인지 모르겠어요. 조금 더 공부 할게요."
             answer_image = None
 
+
         # 검색된 답변데이터와 함께 앞서 정의한 응답하는 JSON 으로 생성
+
+        ### if intent_name == '특정 주가 조회':  같은거 해주세욧!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
         send_json_data_str = {
             "Query": query,
             "Answer": answer,

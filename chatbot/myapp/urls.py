@@ -7,6 +7,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('test/', views.test, name='test'),
     path('rubybot/', views.rubybot, name='rubybot'),
-    path('naver/', views.naver, name='naver'),
+    path('urambot/', views.urambot, name='urambot'),
     path('storage/', views.storage, name='storage'),
 ]

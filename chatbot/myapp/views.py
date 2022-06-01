@@ -10,8 +10,8 @@ def test(request):
 def rubybot(request):
     return render(request, 'rubybot.html')
 
-def naver(request):
-    return render(request, 'naver.html')
+def urambot(request):
+    return render(request, 'urambot.html')
 
 def storage(request):
     return render(request, 'storage.html')

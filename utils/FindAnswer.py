@@ -30,11 +30,11 @@ class FindAnswer:
                 f" where name = '{persona_name}' and intent = (select intent from chatbot where intent='{intent_name}') "
 
         elif intent_name != None and ner_tags != None:
-            where = f" where name = '{persona_name}' and intent = (select intent from chatbot where intent='{intent_name}' and ner='{ner_tags}') "
+            where = f" where name = '{persona_name}' and intent = (select intent from chatbot where intent='{intent_name}' and ner='{' '.join(ner_tags)}') "
             if (len(ner_tags) > 0):
                 where += 'and ('
-                for ne in ner_tags:
-                    where += " ner like '%{}%' or ".format(ne)
+                for ner in ner_tags:
+                    where += f" ner like '%{ner}%' or "
                 where = where[:-3] + ')'
             sql = sql + where    
             

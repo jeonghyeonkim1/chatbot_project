@@ -61,6 +61,8 @@
                     const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span></div></div>";
                     $chatbox.append(bottext);
 
+                    console.log(response)
+
                     // 스크롤 조정하기
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
                 }
@@ -165,7 +167,7 @@
 
 {% block contents %}
     
-    <body class='container'>
+    <body class='container' style='overflow: hidden; margin-top: -1%;'>
         <div style='position: relative;'>
             <nav class='menu'>
                 <ul class="drop-down closed" style='position: fixed;'>
