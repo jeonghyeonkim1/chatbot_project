@@ -50,11 +50,11 @@ def query(bot_type):
             ret = get_answer_from_engine(bottype='루비', query=data['query'])
             return jsonify(ret)
 
-        elif bot_type == '우람':
+        elif bot_type == 'uram':
             ret = get_answer_from_engine(bottype='우람', query=data['query'])
             return jsonify(ret)
 
-        elif bot_type == "뿌꾸":
+        elif bot_type == "bbuggu":
             ret = get_answer_from_engine(bottype='뿌꾸', query=data['query'])
             return jsonify(ret)
 

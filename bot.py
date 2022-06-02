@@ -88,20 +88,38 @@ def to_client(conn, addr, params):
 
         # 검색된 답변데이터와 함께 앞서 정의한 응답하는 JSON 으로 생성
 
-        ### if intent_name == '특정 주가 조회':  같은거 해주세욧!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
         send_json_data_str = {
             "Query": query,
             "Answer": answer,
             "AnswerImageUrl": answer_image,
             "Intent": intent_name,
-            "NER": str(ner_predicts)
+            "NER": str(ner_predicts),
         }
+
+        if intent_name == '특정 주가 조회':
+            stock = None
+            for word, cls in ner_predicts:
+                if cls == "B_STOCK" and stock == None:
+                    stock = word
+            
+            if stock == None:
+                send_json_data_str["Answer"] = "종목명을 정확하게 알려달라냥"
+            else:
+                result = crawl.search_engine(stock)
+
+                if type(result) == str:
+                    send_json_data_str["Answer"] = "검색 결과가 없다 냥"
+                elif type(result) == list and len(result) > 1:
+                    send_json_data_str["Answer"] = "조회하고 싶은 항목을 선택해달라 냥"
+                    send_json_data_str["many"] = result
+                else:
+                    send_json_data_str["information"] = result
 
         # json 텍스트로 변환. 하여 전송
         message = json.dumps(send_json_data_str)
-        conn.send(message.encode())  # utf-8 인코딩하여 클라이언트에 전송
+
+        # utf-8 인코딩하여 클라이언트에 전송
+        conn.send(message.encode())
 
     except Exception as ex:
         print(ex)

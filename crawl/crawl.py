@@ -20,7 +20,13 @@ class Crawl:
         self.foreign_name = df[df['type'] == '해외주식']['name'].tolist()
         self.foreign_id = df[df['type'] == '해외주식']['id'].tolist()
         
-        
+    # 서희 할 꺼
+    def top_today(self):
+        # https://finance.naver.com/
+        # id => _topItems1
+        # 테이블을 태그까지 통째로 가져와서 return에 넣어주기.
+        return  
+
     def stock_today(self):
         kospi = BeautifulSoup(requests.get(self.url).text,
                               'html.parser').select_one(".kospi_area")
@@ -35,38 +41,34 @@ class Crawl:
                 '지수': kospi.select_one(".num").text.strip(),
                 '변화': kospi.select_one(".num2").text.strip(),
                 '변화%': kospi.select_one(".num3").text.strip(),
-                '그래프': kospi.select_one("img[alt='코스피지수 상세보기']").attrs['src'],
-                '날짜': datetime.now()
+                '그래프': kospi.select_one("img[alt='코스피지수 상세보기']").attrs['src']
             },
             'kosdaq': {
                 '종목': kosdaq.select_one(".blind").text.strip(),
                 '지수': kosdaq.select_one(".num").text.strip(),
                 '변화': kosdaq.select_one(".num2").text.strip(),
                 '변화%': kosdaq.select_one(".num3").text.strip(),
-                '그래프': kosdaq.select_one("img[alt='코스닥지수 상세보기']").attrs['src'],
-                '날짜': datetime.now()
+                '그래프': kosdaq.select_one("img[alt='코스닥지수 상세보기']").attrs['src']
             },
             'kospi200': {
                 '종목': kospi200.select_one(".blind").text.strip(),
                 '지수': kospi200.select_one(".num").text.strip(),
                 '변화': kospi200.select_one(".num2").text.strip(),
                 '변화%': kospi200.select_one(".num3").text.strip(),
-                '그래프': kospi200.select_one("img[alt='코스피200지수 상세보기']").attrs['src'],
-                '날짜': datetime.now()
+                '그래프': kospi200.select_one("img[alt='코스피200지수 상세보기']").attrs['src']
             }
         }
 
         return dic
 
     def search_engine(self, query):
-        
         if query in self.korea:      
             query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
             url = f'https://finance.naver.com/search/searchList.naver?query={query}'
             response = requests.get(url)
             dom = BeautifulSoup(response.text, 'html.parser')
 
-            search_list = [(i.text.strip(), i.attrs['href'])
+            search_list = [(i.text.strip(), i.attrs['href'][-6:])
                            for i in dom.select('td.tit a')]
 
             if len(search_list) == 0:
@@ -88,7 +90,7 @@ class Crawl:
                     return '검색 결과가 존재하지 않습니다.'
               
                 else:
-                    query = a.event_to_code[query]
+                    query = Crawl().event_to_code[query]
                     url = f'https://search.naver.com/search.naver?query={query}+주가'
 
                     return Crawl().search_foriegn(url)
@@ -102,7 +104,7 @@ class Crawl:
             response = requests.get(url)
             dom = BeautifulSoup(response.text, 'html.parser')
 
-            search_list = [(i.text.strip(), i.attrs['href'])
+            search_list = [(i.text.strip(), i.attrs['href'][-6:])
                            for i in dom.select('td.tit a')]
 
             if len(search_list) == 0:
@@ -128,8 +130,7 @@ class Crawl:
                 '시가': rate_info[4].text.strip(),
                 '저가': rate_info[5].text.strip(),
                 '하한가': ''.join([i.text.strip() for i in res.select('.rate_info td .sp_txt7 ~ em span')]),
-                '거래대금': rate_info[6].text.strip(),
-                '날짜': datetime.datetime.now()
+                '거래대금': rate_info[6].text.strip()
             }
 
             return dic
@@ -151,8 +152,7 @@ class Crawl:
                 '저가': res.select_one('li.lp dd').text.strip(),
                 '거래대금': res.select_one('li.frr dd').text.strip(),
                 '시가총액': res.select_one('li.cp strong').text.strip(),
-                '그래프': res.select_one('img._stock_chart').attrs['src'],
-                '날짜': datetime.datetime.now()
+                '그래프': res.select_one('img._stock_chart').attrs['src']
             }
 
             return dic

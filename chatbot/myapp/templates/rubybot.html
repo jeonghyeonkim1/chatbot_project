@@ -12,15 +12,21 @@
             // SEND 버튼을 누르거나
             $("#sendbtn").click(function() {
                 send_message();
+                $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
             }); 
 
             // ENTER key 가 눌리면
             $("#chattext").keyup(function(event) {
                 if(event.keyCode == 13) {
                     send_message();
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
                 }
             })
         })
+
+        function select_message(text) {
+            console.log(text)
+        }
 
         function send_message() {
             const chattext = $("#chattext").val().trim();
@@ -32,8 +38,13 @@
             }
 
             // 입력한 채팅 화면에 출력
-            const addtext = "<div style='margin:15px 0;text-align:right;'><span style='padding:5px 10px;background-color:#b8d7ff88;border-radius:3px;'>" + chattext + "</span></div>";
+            $("#wait").remove();
+            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#b8d7ff88;border-radius:3px;'>" + chattext + "</span></div>";
             $("#chatbox").append(addtext);
+
+            // 답변 대기시간동안 로딩 말풍선 띄우기
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
 
             // 먼저 입력했던 것은 지우기
             $("#chattext").val("");
@@ -58,10 +69,32 @@
                     $chatbox = $("#chatbox");
 
                     // 답변출력
-                    const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span></div></div>";
+                    $("#wait").remove();
+                    
+                    table = ""
+                    graph = ""
+                    if (response.information != undefined) {
+                        graph = response.information.그래프
+                        delete response.information.종목
+                        delete response.information.그래프
+                        table = "<table class='table text-center'>"
+                        table += `<tr><td class='border-0'></td><td colspan='2'><img src='${graph}'></td><td class='border-0'></td></tr>`
+                        for (const key in response.information) {
+                            table += `<tr><td class='border-0'></td><td>${key}</td><td class='ft-bold'>${response.information[key]}</td><td class='border-0'></td></tr>`
+                        }
+                        table += "</table>"
+                    } else if (response.many != undefined) {
+                        table = "<table class='table table-hover text-center'>"
+                        for (const event in response.many) {
+                            table += `<tr onclick="select_message('${response.many[event][1]}')" style="cursor: pointer;"><td>${response.many[event][0]}</td></tr>`
+                        }
+                        table += "</table>"
+                    }
+
+                    const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
                     $chatbox.append(bottext);
 
-                    console.log(response)
+                    console.log(response.information);
 
                     // 스크롤 조정하기
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
@@ -94,10 +127,9 @@
             width: 100%;
             color: #000;
             text-align: center;
-            height:80%;
-            margin-top:10px;
             padding-top:10px;
             border-radius: 7px;
+            height: 10%;
         }
         .chatfooter {
             left: 0;
@@ -124,7 +156,24 @@
         #chatbox{
             border-radius: 7px;
             background-color: #fff;
-            margin:30px;
+            margin: 30px;
+            padding-right: 100px;
+            height:75%;
+            margin-top:20px;
+            padding:5px;
+            overflow-y:scroll;
+            overflow-x:hidden;
+            max-height:100vh;
+        }
+        #chatbox::-webkit-scrollbar {
+            width: 10px;
+        }
+        #chatbox::-webkit-scrollbar-thumb {
+            background-color: grey;
+            border-radius: 10px;
+        }
+        #chatbox::-webkit-scrollbar-track {
+            background: transparent;
         }
         #chattext{
             padding:30px;
@@ -167,18 +216,18 @@
 
 {% block contents %}
     
-    <body class='container' style='overflow: hidden; margin-top: -1%;'>
-        <div style='position: relative;'>
+    <body class='container' style='overflow: hidden; margin-top: -1%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;'>
+        <div 'position: relative;'>
             <nav class='menu'>
-                <ul class="drop-down closed" style='position: fixed;'>
+                <ul class="drop-down closed" style='position: fixed'>
                   <li><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
                   <li><a href="{% url 'myapp:home' %}">Home</a></li>
                   <li><a href="{% url 'myapp:storage' %}">My Storage</a></li>
                 </ul>
-              </nav>
+            </nav>
         </div>
     
-        <div style="padding:5px; background-color:rgba(94, 94, 94, 0.164);" class='con'>
+        <div style="padding:5px; background-color:rgba(94, 94, 94, 0.164);" class='con h-100'>
             <div class="chatheader">
                 <div width="100%" border="0">
                     <div style='padding-left: 47%;'>
@@ -191,8 +240,7 @@
                     </div>
                 </div>
             </div>
-            <div id="chatbox"
-                style="height:620px;margin-top:20px;padding:5px; overflow-y:scroll;overflow-x:hidden;max-height:100vh;">
+            <div id="chatbox">
             </div>
             <div class="chatfooter">
                 <table width="100%">
@@ -209,7 +257,8 @@
                     </tr>
                 </table>
             </div>
-        </div>       
+        </div>
+          
     </body>
     <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
     <script>
