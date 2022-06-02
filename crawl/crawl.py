@@ -22,10 +22,9 @@ class Crawl:
         
     # 서희 할 꺼
     def top_today(self):
-        # https://finance.naver.com/
-        # id => _topItems1
-        # 테이블을 태그까지 통째로 가져와서 return에 넣어주기.
-        return  
+        top = BeautifulSoup(requests.get(self.url).text,
+                              'html.parser').select_one("#_topItems1")
+        return  top
 
     def stock_today(self):
         kospi = BeautifulSoup(requests.get(self.url).text,
