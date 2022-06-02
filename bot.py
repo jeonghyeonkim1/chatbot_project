@@ -108,16 +108,19 @@ def to_client(conn, addr, params):
                 result = crawl.search_engine(stock)
 
                 if type(result) == str:
-                    send_json_data_str["Answer"] = "검색 결과가 없다 냥"
+                    send_json_data_str["Answer"] = result
                 elif type(result) == list and len(result) > 1:
                     send_json_data_str["Answer"] = "조회하고 싶은 항목을 선택해달라 냥"
                     send_json_data_str["many"] = result
                 else:
                     send_json_data_str["information"] = result
         elif intent_name == '환율 계산':
-            result = crawl.eor()
-            send_json_data_str["eor"] = result
-            pass
+            send_json_data_str["eor"] = crawl.eor()
+        elif intent_name == '오늘의 증시 조회':
+            send_json_data_str["stock_today"] = crawl.stock_today()
+
+        # elif intent_name == '인기 종목':
+        #     send_json_data_str["hot"] = crawl.top_today()
 
         # json 텍스트로 변환. 하여 전송
         message = json.dumps(send_json_data_str)

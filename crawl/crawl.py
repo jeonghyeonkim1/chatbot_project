@@ -24,7 +24,7 @@ class Crawl:
     def top_today(self):
         top = BeautifulSoup(requests.get(self.url).text,
                               'html.parser').select_one("#_topItems1")
-        return  top
+        return top
 
     def stock_today(self):
         kospi = BeautifulSoup(requests.get(self.url).text,
@@ -35,25 +35,25 @@ class Crawl:
                                  'html.parser').select_one(".kospi200_area")
 
         dic = {
-            'kospi': {
+            'KOSPI': {
                 '종목': kospi.select_one(".blind").text.strip(),
                 '지수': kospi.select_one(".num").text.strip(),
                 '변화': kospi.select_one(".num2").text.strip(),
-                '변화%': kospi.select_one(".num3").text.strip(),
+                '변화퍼센트': kospi.select_one(".num3").text.strip(),
                 '그래프': kospi.select_one("img[alt='코스피지수 상세보기']").attrs['src']
             },
-            'kosdaq': {
+            'KOSDAQ': {
                 '종목': kosdaq.select_one(".blind").text.strip(),
                 '지수': kosdaq.select_one(".num").text.strip(),
                 '변화': kosdaq.select_one(".num2").text.strip(),
-                '변화%': kosdaq.select_one(".num3").text.strip(),
+                '변화퍼센트': kosdaq.select_one(".num3").text.strip(),
                 '그래프': kosdaq.select_one("img[alt='코스닥지수 상세보기']").attrs['src']
             },
-            'kospi200': {
+            'KOSPI200': {
                 '종목': kospi200.select_one(".blind").text.strip(),
                 '지수': kospi200.select_one(".num").text.strip(),
                 '변화': kospi200.select_one(".num2").text.strip(),
-                '변화%': kospi200.select_one(".num3").text.strip(),
+                '변화퍼센트': kospi200.select_one(".num3").text.strip(),
                 '그래프': kospi200.select_one("img[alt='코스피200지수 상세보기']").attrs['src']
             }
         }
@@ -61,7 +61,8 @@ class Crawl:
         return dic
 
     def search_engine(self, query):
-        if query in self.korea:      
+        if query in self.korea:
+            print(1111)   
             query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
             url = f'https://finance.naver.com/search/searchList.naver?query={query}'
             response = requests.get(url)
@@ -71,13 +72,14 @@ class Crawl:
                            for i in dom.select('td.tit a')]
 
             if len(search_list) == 0:
-                return '검색 결과가 존재하지 않습니다.'
+                return '검색 결과가 없다 냥'
             elif len(search_list) == 1:
                 return Crawl().search_korea(self.url + search_list[0][-1])
 
             return search_list
 
         elif query in self.foreign:
+            print(2222)
             alpa = query.replace(" ", "")
             url = f'https://search.naver.com/search.naver?query={alpa}+주가'
             response = requests.get(url)
@@ -86,7 +88,7 @@ class Crawl:
             if not dom.find('div', id = '_cs_root'):
                 if not query in self.foreign_name or query in self.foreign_id:
 
-                    return '검색 결과가 존재하지 않습니다.'
+                    return '검색 결과가 없다 냥'
               
                 else:
                     query = Crawl().event_to_code[query]
@@ -98,6 +100,7 @@ class Crawl:
                 return Crawl().search_foriegn(url)
 
         else :
+            print("검색 주식이 리스트에 없음")
             query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
             url = f'https://finance.naver.com/search/searchList.naver?query={query}'
             response = requests.get(url)
@@ -107,7 +110,7 @@ class Crawl:
                            for i in dom.select('td.tit a')]
 
             if len(search_list) == 0:
-                return print('검색 결과가 존재하지 않습니다.')
+                return print('검색 결과가 없다 냥')
             elif len(search_list) == 1:
                 return Crawl().search_korea(self.url + search_list[0][-1])
 
@@ -134,7 +137,7 @@ class Crawl:
 
             return dic
         except:
-            return "옳바르지 않은 종목명이거나 정보가 없습니다."
+            return "검색 결과가 없다 냥"
         
     def search_foriegn(self, url):
         try:                
@@ -156,7 +159,7 @@ class Crawl:
 
             return dic
         except:
-            return "옳바르지 않은 종목명이거나 정보가 없습니다."
+            return "검색 결과가 없다 냥"
 
     def eor(a):
         url = 'https://finance.naver.com/marketindex/exchangeDetail.naver?marketindexCd=FX_USDKRW'
@@ -172,15 +175,13 @@ class Crawl:
         return float(usd)
 
     # 환율 계산 함수
+    # def K_to_U(dollor):
+    #     usd = Crawl().eor()
+    #     krw = usd * dollor
+    #     print(krw)
 
 
-    def K_to_U(dollor):
-        usd = Crawl().eor()
-        krw = usd * dollor
-        print(krw)
-
-
-    def U_to_K(won):
-        usd = Crawl().eor()
-        dollor = f'{won / usd:.2f}'
-        print(dollor)
+    # def U_to_K(won):
+    #     usd = Crawl().eor()
+    #     dollor = f'{won / usd:.2f}'
+    #     print(dollor)

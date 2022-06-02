@@ -9,6 +9,9 @@
             $chatbox.append(bottext);
         }
         $(function() {
+            $(".nav-button").click(function() {
+              $(this).parent().parent().toggleClass("closed");
+            });
             // SEND 버튼을 누르거나
             $("#sendbtn").click(function() {
                 send_message();
@@ -28,31 +31,26 @@
             console.log(text)
         }
 
-        function send_message() {
-            const chattext = $("#chattext").val().trim();
+        function usd_krw(eor) {
+            // 환율 계산기
+            const inputNum = $("#usd_left").val()
+            $("#krw_right").val((inputNum * eor).toFixed(0));
+        }
 
-            // 입력한 메세지가 없으면 리턴
-            if(chattext == "") {
-                $("#chattext").focus();
-                return;
-            }
+        function krw_usd(eor) {
+            // 환율 계산기
+            const inputNum = $("#krw_left").val()
+            $("#usd_right").val((inputNum / eor).toFixed(3));
+        }
 
-            // 입력한 채팅 화면에 출력
-            $("#wait").remove();
-            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#b8d7ff88;border-radius:3px;'>" + chattext + "</span></div>";
-            $("#chatbox").append(addtext);
+        function stChanger(e) {
+            // $("#st_img").attr('src', e[$("#st_selector").val()].그래프)
+            console.log(e)
+        }
 
-            // 답변 대기시간동안 로딩 말풍선 띄우기
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
-            $chatbox.append(botwait);
-
-            // 먼저 입력했던 것은 지우기
-            $("#chattext").val("");
-            $("#chattext").focus();
-
-            // API 서버에 요청할 데이터
+        function ajaxing(text) {
             const jsonData = {
-                query: chattext
+                query: text
             }
 
             $.ajax({
@@ -80,7 +78,7 @@
                         table = "<table class='table text-center'>"
                         table += `<tr><td class='border-0'></td><td colspan='2'><img src='${graph}'></td><td class='border-0'></td></tr>`
                         for (const key in response.information) {
-                            table += `<tr><td class='border-0'></td><td>${key}</td><td class='ft-bold'>${response.information[key]}</td><td class='border-0'></td></tr>`
+                            table += `<tr><td class='border-0'></td><th>${key}</th><td class='ft-bold'>${response.information[key]}</td><td class='border-0'></td></tr>`
                         }
                         table += "</table>"
                     } else if (response.many != undefined) {
@@ -94,25 +92,66 @@
                         table += `<thead><tr><th>오늘의 환율($)</th><th></th><th>${response.eor}원</th><tr></thead>`
                         table += "<tbody>"
                         table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (USD -> KRW)</td><tr>`
-                        table += `<tr><td class='input-group'><input class='form-control'><span class="input-group-text">$</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input class='form-control' disabled><span class="input-group-text">￦</span></td><tr>`
+                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center' id='usd_left' onkeyup='usd_krw(${response.eor})'><span class="input-group-text">$</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center' id='krw_right' disabled><span class="input-group-text">￦</span></td><tr>`
                         table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (KRW -> USD)</td><tr>`
-                        table += `<tr><td class='input-group'><input class='form-control'><span class="input-group-text">￦</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input class='form-control' disabled><span class="input-group-text">$</span></td><tr>`
+                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center' id='krw_left' onkeyup='krw_usd(${response.eor})'><span class="input-group-text">￦</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center' id='usd_right' disabled><span class="input-group-text">$</span></td><tr>`
                         table += "</tbody></table>"
+                    } else if (response.stock_today != undefined) {
+                        table = "<table class='table text-center'>"
+                        table += `<tr><th><select onchange="stChanger(${response.stock_today})" id='st_selector'><option selected><strong>KOSDAQ</strong></option><option><strong>KOSPI</strong></option><option><strong>KOSPI200</strong></option></select></th><td><img id='st_img' src='${response.stock_today['KOSDAQ'].그래프}'></td></tr>`
+                        table += `<tr><th>지수</th><td id='st_number'>${response.stock_today['KOSDAQ'].지수}</td></tr>`
+                        table += `<tr><th>변화</th><td id='st_change'>${response.stock_today['KOSDAQ'].변화}</td></tr>`
+                        table += `<tr><th>변화%</th><td id='st_change_per'>${response.stock_today['KOSDAQ'].변화퍼센트}</td></tr>`
+                        table += "</table>"
+                    } else if (response.hot != undefined) {
+                        console.log(response.hot)
                     }
 
                     const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
                     $chatbox.append(bottext);
-
-                    console.log(response.information);
+                    
 
                     // 스크롤 조정하기
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
                 }
             });
         }
+
+        function send_message() {
+            const chattext = $("#chattext").val().trim();
+
+            // 입력한 메세지가 없으면 리턴
+            if(chattext == "") {
+                $("#chattext").focus();
+                return;
+            }
+
+            // 입력한 채팅 화면에 출력
+            $("#wait").remove();
+            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#b8d7ff88;border-radius:3px;'>" + chattext + "</span></div>";
+            $("#chatbox").append(addtext);
+
+            // 답변 대기시간동안 로딩 말풍선 띄우기
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
+
+            // 먼저 입력했던 것은 지우기
+            $("#chattext").val("");
+            $("#chattext").focus();
+
+            // ajax
+            ajaxing(chattext)
+        }
     </script>
     <style>
-
+        td, th {
+            vertical-align : middle;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
         .textcon{
             padding: 20px 0 0 26px;
         }
@@ -270,12 +309,4 @@
           
     </body>
     <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
-    <script>
-        $(function() {
-            $(".nav-button").click(function() {
-              $(this).parent().parent().toggleClass("closed");
-            });
-          
-          });
-    </script>
 {% endblock %}
