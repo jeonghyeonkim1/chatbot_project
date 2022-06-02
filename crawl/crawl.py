@@ -159,7 +159,7 @@ class Crawl:
         except:
             return "옳바르지 않은 종목명이거나 정보가 없습니다."
 
-    def eor():
+    def eor(a):
         url = 'https://finance.naver.com/marketindex/exchangeDetail.naver?marketindexCd=FX_USDKRW'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36'

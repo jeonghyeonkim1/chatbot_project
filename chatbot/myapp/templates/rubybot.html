@@ -43,7 +43,7 @@
             $("#chatbox").append(addtext);
 
             // 답변 대기시간동안 로딩 말풍선 띄우기
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
 
             // 먼저 입력했던 것은 지우기
@@ -89,6 +89,15 @@
                             table += `<tr onclick="select_message('${response.many[event][1]}')" style="cursor: pointer;"><td>${response.many[event][0]}</td></tr>`
                         }
                         table += "</table>"
+                    } else if (response.eor != undefined) {
+                        table = "<table class='table table-striped text-center'>"
+                        table += `<thead><tr><th>오늘의 환율($)</th><th></th><th>${response.eor}원</th><tr></thead>`
+                        table += "<tbody>"
+                        table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (USD -> KRW)</td><tr>`
+                        table += `<tr><td class='input-group'><input class='form-control'><span class="input-group-text">$</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input class='form-control' disabled><span class="input-group-text">￦</span></td><tr>`
+                        table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (KRW -> USD)</td><tr>`
+                        table += `<tr><td class='input-group'><input class='form-control'><span class="input-group-text">￦</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input class='form-control' disabled><span class="input-group-text">$</span></td><tr>`
+                        table += "</tbody></table>"
                     }
 
                     const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";

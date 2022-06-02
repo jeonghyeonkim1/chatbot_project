@@ -114,6 +114,10 @@ def to_client(conn, addr, params):
                     send_json_data_str["many"] = result
                 else:
                     send_json_data_str["information"] = result
+        elif intent_name == '환율 계산':
+            result = crawl.eor()
+            send_json_data_str["eor"] = result
+            pass
 
         # json 텍스트로 변환. 하여 전송
         message = json.dumps(send_json_data_str)
