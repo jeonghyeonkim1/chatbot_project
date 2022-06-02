@@ -20,11 +20,33 @@ class Crawl:
         self.foreign_name = df[df['type'] == '해외주식']['name'].tolist()
         self.foreign_id = df[df['type'] == '해외주식']['id'].tolist()
         
-    # 서희 할 꺼
     def top_today(self):
         top = BeautifulSoup(requests.get(self.url).text,
                               'html.parser').select_one("#_topItems1")
-        return top
+    
+        cr_list = top.select('#_topItems1 > tr')
+
+        result = []
+
+        for cr_lists in cr_list:
+
+
+            code = cr_lists.select_one('th > a').attrs['href'][-6:]
+            name = cr_lists.select_one('th > a').text.strip()
+            price = cr_lists.select_one('td').text.strip()
+            up_down = cr_lists.select_one('td ~ td span').text.strip()
+            change = cr_lists.select_one('td ~ td ~td').text.strip()
+
+
+            result.append({
+                '종목코드': code,
+                '종목명' : name,
+                '금액, 상승폭' : price + up_down,
+                '변동폭' : change
+
+            })
+
+        return result
 
     def stock_today(self):
         kospi = BeautifulSoup(requests.get(self.url).text,
