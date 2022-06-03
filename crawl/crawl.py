@@ -16,6 +16,7 @@ class Crawl:
         df = pd.read_excel(data, index_col=0)
 
         self.korea = (df[df['type'] == '국내주식']['name'].tolist() + df[df['type'] == '국내주식']['id'].tolist())
+        self.korea_id = df[df['type'] == '국내주식']['id'].tolist()
         self.foreign = (df[df['type'] == '해외주식']['name'].tolist() + df[df['type'] == '해외주식']['id'].tolist())
         self.foreign_name = df[df['type'] == '해외주식']['name'].tolist()
         self.foreign_id = df[df['type'] == '해외주식']['id'].tolist()
@@ -26,27 +27,17 @@ class Crawl:
     
         cr_list = top.select('#_topItems1 > tr')
 
-        result = []
+        dic = {}
 
         for cr_lists in cr_list:
-
-
-            code = cr_lists.select_one('th > a').attrs['href'][-6:]
-            name = cr_lists.select_one('th > a').text.strip()
-            price = cr_lists.select_one('td').text.strip()
-            up_down = cr_lists.select_one('td ~ td span').text.strip()
-            change = cr_lists.select_one('td ~ td ~td').text.strip()
-
-
-            result.append({
-                '종목코드': code,
-                '종목명' : name,
-                '금액, 상승폭' : price + up_down,
-                '변동폭' : change
-
-            })
-
-        return result
+            dic[cr_lists.select_one('th > a').text.strip()] = {
+                '종목코드': cr_lists.select_one('th > a').attrs['href'][-6:],
+                '가격': cr_lists.select_one('td').text.strip(),
+                '변동': cr_lists.select_one('td ~ td span').text.strip(),
+                '변동퍼센트': cr_lists.select_one('td ~ td ~td').text.strip()
+            }
+            
+        return dic
 
     def stock_today(self):
         kospi = BeautifulSoup(requests.get(self.url).text,
@@ -83,8 +74,10 @@ class Crawl:
         return dic
 
     def search_engine(self, query):
-        if query in self.korea:
-            print(1111)   
+        if query in self.korea_id:
+            return Crawl().search_korea(f'https://finance.naver.com/item/main.naver?code={query}')
+
+        elif query in self.korea:
             query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
             url = f'https://finance.naver.com/search/searchList.naver?query={query}'
             response = requests.get(url)
@@ -101,14 +94,13 @@ class Crawl:
             return search_list
 
         elif query in self.foreign:
-            print(2222)
             alpa = query.replace(" ", "")
             url = f'https://search.naver.com/search.naver?query={alpa}+주가'
             response = requests.get(url)
             dom = BeautifulSoup(response.text, 'html.parser')
                         
             if not dom.find('div', id = '_cs_root'):
-                if not query in self.foreign_name or query in self.foreign_id:
+                if query not in self.foreign_name or query in self.foreign_id:
 
                     return '검색 결과가 없다 냥'
               
@@ -154,7 +146,8 @@ class Crawl:
                 '시가': rate_info[4].text.strip(),
                 '저가': rate_info[5].text.strip(),
                 '하한가': ''.join([i.text.strip() for i in res.select('.rate_info td .sp_txt7 ~ em span')]),
-                '거래대금': rate_info[6].text.strip()
+                '거래대금': rate_info[6].text.strip(),
+                '그래프': res.select_one('#img_chart_area').attrs['src']
             }
 
             return dic

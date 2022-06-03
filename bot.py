@@ -1,5 +1,6 @@
 import threading
 import json
+import pickle
 
 from config.DatabaseConfig import *
 from utils.Database import Database
@@ -46,7 +47,7 @@ def to_client(conn, addr, params):
         
         # 데이터 수신 (클라이언트로부터 데이터를 받기 위함)
         # conn 은 챗봇 클라이언트 소켓 객체 ( 이 객체를 통해 클라이언트 데이터 주고 받는다 )
-        read = conn.recv(2048)  # recv() 는 수신 데이터가 있을 때 까지 블로킹, 최대 2048 바이트만큼 수신
+        read = conn.recv(4096)  # recv() 는 수신 데이터가 있을 때 까지 블로킹, 최대 4096 바이트만큼 수신
                                 # 클라이언트 연결이 끊어지거나 오류발생시 블로킹 해제되고 None 리턴
         print('===========================')
         print('Connection from: %s' % str(addr))
@@ -62,17 +63,25 @@ def to_client(conn, addr, params):
         print("데이터 수신 :", recv_json_data)
         query = recv_json_data['Query']
         persona = recv_json_data['BotType']
-        
-        # 의도 파악
-        intent_predict = intent.predict_class(query)
-        intent_name = intent.labels[intent_predict]
-        
-        # 개체명 파악
-        ner_predicts = ner.predict(query)
-        ner_tags = ner.predict_tags(query)
+
+        if recv_json_data['Selection']:
+            intent_name = '특정 주가 조회'
+            ner_predicts = [(query, 'B_STOCK')]
+            ner_tags = ['B_STOCK']
+
+        else:
+            # 의도 파악
+            intent_predict = intent.predict_class(query)
+            intent_name = intent.labels[intent_predict]
+
+            # 개체명 파악
+            ner_predicts = ner.predict(query)
+            ner_tags = ner.predict_tags(query)
+
 
         print("의도 :", intent_name)
-        print("개체명 :", ner_predicts)
+        print("개체예측 :", ner_predicts)
+        print("개체명 :", ner_tags)
 
         # 답변 검색, 분석된 의도와 개체명을 이용해 학습 DB 에서 답변을 검색
         try:
@@ -82,12 +91,11 @@ def to_client(conn, addr, params):
             answer = f.tag_to_word(ner_predicts, answer_text)
 
         except:
-            answer = "죄송해요 무슨 말인지 모르겠어요. 조금 더 공부 할게요."
+            answer = "내가 모르는 말이다 냥... 미안하냥!!"
             answer_image = None
 
 
         # 검색된 답변데이터와 함께 앞서 정의한 응답하는 JSON 으로 생성
-
         send_json_data_str = {
             "Query": query,
             "Answer": answer,
@@ -118,9 +126,8 @@ def to_client(conn, addr, params):
             send_json_data_str["eor"] = crawl.eor()
         elif intent_name == '오늘의 증시 조회':
             send_json_data_str["stock_today"] = crawl.stock_today()
-
-        # elif intent_name == '인기 종목':
-        #     send_json_data_str["hot"] = crawl.top_today()
+        elif intent_name == '인기 종목':
+            send_json_data_str["hot"] = crawl.top_today()
 
         # json 텍스트로 변환. 하여 전송
         message = json.dumps(send_json_data_str)

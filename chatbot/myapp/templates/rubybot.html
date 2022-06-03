@@ -12,13 +12,13 @@
             $(".nav-button").click(function() {
               $(this).parent().parent().toggleClass("closed");
             });
-            // SEND 버튼을 누르거나
+            // SEND
             $("#sendbtn").click(function() {
                 send_message();
                 $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
             }); 
 
-            // ENTER key 가 눌리면
+            // ENTER
             $("#chattext").keyup(function(event) {
                 if(event.keyCode == 13) {
                     send_message();
@@ -27,46 +27,53 @@
             })
         })
 
-        function select_message(text) {
-            console.log(text)
+        function selection(text) {
+            // 답변 대기시간동안 로딩 말풍선 띄우기
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
+
+            $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
+
+            ajaxing(text, url='http://127.0.0.10:5000/query/ruby_code')
         }
 
         function usd_krw(eor) {
-            // 환율 계산기
-            const inputNum = $("#usd_left").val()
-            $("#krw_right").val((inputNum * eor).toFixed(0));
+            const inputNum = $(".usd_left").last().val()
+            $(".krw_right").last().val((inputNum * eor).toFixed(0));
         }
 
         function krw_usd(eor) {
-            // 환율 계산기
-            const inputNum = $("#krw_left").val()
-            $("#usd_right").val((inputNum / eor).toFixed(3));
+            const inputNum = $(".krw_left").last().val()
+            $(".usd_right").last().val((inputNum / eor).toFixed(3));
         }
 
         function stChanger(e) {
-            // $("#st_img").attr('src', e[$("#st_selector").val()].그래프)
-            console.log(e)
+            $("#st_table").hide();
+
+            $("#st_img").attr('src', e[$("#st_selector").val()].그래프)
+            $("#st_number").text(e[$("#st_selector").val()].지수)
+            $("#st_change").text(e[$("#st_selector").val()].변화)
+            $("#st_change_per").text(e[$("#st_selector").val()].변화퍼센트)
+
+            $("#st_table").fadeIn('slow')
         }
 
-        function ajaxing(text) {
+        function ajaxing(text, url='http://127.0.0.10:5000/query/ruby') {
             const jsonData = {
                 query: text
             }
 
             $.ajax({
-                url: 'http://127.0.0.10:5000/query/ruby',
+                url: url,
                 type: "POST",
                 data: JSON.stringify(jsonData),
-                dataType: "JSON",   // 응답받을 데이터 타입
+                dataType: "JSON",
                 contentType: "application/json; charset=utf-8",
                 crossDomain: true,
 
                 success: function(response){
-                    // 답변텍스트는 response.Answer 에 담겨 있다
-
                     $chatbox = $("#chatbox");
 
-                    // 답변출력
                     $("#wait").remove();
                     
                     table = ""
@@ -84,7 +91,7 @@
                     } else if (response.many != undefined) {
                         table = "<table class='table table-hover text-center'>"
                         for (const event in response.many) {
-                            table += `<tr onclick="select_message('${response.many[event][1]}')" style="cursor: pointer;"><td>${response.many[event][0]}</td></tr>`
+                            table += `<tr onclick="selection('${response.many[event][1]}')" style="cursor: pointer;"><td>${response.many[event][0]}</td></tr>`
                         }
                         table += "</table>"
                     } else if (response.eor != undefined) {
@@ -92,19 +99,31 @@
                         table += `<thead><tr><th>오늘의 환율($)</th><th></th><th>${response.eor}원</th><tr></thead>`
                         table += "<tbody>"
                         table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (USD -> KRW)</td><tr>`
-                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center' id='usd_left' onkeyup='usd_krw(${response.eor})'><span class="input-group-text">$</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center' id='krw_right' disabled><span class="input-group-text">￦</span></td><tr>`
+                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center usd_left' onkeyup='usd_krw(${response.eor})'><span class="input-group-text">$</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center krw_right' disabled><span class="input-group-text">￦</span></td><tr>`
                         table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (KRW -> USD)</td><tr>`
-                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center' id='krw_left' onkeyup='krw_usd(${response.eor})'><span class="input-group-text">￦</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center' id='usd_right' disabled><span class="input-group-text">$</span></td><tr>`
+                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center krw_left' onkeyup='krw_usd(${response.eor})'><span class="input-group-text">￦</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center usd_right' disabled><span class="input-group-text">$</span></td><tr>`
                         table += "</tbody></table>"
                     } else if (response.stock_today != undefined) {
-                        table = "<table class='table text-center'>"
-                        table += `<tr><th><select onchange="stChanger(${response.stock_today})" id='st_selector'><option selected><strong>KOSDAQ</strong></option><option><strong>KOSPI</strong></option><option><strong>KOSPI200</strong></option></select></th><td><img id='st_img' src='${response.stock_today['KOSDAQ'].그래프}'></td></tr>`
+                        table = "<table class='table text-center' id='st_table'>"
+                        table += `<tr><th><select onchange='stChanger(${JSON.stringify(response.stock_today)})' id='st_selector'><option selected><strong>KOSDAQ</strong></option><option><strong>KOSPI</strong></option><option><strong>KOSPI200</strong></option></select></th><td><img id='st_img' src='${response.stock_today['KOSDAQ'].그래프}'></td></tr>`
                         table += `<tr><th>지수</th><td id='st_number'>${response.stock_today['KOSDAQ'].지수}</td></tr>`
                         table += `<tr><th>변화</th><td id='st_change'>${response.stock_today['KOSDAQ'].변화}</td></tr>`
                         table += `<tr><th>변화%</th><td id='st_change_per'>${response.stock_today['KOSDAQ'].변화퍼센트}</td></tr>`
                         table += "</table>"
                     } else if (response.hot != undefined) {
-                        console.log(response.hot)
+                        table = "<table class='table table-hover text-center'>"
+                        table += "<thead><th>종목명</th><th>가격</th><th>상승/하락</th><th>변동폭</th></thead><tbody>"
+                        for (const event in response.hot) {
+                            if (response.hot[event].변동퍼센트[0] == '+') {
+                                table += `<tr class='text-danger' onclick="selection('${response.hot[event].종목코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
+                            } else if (response.hot[event].변동퍼센트[0] == '-') {
+                                table += `<tr class='text-primary' onclick="selection('${response.hot[event].종목코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
+                            } else {
+                                table += `<tr onclick="selection('${response.hot[event].종목코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
+                            }
+                                
+                        }
+                        table += "</tbody></table>"
                     }
 
                     const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
@@ -205,10 +224,10 @@
             border-radius: 7px;
             background-color: #fff;
             margin: 30px;
-            padding-right: 100px;
             height:75%;
             margin-top:20px;
             padding:5px;
+            padding-right: 25px;
             overflow-y:scroll;
             overflow-x:hidden;
             max-height:100vh;
