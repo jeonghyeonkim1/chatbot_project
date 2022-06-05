@@ -15,56 +15,92 @@
             // SEND
             $("#sendbtn").click(function() {
                 send_message();
-                $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
+                $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
             }); 
 
             // ENTER
             $("#chattext").keyup(function(event) {
                 if(event.keyCode == 13) {
                     send_message();
-                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
                 }
             })
         })
 
         function selection(text) {
-            // 답변 대기시간동안 로딩 말풍선 띄우기
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
-            $chatbox.append(botwait);
-
-            $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
-
-            ajaxing(text, url='http://127.0.0.10:5000/query/ruby_code')
+            waiter();
+            ajaxing({query: text, selection: true});
         }
 
         function usd_krw(eor) {
-            const inputNum = $(".usd_left").last().val()
+            const inputNum = $(".usd_left").last().val();
             $(".krw_right").last().val((inputNum * eor).toFixed(0));
         }
 
         function krw_usd(eor) {
-            const inputNum = $(".krw_left").last().val()
+            const inputNum = $(".krw_left").last().val();
             $(".usd_right").last().val((inputNum / eor).toFixed(3));
         }
 
         function stChanger(e) {
             $("#st_table").hide();
 
-            $("#st_img").attr('src', e[$("#st_selector").val()].그래프)
-            $("#st_number").text(e[$("#st_selector").val()].지수)
-            $("#st_change").text(e[$("#st_selector").val()].변화)
-            $("#st_change_per").text(e[$("#st_selector").val()].변화퍼센트)
+            $("#st_img").attr('src', e[$("#st_selector").val()].그래프);
+            $("#st_number").text(e[$("#st_selector").val()].지수);
+            $("#st_change").text(e[$("#st_selector").val()].변화);
+            $("#st_change_per").text(e[$("#st_selector").val()].변화퍼센트);
 
-            $("#st_table").fadeIn('slow')
+            $("#st_table").fadeIn('slow');
         }
 
-        function ajaxing(text, url='http://127.0.0.10:5000/query/ruby') {
-            const jsonData = {
-                query: text
+        function word_search(text) {
+            waiter();
+            ajaxing({query: text, word: true});
+        }
+
+        function stock_trade(event, num, intent) {
+            ajaxing({query: event + num + '개 ' + intent})
+        }
+
+        function send_todo(event, intent) {
+            $(".todo_list").hide();
+            $(".todo_input").hide();
+
+            if (intent == '정보 조회') {
+                waiter();
+                ajaxing({query: event + '조회'});
+            } else if (intent == '매수') {
+                const table = "<div class='input-group'><input type='number' placeholder='갯수를 입력해주세요.' class='cnt_input form-control text-center'><button class='btn btn-outline-secondary'>매수하기</button></div>"
+                const bottext = `<div class='todo_input' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매수할꺼냥?</span>${table}</div></div>`;
+                $("#chatbox").append(bottext);
+                $(".cnt_input ~ button").on('click', function() {
+                    stock_trade(event, $(".cnt_input").last().val(), intent)
+                })
+            } else if (intent == '매도') {
+                const table = "<div class='input-group'><input type='number' placeholder='갯수를 입력해주세요.' class='cnt_input form-control text-center'><button class='btn btn-outline-secondary'>매도하기</button></div>"
+                const bottext = `<div class='todo_input' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매수할꺼냥?</span>${table}</div></div>`;
+                $("#chatbox").append(bottext);
+                $(".cnt_input ~ button").on('click', function() {
+                    stock_trade(event, $(".cnt_input").last().val(), intent)
+                })
+            } else {    
+                waiter();
+                ajaxing({query: event + '취소'});
             }
+        }
+
+        function waiter() {
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
+            $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
+        }
+
+        function ajaxing(jsonData) {
+            $(".todo_list").hide();
+            $(".todo_input").hide();
 
             $.ajax({
-                url: url,
+                url: 'http://127.0.0.10:5000/query/ruby',
                 type: "POST",
                 data: JSON.stringify(jsonData),
                 dataType: "JSON",
@@ -121,19 +157,38 @@
                             } else {
                                 table += `<tr onclick="selection('${response.hot[event].종목코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
                             }
-                                
                         }
                         table += "</tbody></table>"
+                    } else if (response.word != undefined) {
+                        cnt = 0
+                        table = "<div class='m-5'>"
+                        for (const word in response.word) {
+                            table += `<button class='btn btn-outline-secondary m-1' onclick='word_search($(this).text())'>${response.word[word]}</button></td>`
+                        }
+                        table += "</div>"
+                    } else if (response.explain != undefined) {
+                        table = `<table class='table text-center'><tr><td></td></tr><tr><td>${response.explain}</td></tr></table>`
+                    } else if (response.event != undefined) {
+                        table = "<table class='table table-hover text-center todo_list'>"
+                        for (const event in response.list) {
+                            table += `<tr style="cursor: pointer;"><td><input type='hidden' value='${response.event}'>${response.list[event]}</td></tr>`
+                        }
+                        table += "</table>"
                     }
 
-                    const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
+                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
                     $chatbox.append(bottext);
                     
-
                     // 스크롤 조정하기
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
+
+                    $(".todo_list tbody tr").children().each(function() {
+                        $(this).on('click', function() {
+                            send_todo($(this).find('input').val(), $(this).text())
+                        })
+                    })
                 }
-            });
+            })
         }
 
         function send_message() {
@@ -159,10 +214,13 @@
             $("#chattext").focus();
 
             // ajax
-            ajaxing(chattext)
+            ajaxing({query: chattext})
         }
     </script>
     <style>
+        input:focus::placeholder{
+            color:transparent;
+        }
         td, th {
             vertical-align : middle;
         }

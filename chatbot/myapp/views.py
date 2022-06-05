@@ -1,17 +1,20 @@
 from django.shortcuts import render
+import pandas as pd
 
 
-def home(request):
-    return render(request, 'home.html')
+def home(req):
+    return render(req, 'home.html')
 
-def test(request):
-    return render(request, 'test.html')
+def test(req):
+    return render(req, 'test.html')
 
-def rubybot(request):
-    return render(request, 'rubybot.html')
+def rubybot(req):
+    return render(req, 'rubybot.html')
 
-def urambot(request):
-    return render(request, 'urambot.html')
+def urambot(req):
+    return render(req, 'urambot.html')
 
-def storage(request):
-    return render(request, 'storage.html')
+def storage(req):
+    return render(req, 'storage.html')
+
+

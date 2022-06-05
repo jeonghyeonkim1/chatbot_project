@@ -1,25 +1,56 @@
+from config.DatabaseConfig import *
+import pymysql
+import pymysql.cursors
 from bs4 import BeautifulSoup
-import requests, os, datetime, pickle
-import pandas as pd
+import requests
 
 class Crawl:
     def __init__(self):
         self.url = 'https://finance.naver.com/'
-        
-        with open(r'./data/re.bin', 'rb') as f:
-            event_to_code = pickle.load(f)
-        self.event_to_code = event_to_code
-        self.code_to_event = {j:i for i, j in self.event_to_code.items()}
-        
-        path = r'./data/종목.xlsx'
-        data = os.path.join(path)
-        df = pd.read_excel(data, index_col=0)
 
-        self.korea = (df[df['type'] == '국내주식']['name'].tolist() + df[df['type'] == '국내주식']['id'].tolist())
-        self.korea_id = df[df['type'] == '국내주식']['id'].tolist()
-        self.foreign = (df[df['type'] == '해외주식']['name'].tolist() + df[df['type'] == '해외주식']['id'].tolist())
-        self.foreign_name = df[df['type'] == '해외주식']['name'].tolist()
-        self.foreign_id = df[df['type'] == '해외주식']['id'].tolist()
+        try:
+            db = pymysql.connect(
+                host=DB_HOST,
+                user=DB_USER,
+                passwd=DB_PASSWORD,
+                db=DB_NAME,
+                charset='utf8'
+            )
+
+            sql = '''
+                select * from chatbot_stock
+            '''
+
+            with db.cursor() as cursor:
+                cursor.execute(sql)
+                self.event_to_code = {c: a for a, b, c in cursor.fetchall()}
+                self.code_to_event = {a: c for a, b, c in cursor.fetchall()}
+
+            sql = '''
+                select * from chatbot_stock where type='국내주식'
+            '''
+
+            with db.cursor() as cursor:
+                cursor.execute(sql)
+                self.korea_name = [i[2] for i in cursor.fetchall()]
+                self.korea_id = [i[0] for i in cursor.fetchall()]
+
+            sql = '''
+                select * from chatbot_stock where type='해외주식'
+            '''
+
+            with db.cursor() as cursor:
+                cursor.execute(sql)
+                self.foreign_name = [i[2] for i in cursor.fetchall()]
+                self.foreign_id = [i[0] for i in cursor.fetchall()]
+
+        except Exception as e:
+            print(e)
+
+
+        finally:
+            if db is not None:
+                db.close()
         
     def top_today(self):
         top = BeautifulSoup(requests.get(self.url).text,
@@ -77,7 +108,7 @@ class Crawl:
         if query in self.korea_id:
             return Crawl().search_korea(f'https://finance.naver.com/item/main.naver?code={query}')
 
-        elif query in self.korea:
+        elif query in self.korea_id + self.korea_name:
             query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
             url = f'https://finance.naver.com/search/searchList.naver?query={query}'
             response = requests.get(url)
@@ -93,7 +124,7 @@ class Crawl:
 
             return search_list
 
-        elif query in self.foreign:
+        elif query in self.foreign_id + self.foreign_name:
             alpa = query.replace(" ", "")
             url = f'https://search.naver.com/search.naver?query={alpa}+주가'
             response = requests.get(url)
@@ -114,21 +145,7 @@ class Crawl:
                 return Crawl().search_foriegn(url)
 
         else :
-            print("검색 주식이 리스트에 없음")
-            query = str(query.encode('euc-kr'))[2:-1].replace('\\x', '%')
-            url = f'https://finance.naver.com/search/searchList.naver?query={query}'
-            response = requests.get(url)
-            dom = BeautifulSoup(response.text, 'html.parser')
-
-            search_list = [(i.text.strip(), i.attrs['href'][-6:])
-                           for i in dom.select('td.tit a')]
-
-            if len(search_list) == 0:
-                return print('검색 결과가 없다 냥')
-            elif len(search_list) == 1:
-                return Crawl().search_korea(self.url + search_list[0][-1])
-
-            return search_list
+            return '검색 결과가 없다 냥'
             
     def search_korea(self, url):
         try:
@@ -188,15 +205,3 @@ class Crawl:
         usd = elements[0].text.strip()
         usd = usd.replace(',', '')
         return float(usd)
-
-    # 환율 계산 함수
-    # def K_to_U(dollor):
-    #     usd = Crawl().eor()
-    #     krw = usd * dollor
-    #     print(krw)
-
-
-    # def U_to_K(won):
-    #     usd = Crawl().eor()
-    #     dollor = f'{won / usd:.2f}'
-    #     print(dollor)
