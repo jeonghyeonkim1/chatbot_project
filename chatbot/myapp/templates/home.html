@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
 
 {% block src %}
-
+<script>
+    $(function() {
+        $('#r-bot').click(function(){
+            $('#modal2').modal('show')
+        });
+    })
+</script>
 <style>
     #modal2{
         position: fixed;
@@ -29,135 +35,53 @@
 {% endblock %}
 
 {% block contents %}
-<div class='modal fade' id='modal2'>
-    <div class='modal-dialog'>
-        <div class='modal-content'>
-            <div class='modal-header'><h4 class='modal-title'>Welcome Ruby bot</h4></div>
-            <div class='modal-body'>
-                <div style='text-align:center;' class='iconcon'>
-                    <div style='display:inline-block;padding:20px;' onclick="location.href='{% url 'myapp:rubybot' %}'"><i class="display-5 fa-solid fa-robot p-3"><h6>Start Chatting</h6></i></div>
-                    <div style='display:inline-block;padding:20px 40px 20px 40px;' onclick="location.href='{% url 'myapp:storage' %}'"><i class="display-5 fa-solid fa-folder-plus p-3"><h6>Storage</h6></i></div>
+<body class="container bg-dark" style='overflow: hidden;'>
+    <div class='modal fade' id='modal2'>
+        <div class='modal-dialog'>
+            <div class='modal-content'>
+                <div class='modal-header'><h4 class='modal-title'>Welcome Ruby bot</h4></div>
+                <div class='modal-body'>
+                    <div style='text-align:center;' class='iconcon'>
+                        <div style='display:inline-block;padding:20px;' onclick="location.href='{% url 'myapp:rubybot' %}'"><i class="display-5 fa-solid fa-robot p-3"><h6>Start Chatting</h6></i></div>
+                        <div style='display:inline-block;padding:20px 40px 20px 40px;' onclick="location.href='{% url 'myapp:storage' %}'"><i class="display-5 fa-solid fa-folder-plus p-3"><h6>Storage</h6></i></div>
+                    </div>
                 </div>
-            </div>
-            <div class='modal-footer'>
-                <button type='button' class='btn btn-default' data-dismiss='modal'></button>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-default' data-dismiss='modal'></button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-    <body class="container bg-dark">
-        
-        <div class="rounded vh-100 m-3 p-3 d-flex justify-content-center align-items-center bg-light">
-            <table class="table table-striped table-dark text-center">
-                <thead>
-                    <tr>
-                        <th colspan='3'>
-                            <i class="display-3 fa-brands fa-bots"></i>
-                        </th>
-                    </tr>
-                </thead>
-                  
-                <tbody>
-                    <tr>
-                        <td>
-                            <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:urambot' %}'">
-                                <i class="display-5 fa-solid fa-tent p-3 fa-beat"></i>
-                                <h5>Camping</h5>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="border: none;" class="linker btn btn-outline-light" id='r-bot'>
-                                <i class="display-5 fa-solid fa-chart-line p-3 fa-beat"></i>
-                                <h5>Stock</h5>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <footer class="bg-dark text-center text-white">
-            <div class="container p-4">
-                <section class="mb-4">
-                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.facebook.com" role="button" target="_blank">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.twitter.com" role="button" target="_blank">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.google.com" role="button" target="_blank">
-                        <i class="fab fa-google"></i>
-                    </a>
-                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.instagram.com" role="button" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.youtube.com" role="button" target="_blank">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                    <a class="btn btn-outline-light btn-floating m-1" href="http://www.github.com" role="button" target="_blank">
-                        <i class="fab fa-github"></i>
-                    </a>
-                </section>
-                <section>
-                    
-                </section>
-                <section class="mb-4">
-                    <h1>{{ config.site_name }}</h1>
-                    <h6>
-                        {{ config.sale_time }}<br>
-                        {{ config.lunch_time }}<br>
-                        {{ config.holiday }}
-                    </h6>
-                </section>
-                <section class="">
-                    <div class="row">
-                        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                            <h5 class="text-uppercase">ABOUT</h5>
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#!" class="text-white text-decoration-none">설립</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">주소</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">지도</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">스태프</a></li>
-                            </ul>
+    
+    <div class="rounded vh-100 m-3 p-3 d-flex justify-content-center align-items-center bg-light">
+        <table class="table table-striped table-dark text-center">
+            <thead>
+                <tr>
+                    <th colspan='3'>
+                        <i class="display-3 fa-brands fa-bots"></i>
+                    </th>
+                </tr>
+            </thead>
+                
+            <tbody>
+                <tr>
+                    <td>
+                        <div style="border: none;" class="linker btn btn-outline-light" onclick="location.href='{% url 'myapp:urambot' %}'">
+                            <i class="display-5 fa-solid fa-tent p-3 fa-beat"></i>
+                            <h5>Camping</h5>
                         </div>
-                        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                            <h5 class="text-uppercase">SUPPORT</h5>
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#!" class="text-white text-decoration-none">다운로드</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">매뉴얼</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">자주묻는질문</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">문의</a></li>
-                            </ul>
+                    </td>
+                    <td>
+                        <div style="border: none;" class="linker btn btn-outline-light" id='r-bot'>
+                            <i class="display-5 fa-solid fa-chart-line p-3 fa-beat"></i>
+                            <h5>Stock</h5>
                         </div>
-                        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                            <h5 class="text-uppercase">POLICY</h5>
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#!" class="text-white text-decoration-none">이용약관</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">개인정보처리방침</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">이용안내</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">제휴입점문의</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-lg-3 col-md-6 mb-4 mb-md-0">
-                            <h5 class="text-uppercase">SOULMATE</h5>
-                            <ul class="list-unstyled mb-0">
-                                <li><a href="#!" class="text-white text-decoration-none">서희</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">도희</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">동완</a></li>
-                                <li><a href="#!" class="text-white text-decoration-none">윤직</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            <div class="text-center p-3" style="background-color: #fff; color:#000; border-radius:3px">
-                Copyright © {{ config.site_name }} Corp. 2022-2023 All Rights Reserved.
-            </div>
-        </footer>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    </body>
-<script>
-    $('#r-bot').click(function(){
-        $('#modal2').modal('show')
-    });
-</script>
+</body>
+
 {% endblock %}

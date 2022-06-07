@@ -23,26 +23,12 @@ class Crawl:
 
             with db.cursor() as cursor:
                 cursor.execute(sql)
-                self.event_to_code = {c: a for a, b, c in cursor.fetchall()}
-                self.code_to_event = {a: c for a, b, c in cursor.fetchall()}
-
-            sql = '''
-                select * from chatbot_stock where type='국내주식'
-            '''
-
-            with db.cursor() as cursor:
-                cursor.execute(sql)
-                self.korea_name = [i[2] for i in cursor.fetchall()]
-                self.korea_id = [i[0] for i in cursor.fetchall()]
-
-            sql = '''
-                select * from chatbot_stock where type='해외주식'
-            '''
-
-            with db.cursor() as cursor:
-                cursor.execute(sql)
-                self.foreign_name = [i[2] for i in cursor.fetchall()]
-                self.foreign_id = [i[0] for i in cursor.fetchall()]
+                content = cursor.fetchall()
+                self.event_to_code = {c: a for a, b, c in content}
+                self.korea_name = [c for a, b, c in content if b == '국내주식']
+                self.korea_id = [a for a, b, c in content if b == '국내주식']
+                self.foreign_name = [c for a, b, c in content if b == '해외주식']
+                self.foreign_id = [a for a, b, c in content if b == '해외주식']
 
         except Exception as e:
             print(e)
@@ -62,7 +48,8 @@ class Crawl:
 
         for cr_lists in cr_list:
             dic[cr_lists.select_one('th > a').text.strip()] = {
-                '종목코드': cr_lists.select_one('th > a').attrs['href'][-6:],
+                '종목': cr_lists.select_one('th > a').text.strip(),
+                '코드': cr_lists.select_one('th > a').attrs['href'][-6:],
                 '가격': cr_lists.select_one('td').text.strip(),
                 '변동': cr_lists.select_one('td ~ td span').text.strip(),
                 '변동퍼센트': cr_lists.select_one('td ~ td ~td').text.strip()
@@ -120,7 +107,7 @@ class Crawl:
             if len(search_list) == 0:
                 return '검색 결과가 없다 냥'
             elif len(search_list) == 1:
-                return Crawl().search_korea(self.url + search_list[0][-1])
+                return Crawl().search_korea(self.url + 'item/main.naver?code=' + search_list[0][-1])
 
             return search_list
 
@@ -132,7 +119,6 @@ class Crawl:
                         
             if not dom.find('div', id = '_cs_root'):
                 if query not in self.foreign_name or query in self.foreign_id:
-
                     return '검색 결과가 없다 냥'
               
                 else:
@@ -154,44 +140,47 @@ class Crawl:
             rate_info = res.select('.rate_info td span.blind')
 
             dic = {
+                '코드': res.select_one('div.description span.code').text.strip(),
                 '종목': res.select_one('div.wrap_company h2 a').text.strip(),
                 '가격': res.select_one('p.no_today span.blind').text.strip(),
-                '전일': rate_info[0].text.strip(),
+                '전일종가': rate_info[0].text.strip(),
                 '고가': rate_info[1].text.strip(),
                 '상한가': rate_info[2].text.strip(),
                 '거래량': rate_info[3].text.strip(),
                 '시가': rate_info[4].text.strip(),
                 '저가': rate_info[5].text.strip(),
                 '하한가': ''.join([i.text.strip() for i in res.select('.rate_info td .sp_txt7 ~ em span')]),
-                '거래대금': rate_info[6].text.strip(),
+                '거래대금': rate_info[6].text.strip() + ' 백만',
                 '그래프': res.select_one('#img_chart_area').attrs['src']
             }
 
             return dic
         except:
-            return "검색 결과가 없다 냥"
+            return "국내 주식 검색 중 오류가 났다 냥"
         
     def search_foriegn(self, url):
-        try:                
+        try:           
             response = requests.get(url)
             dom = BeautifulSoup(response.text, 'html.parser')
             res = dom.find('div', id = '_cs_root')
+            event_code = res.select_one('span.stk_nm ~ em.t_nm').text.replace('"', '').strip() if res.select_one(
+                'span.stk_nm ~ em.t_nm') != None else res.select_one('span.stk_nm ~ em.t_nm_s').text.replace('"', '').strip()
             
             dic = {
+                '코드': event_code.split(" ")[0],
                 '종목': res.select_one('span.stk_nm').text.strip(),
                 '가격': res.select_one('span.spt_con strong').text.strip(),
                 '전일종가': res.select_one('li.pcp dd').text.strip(),
                 '고가': res.select_one('li.hp dd').text.strip(),
                 '거래량': res.select_one('li.vl dd').text.strip(),
                 '저가': res.select_one('li.lp dd').text.strip(),
-                '거래대금': res.select_one('li.frr dd').text.strip(),
-                '시가총액': res.select_one('li.cp strong').text.strip(),
+                '시가총액': res.select_one('li.mc dl dd').text.strip(),
                 '그래프': res.select_one('img._stock_chart').attrs['src']
             }
 
             return dic
         except:
-            return "검색 결과가 없다 냥"
+            return "해외 주식 검색 중 오류가 났다 냥"
 
     def eor(a):
         url = 'https://finance.naver.com/marketindex/exchangeDetail.naver?marketindexCd=FX_USDKRW'

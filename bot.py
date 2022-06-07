@@ -1,7 +1,6 @@
 import threading
 import json
 import re
-import pandas as pd
 import pymysql
 import pymysql.cursors
 
@@ -36,7 +35,31 @@ ner = NerModel(
 
 crawl = Crawl()
 
-event_list = pd.read_excel('./data/종목.xlsx')['name'].tolist() + pd.read_excel('./data/종목.xlsx')['id'].tolist()
+try:
+    database = pymysql.connect(
+        host=DB_HOST,
+        user=DB_USER,
+        passwd=DB_PASSWORD,
+        db=DB_NAME,
+        charset='utf8'
+    )
+
+    sql = '''
+        select * from chatbot_stock
+    '''
+
+    with database.cursor() as cursor:
+        cursor.execute(sql)
+        content = cursor.fetchall()
+        code_to_event = {a: c for a, b, c in content}
+
+except Exception as e:
+    print(e)
+
+
+finally:
+    if database is not None:
+        database.close()
 
 def to_client(conn, addr, params):
     db = params['db']
@@ -58,11 +81,8 @@ def to_client(conn, addr, params):
 
         send_json_data_str = {}
 
-        # 숫자 + 주 를 숫자 + 개로 변환
-        # if re.search(r'\d+주', query) != None:
-        #     query = query.replace(
-        #         re.search(r'\d+주', query).group(), re.search(r'\d+주', query).group()[:-1] + '개')
         if 'Word' in recv_json_data:
+            database = None
             try:
                 database = pymysql.connect(
                     host=DB_HOST,
@@ -103,6 +123,7 @@ def to_client(conn, addr, params):
                 "Answer": "어떤 용어가 궁금하냥?"
             }
 
+            database = None
             try:
                 database = pymysql.connect(
                     host=DB_HOST,
@@ -133,7 +154,7 @@ def to_client(conn, addr, params):
             conn.send(message.encode())
             return
 
-        elif query.strip() in event_list:
+        elif query.strip() in crawl.foreign_id + crawl.foreign_name + crawl.korea_id + crawl.korea_name:
             send_json_data_str = {
                 "Answer": "해당 종목으로 뭘 하고 싶냥?",
                 "event": query.strip(),
@@ -148,12 +169,24 @@ def to_client(conn, addr, params):
             intent_predict = intent.predict_class(query)
             intent_name = intent.labels[intent_predict]
 
-            ner_predicts = ner.predict(query)
-            ner_tags = ner.predict_tags(query)
+            ner_predicts = [(x, 'B_STOCK') if x in code_to_event and y != 'B_STOCK' else (x, y) for x, y in [(a, 'O') if a not in code_to_event.values() and b == 'B_STOCK' else (a, b) for a, b in [(i, 'B_COUNT') if re.match(r'^\d+주$', i) != None and j != 'B_COUNT' else (i, j) for i, j in ner.predict(query)]]]
+            ner_tags = [j for i, j in ner_predicts if j == 'B_STOCK' or j == 'B_COUNT']
 
 
         print("의도 :", intent_name)
         print("개체명 :", ner_predicts)
+
+        if ner_tags.count('B_STOCK') > 1:
+            message = json.dumps({"Answer": "종목을 하나만 입력해달라 냥!!!"})
+
+            conn.send(message.encode())
+            return
+        elif ner_tags.count('B_COUNT') > 1:
+            message = json.dumps({"Answer": "갯수를 하나만 입력해달라 냥!!!"})
+
+            conn.send(message.encode())
+            return
+
 
         try:
             f = FindAnswer(db)
@@ -161,40 +194,164 @@ def to_client(conn, addr, params):
             answer = f.tag_to_word(ner_predicts, answer_text)
 
         except:
-            answer = "내가 모르는 말이다 냥... 미안하냥!!"
-
+            answer = "DB에서 정보를 찾을 수 없다 냥!!!!!"
 
         send_json_data_str = {
             "Query": query,
             "Answer": answer,
-            "Intent": intent_name,
-            "NER": str(ner_predicts),
+            # "Intent": intent_name,
+            # "NER": str(ner_predicts),
         }
 
-        if intent_name == '특정 주가 조회':
-            stock = None
-            for word, cls in ner_predicts:
-                if cls == "B_STOCK" and stock == None:
-                    stock = word
-            
-            if stock == None:
-                send_json_data_str["Answer"] = "종목명을 정확하게 알려달라냥"
-            else:
-                result = crawl.search_engine(stock)
+        database = None
+        try:
+            database = pymysql.connect(
+                host=DB_HOST,
+                user=DB_USER,
+                passwd=DB_PASSWORD,
+                db=DB_NAME,
+                charset='utf8'
+            )
 
-                if type(result) == str:
-                    send_json_data_str["Answer"] = result
-                elif type(result) == list and len(result) > 1:
-                    send_json_data_str["Answer"] = "조회하고 싶은 항목을 선택해달라 냥"
-                    send_json_data_str["many"] = result
+            sql = ''
+
+            if intent_name == '특정 주가 조회':
+                stock = None
+                for word, cls in ner_predicts:
+                    if cls == "B_STOCK" and stock == None:
+                        stock = word
+                
+                if stock == None:
+                    send_json_data_str["Answer"] = "종목명을 정확하게 알려달라냥"
                 else:
-                    send_json_data_str["information"] = result
-        elif intent_name == '환율 계산':
-            send_json_data_str["eor"] = crawl.eor()
-        elif intent_name == '오늘의 증시 조회':
-            send_json_data_str["stock_today"] = crawl.stock_today()
-        elif intent_name == '인기 종목':
-            send_json_data_str["hot"] = crawl.top_today()
+                    result = crawl.search_engine(stock)
+
+                    if type(result) == str:
+                        send_json_data_str["Answer"] = result
+                    elif type(result) == list and len(result) > 1:
+                        send_json_data_str["Answer"] = "조회하고 싶은 항목을 선택해달라 냥"
+                        send_json_data_str["many"] = result
+                    else:
+                        send_json_data_str["information"] = result
+
+                        sql = '''
+                            INSERT chatbot_view(code, name, price, hp, lp, yp, mp, total_mp, tc, max_p, min_p, amount, graph) 
+                            values(
+                            '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'
+                            )
+                        ''' % (
+                                result["코드"],
+                                result["종목"],
+                                result["가격"],
+                                result["고가"],
+                                result["저가"],
+                                result["전일종가"],
+                                result["시가"] if "시가" in result else "",
+                                result["시가총액"] if "시가총액" in result else "",
+                                result["거래대금"] if "거래대금" in result else "",
+                                result["상한가"] if "상한가" in result else "",
+                                result["하한가"] if "하한가" in result else "",
+                                result["거래량"],
+                                result["그래프"]
+                            )
+
+            elif intent_name == '환율 계산':
+                send_json_data_str["eor"] = crawl.eor()
+
+                sql = '''
+                    INSERT chatbot_eor(eor) 
+                    values(
+                    '%s'
+                    )
+                ''' % (send_json_data_str["eor"])
+
+            elif intent_name == '오늘의 증시 조회':
+                send_json_data_str["stock_today"] = crawl.stock_today()
+
+                sql = '''
+                    INSERT chatbot_stock_today(
+                        kospi_rate,
+                        kospi_change,
+                        kospi_per,
+                        kospi_graph,
+                        kosdaq_rate,
+                        kosdaq_change,
+                        kosdaq_per,
+                        kosdaq_graph,
+                        kospi200_rate,
+                        kospi200_change,
+                        kospi200_per,
+                        kospi200_graph
+                    ) VALUES (
+                        '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'
+                    )
+                ''' % (
+                    send_json_data_str["stock_today"]["KOSPI"]["지수"],
+                    send_json_data_str["stock_today"]["KOSPI"]["변화"],
+                    send_json_data_str["stock_today"]["KOSPI"]["변화퍼센트"],
+                    send_json_data_str["stock_today"]["KOSPI"]["그래프"],
+                    send_json_data_str["stock_today"]["KOSDAQ"]["지수"],
+                    send_json_data_str["stock_today"]["KOSDAQ"]["변화"],
+                    send_json_data_str["stock_today"]["KOSDAQ"]["변화퍼센트"],
+                    send_json_data_str["stock_today"]["KOSDAQ"]["그래프"],
+                    send_json_data_str["stock_today"]["KOSPI200"]["지수"],
+                    send_json_data_str["stock_today"]["KOSPI200"]["변화"],
+                    send_json_data_str["stock_today"]["KOSPI200"]["변화퍼센트"],
+                    send_json_data_str["stock_today"]["KOSPI200"]["그래프"]
+                )
+            elif intent_name == '인기 종목':
+                send_json_data_str["hot"] = crawl.top_today()
+            elif intent_name == '매수' or intent_name == '매도':
+                b_stock = [i for i, j in ner_predicts if j == 'B_STOCK'][0]
+                b_count = [i for i, j in ner_predicts if j == 'B_COUNT'][0][:-1]
+
+                result = crawl.search_engine(b_stock)
+
+                if intent_name == '매도':
+                    sql = f'''
+                        select sum(amount) from chatbot_order where code = '{result['코드']}'
+                    '''
+                    with database.cursor() as cursor:
+                        cursor.execute(sql)
+                        all_count = cursor.fetchone()[0]
+
+                    if all_count == None or all_count < int(b_count):
+                        send_json_data_str = {"Answer": "보유주가 부족해서 매도가 불가능하다 냥!!"}
+                        message = json.dumps(send_json_data_str)
+
+                        conn.send(message.encode())
+                        return
+
+                sql = '''
+                    INSERT chatbot_order(code, name, amount, price) 
+                    values(
+                    '%s', '%s', '%s', '%s'
+                    )
+                ''' % (
+                    result['코드'],
+                    result['종목'],
+                    int(b_count) if intent_name == '매수' else -1 * int(b_count),
+                    int(re.sub('[^\d]', '', result['가격'])) if intent_name == '매수' else -1 * int(re.sub('[^\d]', '', result['가격']))
+                )
+
+            elif intent_name == '취소':
+                pass
+
+            
+            if sql != '':
+                sql = sql.replace("'None'", "null")
+
+                with database.cursor() as cursor:
+                    cursor.execute(sql)
+                    print('저장')
+                    database.commit()
+
+        except Exception as e:
+            print(e)
+
+        finally:
+            if database is not None:
+                database.close()
 
         message = json.dumps(send_json_data_str)
 

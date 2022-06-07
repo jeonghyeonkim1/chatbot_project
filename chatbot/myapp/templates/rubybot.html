@@ -151,11 +151,11 @@
                         table += "<thead><th>종목명</th><th>가격</th><th>상승/하락</th><th>변동폭</th></thead><tbody>"
                         for (const event in response.hot) {
                             if (response.hot[event].변동퍼센트[0] == '+') {
-                                table += `<tr class='text-danger' onclick="selection('${response.hot[event].종목코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
+                                table += `<tr class='text-danger' onclick="selection('${response.hot[event].코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
                             } else if (response.hot[event].변동퍼센트[0] == '-') {
-                                table += `<tr class='text-primary' onclick="selection('${response.hot[event].종목코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
+                                table += `<tr class='text-primary' onclick="selection('${response.hot[event].코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
                             } else {
-                                table += `<tr onclick="selection('${response.hot[event].종목코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
+                                table += `<tr onclick="selection('${response.hot[event].코드}')" style="cursor: pointer;"><th>${event}</th><td>${response.hot[event].가격}</td><td>${response.hot[event].변동}</td><td>${response.hot[event].변동퍼센트}</td></tr>`
                             }
                         }
                         table += "</tbody></table>"
@@ -385,5 +385,4 @@
         </div>
           
     </body>
-    <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
 {% endblock %}

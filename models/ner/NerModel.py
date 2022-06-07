@@ -11,8 +11,8 @@ class NerModel:
         # BIO 태그 클래스 별 레이블
         self.index_to_ner = {
             1: 'O',
-            2: 'B_COUNT',
-            3: 'B_STOCK',
+            2: 'B_STOCK',
+            3: 'B_COUNT',
             0: 'PAD'
         }
 
@@ -33,7 +33,7 @@ class NerModel:
         sequences = [self.p.get_wordidx_sequence(keywords)]
 
         # 패딩처리
-        max_len = 15
+        max_len = 10
         padded_seqs = preprocessing.sequence.pad_sequences(sequences, padding="post", value=0, maxlen=max_len)
 
         predict = self.model.predict(np.array([padded_seqs[0]]))
@@ -52,7 +52,7 @@ class NerModel:
         sequences = [self.p.get_wordidx_sequence(keywords)]
 
         # 패딩처리
-        max_len = 15
+        max_len = 10
         padded_seqs = preprocessing.sequence.pad_sequences(sequences, padding="post", value=0, maxlen=max_len)
 
         predict = self.model.predict(np.array([padded_seqs[0]]))

@@ -42,7 +42,6 @@ def query(bot_type):
     try:        
         if bot_type == 'ruby':
             ret = get_answer_from_engine(bottype='루비', data=data)
-
             return jsonify(ret)
 
         elif bot_type == 'uram':
