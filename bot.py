@@ -52,6 +52,7 @@ try:
         cursor.execute(sql)
         content = cursor.fetchall()
         code_to_event = {a: c for a, b, c in content}
+        foreign_code = [a for a, b, c in content if b == '해외주식']
 
 except Exception as e:
     print(e)
@@ -112,11 +113,19 @@ def to_client(conn, addr, params):
             conn.send(message.encode())
             return
 
-
         elif 'Selection' in recv_json_data:
-            intent_name = '특정 주가 조회'
-            ner_predicts = [(query, 'B_STOCK')]
-            ner_tags = ['B_STOCK']
+            send_json_data_str['Answer'] = "하고싶은 것을 선택해달라 냥"
+            send_json_data_str['list'] = ['정보 조회', '매수', '매도', '취소']
+            send_json_data_str['event'] = query
+
+            message = json.dumps(send_json_data_str)
+            conn.send(message.encode())
+            return
+
+        elif 'Trade' in recv_json_data:
+            intent_name = recv_json_data['Intent']
+            ner_predicts = [(query, 'B_STOCK'), (recv_json_data['Trade'] + '개', 'B_COUNT')]
+            ner_tags = ['B_STOCK', 'B_COUNT']
 
         elif re.search(r'용어|단어', query.strip()) != None:
             send_json_data_str = {
@@ -155,15 +164,21 @@ def to_client(conn, addr, params):
             return
 
         elif query.strip() in crawl.foreign_id + crawl.foreign_name + crawl.korea_id + crawl.korea_name:
-            send_json_data_str = {
-                "Answer": "해당 종목으로 뭘 하고 싶냥?",
-                "event": query.strip(),
-                "list": ["정보 조회", "매수", "매도", "취소"]
-            }
+            result = crawl.search_engine(query.strip())
 
-            message = json.dumps(send_json_data_str)
-            conn.send(message.encode())
-            return
+            if type(result) == str:
+                send_json_data_str["Answer"] = result
+
+                message = json.dumps(send_json_data_str)
+                conn.send(message.encode())
+                return
+            elif type(result) == list and len(result) > 1:
+                send_json_data_str["Answer"] = "검색된 종목들이다 냥"
+                send_json_data_str["many"] = result
+
+                message = json.dumps(send_json_data_str)
+                conn.send(message.encode())
+                return
 
         else:
             intent_predict = intent.predict_class(query)
@@ -198,9 +213,7 @@ def to_client(conn, addr, params):
 
         send_json_data_str = {
             "Query": query,
-            "Answer": answer,
-            # "Intent": intent_name,
-            # "NER": str(ner_predicts),
+            "Answer": answer
         }
 
         database = None
@@ -223,15 +236,16 @@ def to_client(conn, addr, params):
                 
                 if stock == None:
                     send_json_data_str["Answer"] = "종목명을 정확하게 알려달라냥"
+
                 else:
                     result = crawl.search_engine(stock)
 
                     if type(result) == str:
                         send_json_data_str["Answer"] = result
-                    elif type(result) == list and len(result) > 1:
-                        send_json_data_str["Answer"] = "조회하고 싶은 항목을 선택해달라 냥"
-                        send_json_data_str["many"] = result
                     else:
+                        if type(result) == list:
+                            result = crawl.search_engine([a for a, b, c in content if c == stock][0])
+                            
                         send_json_data_str["information"] = result
 
                         sql = '''
@@ -299,40 +313,70 @@ def to_client(conn, addr, params):
                     send_json_data_str["stock_today"]["KOSPI200"]["변화퍼센트"],
                     send_json_data_str["stock_today"]["KOSPI200"]["그래프"]
                 )
+
             elif intent_name == '인기 종목':
                 send_json_data_str["hot"] = crawl.top_today()
+
             elif intent_name == '매수' or intent_name == '매도':
-                b_stock = [i for i, j in ner_predicts if j == 'B_STOCK'][0]
-                b_count = [i for i, j in ner_predicts if j == 'B_COUNT'][0][:-1]
+                b_stock = [i for i, j in ner_predicts if j == 'B_STOCK']
 
-                result = crawl.search_engine(b_stock)
+                if len(b_stock) < 1:
+                    send_json_data_str["Answer"] = "종목명을 정확하게 알려달라냥"
 
-                if intent_name == '매도':
-                    sql = f'''
-                        select sum(amount) from chatbot_order where code = '{result['코드']}'
-                    '''
-                    with database.cursor() as cursor:
-                        cursor.execute(sql)
-                        all_count = cursor.fetchone()[0]
+                elif len([i for i, j in ner_predicts if j == 'B_COUNT']) < 1:
+                    send_json_data_str["Answer"] = "갯수를 정확하게 알려달라냥"
+                    
+                else:
+                    result = crawl.search_engine(b_stock[0])
+                    b_count = [i for i, j in ner_predicts if j == 'B_COUNT'][0][:-1]
 
-                    if all_count == None or all_count < int(b_count):
-                        send_json_data_str = {"Answer": "보유주가 부족해서 매도가 불가능하다 냥!!"}
-                        message = json.dumps(send_json_data_str)
+                    if not b_count.isdigit():
+                        send_json_data_str["Answer"] = "정확한 숫자를 입력해달라 냥"
+                    elif int(b_count) <= 0:
+                        send_json_data_str["Answer"] = "1 이상의 숫자만 입력해달라 냥"
+                    else:
+                        if intent_name == '매도':
+                            sql = f'''
+                                select sum(amount) from chatbot_order where code = '{result['코드']}'
+                            '''
+                            with database.cursor() as cursor:
+                                cursor.execute(sql)
+                                all_count = cursor.fetchone()[0]
 
-                        conn.send(message.encode())
-                        return
+                            if all_count == None or all_count < int(b_count):
+                                send_json_data_str = {"Answer": "보유주가 부족해서 매도가 불가능하다 냥!!"}
+                                message = json.dumps(send_json_data_str)
 
-                sql = '''
-                    INSERT chatbot_order(code, name, amount, price) 
-                    values(
-                    '%s', '%s', '%s', '%s'
-                    )
-                ''' % (
-                    result['코드'],
-                    result['종목'],
-                    int(b_count) if intent_name == '매수' else -1 * int(b_count),
-                    int(re.sub('[^\d]', '', result['가격'])) if intent_name == '매수' else -1 * int(re.sub('[^\d]', '', result['가격']))
-                )
+                                conn.send(message.encode())
+                                return
+                        
+                        
+                        if result['코드'] not in foreign_code:
+                            sql = '''
+                                INSERT chatbot_order(code, name, amount, price) 
+                                values(
+                                '%s', '%s', '%s', '%s'
+                                )
+                            ''' % (
+                                result['코드'],
+                                result['종목'],
+                                int(b_count) if intent_name == '매수' else - 1 * int(b_count),
+                                int(re.sub('[^\d]', '', result['가격'])) if intent_name == '매수' else -1 * int(re.sub('[^\d]', '', result['가격']))
+                            )
+                        else:
+                            eor = crawl.eor()
+
+                            sql = '''
+                                INSERT chatbot_order(code, name, amount, price) 
+                                values(
+                                '%s', '%s', '%s', '%s'
+                                )
+                            ''' % (
+                                result['코드'],
+                                result['종목'],
+                                int(b_count) if intent_name == '매수' else -1 * int(b_count),
+                                int(float(result['가격']) * float(eor)) if intent_name == '매수' else -1 * int(float(result['가격']) * float(eor))
+                            )
 
             elif intent_name == '취소':
                 pass

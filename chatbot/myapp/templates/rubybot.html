@@ -12,6 +12,7 @@
             $(".nav-button").click(function() {
               $(this).parent().parent().toggleClass("closed");
             });
+
             // SEND
             $("#sendbtn").click(function() {
                 send_message();
@@ -30,6 +31,11 @@
         function selection(text) {
             waiter();
             ajaxing({query: text, selection: true});
+        }
+
+        function selection_trade(text, amount, intent) {
+            waiter();
+            ajaxing({query: text, trade: amount, intent: intent});
         }
 
         function usd_krw(eor) {
@@ -55,11 +61,12 @@
 
         function word_search(text) {
             waiter();
-            ajaxing({query: text, word: true});
+            ajaxing({query: text, word: text});
         }
 
         function stock_trade(event, num, intent) {
-            ajaxing({query: event + num + '개 ' + intent})
+            waiter();
+            ajaxing({query: event + ' ' + num + '개 ' + intent})
         }
 
         function send_todo(event, intent) {
@@ -78,7 +85,7 @@
                 })
             } else if (intent == '매도') {
                 const table = "<div class='input-group'><input type='number' placeholder='갯수를 입력해주세요.' class='cnt_input form-control text-center'><button class='btn btn-outline-secondary'>매도하기</button></div>"
-                const bottext = `<div class='todo_input' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매수할꺼냥?</span>${table}</div></div>`;
+                const bottext = `<div class='todo_input' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매도할꺼냥?</span>${table}</div></div>`;
                 $("#chatbox").append(bottext);
                 $(".cnt_input ~ button").on('click', function() {
                     stock_trade(event, $(".cnt_input").last().val(), intent)
@@ -96,6 +103,7 @@
         }
 
         function ajaxing(jsonData) {
+            $(".many_list").hide();
             $(".todo_list").hide();
             $(".todo_input").hide();
 
@@ -116,16 +124,18 @@
                     graph = ""
                     if (response.information != undefined) {
                         graph = response.information.그래프
+                        event_name = response.information.종목
                         delete response.information.종목
                         delete response.information.그래프
                         table = "<table class='table text-center'>"
+                        table += `<tr><td class='border-0'></td><th colspan='2' class='display-5'>${event_name}</th><td class='border-0'></td></tr>`
                         table += `<tr><td class='border-0'></td><td colspan='2'><img src='${graph}'></td><td class='border-0'></td></tr>`
                         for (const key in response.information) {
                             table += `<tr><td class='border-0'></td><th>${key}</th><td class='ft-bold'>${response.information[key]}</td><td class='border-0'></td></tr>`
                         }
                         table += "</table>"
                     } else if (response.many != undefined) {
-                        table = "<table class='table table-hover text-center'>"
+                        table = "<table class='table table-hover text-center many_list'>"
                         for (const event in response.many) {
                             table += `<tr onclick="selection('${response.many[event][1]}')" style="cursor: pointer;"><td>${response.many[event][0]}</td></tr>`
                         }
@@ -160,7 +170,6 @@
                         }
                         table += "</tbody></table>"
                     } else if (response.word != undefined) {
-                        cnt = 0
                         table = "<div class='m-5'>"
                         for (const word in response.word) {
                             table += `<button class='btn btn-outline-secondary m-1' onclick='word_search($(this).text())'>${response.word[word]}</button></td>`

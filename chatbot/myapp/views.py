@@ -34,7 +34,7 @@ def storage(req):
         )
 
         sql = f'''
-                select * from chatbot_view
+                select * from chatbot_view ORDER BY date DESC
             '''
         with database.cursor() as cursor:
             cursor.execute(sql)
@@ -42,7 +42,7 @@ def storage(req):
             content['chatbot_view'] = chatbot_view
 
         sql = f'''
-                select * from chatbot_eor
+                select * from chatbot_eor ORDER BY view DESC
             '''
         with database.cursor() as cursor:
             cursor.execute(sql)
@@ -50,12 +50,20 @@ def storage(req):
             content['chatbot_eor'] = chatbot_eor
 
         sql = f'''
-                select * from chatbot_stock_today
+                select * from chatbot_stock_today ORDER BY view DESC
             '''
         with database.cursor() as cursor:
             cursor.execute(sql)
             chatbot_stock_today = cursor.fetchall()
             content['chatbot_stock_today'] = chatbot_stock_today
+
+        sql = f'''
+                select * from chatbot_order ORDER BY date DESC
+            '''
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            chatbot_order = cursor.fetchall()
+            content['chatbot_order'] = chatbot_order
 
     except Exception as e:
         print(e)
@@ -66,7 +74,7 @@ def storage(req):
 
     return render(req, 'storage.html', content)
 
-def del_view(req):
+def del_view(req, table):
     database = None
     try:
         database = pymysql.connect(
@@ -78,7 +86,7 @@ def del_view(req):
         )
 
         sql = f'''
-                delete from chatbot_view
+                delete from {table}
             '''
         with database.cursor() as cursor:
             cursor.execute(sql)
