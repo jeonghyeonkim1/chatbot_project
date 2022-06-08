@@ -1,11 +1,23 @@
 {% extends 'base.html' %}
 
 {% block src %}
+    <script>
+        $(function() {
+            console.log($("iframe"))
 
+            $("#chattingPanel").click(function() {
+                alert(1)
+            })
+        })
+    </script>
 {% endblock %}
 
 {% block contents %}
     <body>
-        <h1>네이버</h1>
+        <div class=''>
+            <iframe src="https://frogue.danbee.ai/?chatbot_id=3904a8c1-fdcd-4328-89ac-da6d1dad1cd7&force_welcome=Y" allow="microphone; autoplay" allowusermedia="true" style="position: fixed; right: 40px; bottom: 40px; width: 420px; height: 720px; border-radius: 20px; border: 0; box-shadow: rgba(79, 98, 114, 0.2) 0px 6px 60px 0px;">
+                
+            </iframe>
+        </div>
     </body>
 {% endblock %}

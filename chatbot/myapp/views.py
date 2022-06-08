@@ -65,6 +65,14 @@ def storage(req):
             chatbot_order = cursor.fetchall()
             content['chatbot_order'] = chatbot_order
 
+        sql = f'''
+                select sum(price) from chatbot_order where cancel = 0;
+            '''
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            chatbot_sum = cursor.fetchall()
+            content['chatbot_sum'] = chatbot_sum
+
     except Exception as e:
         print(e)
 

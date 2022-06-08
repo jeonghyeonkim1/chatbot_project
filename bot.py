@@ -245,7 +245,7 @@ def to_client(conn, addr, params):
                     else:
                         if type(result) == list:
                             result = crawl.search_engine([a for a, b, c in content if c == stock][0])
-                            
+
                         send_json_data_str["information"] = result
 
                         sql = '''
@@ -335,6 +335,11 @@ def to_client(conn, addr, params):
                     elif int(b_count) <= 0:
                         send_json_data_str["Answer"] = "1 이상의 숫자만 입력해달라 냥"
                     else:
+                        if type(result) == str:
+                            send_json_data_str["Answer"] = result
+                        elif type(result) == list:
+                            result = crawl.search_engine([a for a, b, c in content if c == b_stock[0]][0])
+                            
                         if intent_name == '매도':
                             sql = f'''
                                 select sum(amount) from chatbot_order where code = '{result['코드']}'
