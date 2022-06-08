@@ -26,6 +26,8 @@ def get_answer_from_engine(bottype, data):
     elif 'trade' in data:
         json_data['Trade'] = data['trade']
         json_data['Intent'] = data['intent']
+    elif 'cancel' in data:
+        json_data['Cancel'] = data['cancel']
 
     message = json.dumps(json_data)
     mySocket.send(message.encode())

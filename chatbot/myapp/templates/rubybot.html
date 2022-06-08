@@ -70,22 +70,19 @@
         }
 
         function send_todo(event, intent) {
-            $(".todo_list").hide();
-            $(".todo_input").hide();
-
             if (intent == '정보 조회') {
                 waiter();
                 ajaxing({query: event + '조회'});
             } else if (intent == '매수') {
                 const table = "<div class='input-group'><input type='number' placeholder='갯수를 입력해주세요.' class='cnt_input form-control text-center'><button class='btn btn-outline-secondary'>매수하기</button></div>"
-                const bottext = `<div class='todo_input' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매수할꺼냥?</span>${table}</div></div>`;
+                const bottext = `<div class='removable' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매수할꺼냥?</span>${table}</div></div>`;
                 $("#chatbox").append(bottext);
                 $(".cnt_input ~ button").on('click', function() {
                     stock_trade(event, $(".cnt_input").last().val(), intent)
                 })
             } else if (intent == '매도') {
                 const table = "<div class='input-group'><input type='number' placeholder='갯수를 입력해주세요.' class='cnt_input form-control text-center'><button class='btn btn-outline-secondary'>매도하기</button></div>"
-                const bottext = `<div class='todo_input' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매도할꺼냥?</span>${table}</div></div>`;
+                const bottext = `<div class='removable' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매도할꺼냥?</span>${table}</div></div>`;
                 $("#chatbox").append(bottext);
                 $(".cnt_input ~ button").on('click', function() {
                     stock_trade(event, $(".cnt_input").last().val(), intent)
@@ -96,6 +93,11 @@
             }
         }
 
+        function canceler(id) {
+            waiter();
+            ajaxing({query: "해당 종목을 취소했다 냥", cancel: id});
+        }
+
         function waiter() {
             const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
@@ -103,9 +105,7 @@
         }
 
         function ajaxing(jsonData) {
-            $(".many_list").hide();
-            $(".todo_list").hide();
-            $(".todo_input").hide();
+            $(".removable").hide();
 
             $.ajax({
                 url: 'http://127.0.0.10:5000/query/ruby',
@@ -135,7 +135,7 @@
                         }
                         table += "</table>"
                     } else if (response.many != undefined) {
-                        table = "<table class='table table-hover text-center many_list'>"
+                        table = "<table class='table table-hover text-center removable'>"
                         for (const event in response.many) {
                             table += `<tr onclick="selection('${response.many[event][1]}')" style="cursor: pointer;"><td>${response.many[event][0]}</td></tr>`
                         }
@@ -178,10 +178,23 @@
                     } else if (response.explain != undefined) {
                         table = `<table class='table text-center'><tr><td></td></tr><tr><td>${response.explain}</td></tr></table>`
                     } else if (response.event != undefined) {
-                        table = "<table class='table table-hover text-center todo_list'>"
+                        table = "<table class='table table-hover text-center removable todo_list'>"
                         for (const event in response.list) {
                             table += `<tr style="cursor: pointer;"><td><input type='hidden' value='${response.event}'>${response.list[event]}</td></tr>`
                         }
+                        table += "</table>"
+                    } else if (response.order_list != undefined) {
+                        table = "<table class='table table-hover text-center removable'>"
+                        table += "<thead><tr><th>종목코드</th><th>종목명</th><th>타입</th><th>갯수</th><th>가격</th></tr></thead>"
+                        table += "<tbody>"
+                        for (const order in response.order_list) {
+                            if (response.order_list[order][2] > 0) {
+                                table += `<tr onclick='canceler("${response.order_list[order][0]}")'><td>${response.order_list[order][1]}</td><td>${response.order_list[order][2]}</td><td>매수</td><td>${response.order_list[order][3]}</td><td>${response.order_list[order][4]}</td></tr>`
+                            } else {
+                                table += `<tr onclick='canceler("${response.order_list[order][0]}")'><td>${response.order_list[order][1]}</td><td>${response.order_list[order][2]}</td><td>매도</td><td>${-1 * response.order_list[order][3]}</td><td>${-1 * response.order_list[order][4]}</td></tr>`
+                            }
+                        }
+                        table += "</tbody>"
                         table += "</table>"
                     }
 

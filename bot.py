@@ -81,8 +81,40 @@ def to_client(conn, addr, params):
         query = recv_json_data['Query']
 
         send_json_data_str = {}
+        if 'Cancel' in recv_json_data:
+            database = None
+            try:
+                database = pymysql.connect(
+                    host=DB_HOST,
+                    user=DB_USER,
+                    passwd=DB_PASSWORD,
+                    db=DB_NAME,
+                    charset='utf8'
+                )
 
-        if 'Word' in recv_json_data:
+                sql = '''
+                    UPDATE chatbot_order set cancel = 1 where id = '%s'
+                ''' % (recv_json_data['Cancel'])
+
+                with database.cursor() as cursor:
+                    cursor.execute(sql)
+                    print('저장')
+                    database.commit()
+
+                send_json_data_str['Answer'] = query
+
+            except Exception as e:
+                print(e)
+
+            finally:
+                if database is not None:
+                    database.close()
+
+            message = json.dumps(send_json_data_str)
+            conn.send(message.encode())
+            return
+            
+        elif 'Word' in recv_json_data:
             database = None
             try:
                 database = pymysql.connect(
@@ -179,12 +211,20 @@ def to_client(conn, addr, params):
                 message = json.dumps(send_json_data_str)
                 conn.send(message.encode())
                 return
+            else:
+                send_json_data_str['Answer'] = "하고싶은 것을 선택해달라 냥"
+                send_json_data_str['list'] = ['정보 조회', '매수', '매도', '취소']
+                send_json_data_str['event'] = query.strip()
+
+                message = json.dumps(send_json_data_str)
+                conn.send(message.encode())
+                return
 
         else:
             intent_predict = intent.predict_class(query)
             intent_name = intent.labels[intent_predict]
 
-            ner_predicts = [(x, 'B_STOCK') if x in code_to_event and y != 'B_STOCK' else (x, y) for x, y in [(a, 'O') if a not in code_to_event.values() and b == 'B_STOCK' else (a, b) for a, b in [(i, 'B_COUNT') if re.match(r'^\d+주$', i) != None and j != 'B_COUNT' else (i, j) for i, j in ner.predict(query)]]]
+            ner_predicts = [(x, 'B_STOCK') if (x in code_to_event or x in code_to_event.values()) and y != 'B_STOCK' else (x, y) for x, y in [(a, 'O') if a not in code_to_event.values() and b == 'B_STOCK' else (a, b) for a, b in [(i, 'B_COUNT') if re.match(r'^\d+주$', i) != None and j != 'B_COUNT' else (i, j) for i, j in ner.predict(query)]]]
             ner_tags = [j for i, j in ner_predicts if j == 'B_STOCK' or j == 'B_COUNT']
 
 
@@ -383,8 +423,20 @@ def to_client(conn, addr, params):
                                 int(float(result['가격']) * float(eor)) if intent_name == '매수' else -1 * int(float(result['가격']) * float(eor))
                             )
 
-            elif intent_name == '취소':
-                pass
+            elif intent_name == '주문 취소':
+                b_stock = [i for i, j in ner_predicts if j == 'B_STOCK']
+                sql = f'''
+                    select id, code, name, amount, price from chatbot_order where cancel = 0 and (name = '{b_stock[0]}' or code = '{b_stock[0]}')
+                '''
+
+                with database.cursor() as cursor:
+                    cursor.execute(sql)
+                    order_list = cursor.fetchall()
+                    if len(order_list) > 0:
+                        send_json_data_str['Answer'] = '취소하고 싶은 것을 선택해달라 냥'
+                        send_json_data_str['order_list'] = order_list
+                    else:
+                        send_json_data_str['Answer'] = f'{b_stock[0]}에서 취소할 수 있는 주문이 없다 냥'
 
             
             if sql != '':

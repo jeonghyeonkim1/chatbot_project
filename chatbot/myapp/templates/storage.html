@@ -2,7 +2,6 @@
 
 {% block src %}
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
 <script>
     $(function() {
         $("#item li").children().each(function() {
@@ -170,8 +169,50 @@
                     </div>
                     <div class='detail-container w-100 h-100 p-1' id='m2' style='display:none;'>
                         <table class='table table-dark table-striped text-center'>
-                            <thead><tr><th>평가손익</th></tr></t>
-                            <tbody><tr><th>{{  }}</th></tr></tbody>
+                            <thead>
+                                <tr>
+                                    <th>총 투자액</th>
+                                    <th>평가 총 자산</th>
+                                    <th>평가손익</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>{{ chatbot_total }}</th>
+                                    <th>{{ chatbot_current_total }}</th>
+                                    {% if chatbot_profit_loss > 0 %}
+                                        <th class='text-danger'>+{{ chatbot_profit_loss }}</th>
+                                    {% elif chatbot_profit_loss < 0 %}
+                                        <th class='text-primary'>{{ chatbot_profit_loss }}</th>
+                                    {% else %}
+                                        <th>{{ chatbot_profit_loss }}</th>
+                                    {% endif %}
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class='table table-dark table-striped text-center'>
+                            <thead>
+                                <tr><th colspan='6' class='display-5'>보유현황</th></tr>
+                                <tr><th>종목명</th><th>보유수량</th><th>총 가격</th><th>구매금액</th><th>평가금액</th><th>손익률</th></tr>
+                            </thead>
+                            <tbody>
+                                {% for own in chatbot_own %}
+                                    <tr>
+                                        <td>{{ own.0 }}</td>
+                                        <td>{{ own.1 }}</td>
+                                        <td>{{ own.2 }}</td>
+                                        <td>{{ own.3 }}</td>
+                                        <td>{{ own.4 }}</td>
+                                        {% if own.3 < own.4 %}
+                                            <td class='text-danger'>+{{ own.5 }}</td>
+                                        {% elif own.3 > own.4 %}
+                                            <td class='text-primary'>{{ own.5 }}</td>
+                                        {% else %}
+                                            <td>{{ own.5 }}</td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                     <div class='detail-container w-100 h-100 p-1' id='m3' style='display:none;'>
