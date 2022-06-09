@@ -91,9 +91,6 @@ def storage(req):
             content['chatbot_current_total'] = sum(List)
             content['chatbot_profit_loss'] = sum(List) - content['chatbot_total']
 
-            print(content['chatbot_own'])
-            
-
     except Exception as e:
         print(e)
 
