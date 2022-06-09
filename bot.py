@@ -422,7 +422,7 @@ def to_client(conn, addr, params):
                             
                         if intent_name == '매도':
                             sql = f'''
-                                select sum(amount) from chatbot_order where code = '{result['코드']}'
+                                select sum(amount) from chatbot_order where code = '{result['코드']}' and cancel = 0
                             '''
                             with database.cursor() as cursor:
                                 cursor.execute(sql)
