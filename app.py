@@ -28,6 +28,8 @@ def get_answer_from_engine(bottype, data):
         json_data['Intent'] = data['intent']
     elif 'cancel' in data:
         json_data['Cancel'] = data['cancel']
+    elif 'eor' in data:
+        json_data['Eor'] = data['eor']
 
     message = json.dumps(json_data)
     mySocket.send(message.encode())

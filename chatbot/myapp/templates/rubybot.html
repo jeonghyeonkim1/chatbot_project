@@ -38,6 +38,11 @@
             ajaxing({query: text, trade: amount, intent: intent});
         }
 
+        function eor_select(name, eor) {
+            waiter();
+            ajaxing({query: name, eor: eor});
+        }
+
         function usd_krw(eor) {
             const inputNum = $(".usd_left").last().val();
             $(".krw_right").last().val((inputNum * eor).toFixed(0));
@@ -140,14 +145,20 @@
                             table += `<tr onclick="selection('${response.many[event][1]}')" style="cursor: pointer;"><td>${response.many[event][0]}</td></tr>`
                         }
                         table += "</table>"
+                    } else if (response.eor_finder != undefined) {
+                        table = "<div class='m-5'>"
+                        for (const eor_selector in response.eor_finder) {
+                            table += `<button class='btn btn-outline-secondary m-1' onclick="eor_select('${response.eor_finder[eor_selector]['name']}', '${response.eor_finder[eor_selector]['eor']}')">${response.eor_finder[eor_selector]['name']}</button></td>`
+                        }
+                        table += "</div>"
                     } else if (response.eor != undefined) {
                         table = "<table class='table table-striped text-center'>"
-                        table += `<thead><tr><th>오늘의 환율($)</th><th></th><th>${response.eor}원</th><tr></thead>`
+                        table += `<thead><tr><th>오늘의 ${response.country} 환율</th><th></th><th>${response.eor}원</th><tr></thead>`
                         table += "<tbody>"
-                        table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (USD -> KRW)</td><tr>`
-                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center usd_left' onkeyup='usd_krw(${response.eor})'><span class="input-group-text">$</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center krw_right' disabled><span class="input-group-text">￦</span></td><tr>`
-                        table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (KRW -> USD)</td><tr>`
-                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center krw_left' onkeyup='krw_usd(${response.eor})'><span class="input-group-text">￦</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center usd_right' disabled><span class="input-group-text">$</span></td><tr>`
+                        table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (${response.currency} -> KRW)</td><tr>`
+                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center usd_left' onkeyup='usd_krw(${response.eor})'><span class="input-group-text">${response.unit}${response.currency}</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center krw_right' disabled><span class="input-group-text">KRW</span></td><tr>`
+                        table += `<tr><td colspan='3' style='font-weight: bold;'>환율 계산기 (KRW -> ${response.currency})</td><tr>`
+                        table += `<tr><td class='input-group'><input type='number' class='form-control text-center krw_left' onkeyup='krw_usd(${response.eor})'><span class="input-group-text">KRW</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center usd_right' disabled><span class="input-group-text">${response.unit}${response.currency}</span></td><tr>`
                         table += "</tbody></table>"
                     } else if (response.stock_today != undefined) {
                         table = "<table class='table text-center' id='st_table'>"

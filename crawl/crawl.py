@@ -182,15 +182,19 @@ class Crawl:
         except:
             return "해외 주식 검색 중 오류가 났다 냥"
 
-    def eor(a):
-        url = 'https://finance.naver.com/marketindex/exchangeDetail.naver?marketindexCd=FX_USDKRW'
+    def eor_finder(a):
+        url = 'https://finance.naver.com/marketindex/exchangeList.naver'
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36'
         }
         response = requests.get(url, headers=headers)
         dom = BeautifulSoup(response.text, 'html.parser')
-        elements = dom.select(
-            '#content > div.section_calculator > table:nth-child(4) > tbody > tr > td:nth-child(1)')
-        usd = elements[0].text.strip()
-        usd = usd.replace(',', '')
-        return float(usd)
+        elements = dom.select("tr")[2:]
+
+        return [
+            {
+                'name': i.select_one('td.tit a').text.strip(),
+                'eor': i.select_one('td.sale').text.strip()
+            }
+            for i in elements
+        ]
