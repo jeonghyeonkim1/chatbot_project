@@ -188,7 +188,7 @@
                         table += "<thead><tr><th>종목코드</th><th>종목명</th><th>타입</th><th>갯수</th><th>가격</th></tr></thead>"
                         table += "<tbody>"
                         for (const order in response.order_list) {
-                            if (response.order_list[order][2] > 0) {
+                            if (response.order_list[order][3] > 0) {
                                 table += `<tr onclick='canceler("${response.order_list[order][0]}")'><td>${response.order_list[order][1]}</td><td>${response.order_list[order][2]}</td><td>매수</td><td>${response.order_list[order][3]}</td><td>${response.order_list[order][4]}</td></tr>`
                             } else {
                                 table += `<tr onclick='canceler("${response.order_list[order][0]}")'><td>${response.order_list[order][1]}</td><td>${response.order_list[order][2]}</td><td>매도</td><td>${-1 * response.order_list[order][3]}</td><td>${-1 * response.order_list[order][4]}</td></tr>`
