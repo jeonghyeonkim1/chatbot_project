@@ -93,7 +93,7 @@ def to_client(conn, addr, params):
             send_json_data_str['country'] = re.sub('[0-9|A-Z| ]*', '', query)
             send_json_data_str['Answer'] = send_json_data_str['country'] + ' 환율이다 냥'
             send_json_data_str['currency'] = re.sub('[^A-Z]*', '', query)
-            send_json_data_str['eor'] = recv_json_data['Eor']
+            send_json_data_str['eor'] = recv_json_data['Eor'].replace(',', '')
             send_json_data_str['unit'] = re.sub('[^0-9]*', '', query)
 
             message = json.dumps(send_json_data_str)
