@@ -81,7 +81,25 @@ def to_client(conn, addr, params):
         query = recv_json_data['Query']
 
         send_json_data_str = {}
-        if 'Cancel' in recv_json_data:
+
+        if 'Eor' in recv_json_data:
+            sql = '''
+                INSERT chatbot_eor(country, eor) 
+                values(
+                '%s', '%s'
+                )
+            ''' % (query, recv_json_data['Eor'])
+
+            send_json_data_str['country'] = re.sub('[0-9|A-Z| ]*', '', query)
+            send_json_data_str['Answer'] = send_json_data_str['country'] + ' 환율이다 냥'
+            send_json_data_str['currency'] = re.sub('[^A-Z]*', '', query)
+            send_json_data_str['eor'] = recv_json_data['Eor']
+            send_json_data_str['unit'] = re.sub('[^0-9]*', '', query)
+
+            message = json.dumps(send_json_data_str)
+            conn.send(message.encode())
+            return
+        elif 'Cancel' in recv_json_data:
             database = None
             try:
                 database = pymysql.connect(
@@ -101,7 +119,7 @@ def to_client(conn, addr, params):
                     print('저장')
                     database.commit()
 
-                send_json_data_str['Answer'] = query
+                send_json_data_str['Answer'] = query.strip()
 
             except Exception as e:
                 print(e)
@@ -148,7 +166,7 @@ def to_client(conn, addr, params):
         elif 'Selection' in recv_json_data:
             send_json_data_str['Answer'] = "하고싶은 것을 선택해달라 냥"
             send_json_data_str['list'] = ['정보 조회', '매수', '매도', '취소']
-            send_json_data_str['event'] = query
+            send_json_data_str['event'] = query.strip()
 
             message = json.dumps(send_json_data_str)
             conn.send(message.encode())
@@ -156,7 +174,7 @@ def to_client(conn, addr, params):
 
         elif 'Trade' in recv_json_data:
             intent_name = recv_json_data['Intent']
-            ner_predicts = [(query, 'B_STOCK'), (recv_json_data['Trade'] + '개', 'B_COUNT')]
+            ner_predicts = [(query.strip(), 'B_STOCK'), (recv_json_data['Trade'] + '개', 'B_COUNT')]
             ner_tags = ['B_STOCK', 'B_COUNT']
 
         elif re.search(r'용어|단어', query.strip()) != None:
@@ -221,12 +239,12 @@ def to_client(conn, addr, params):
                 return
 
         else:
-            intent_predict = intent.predict_class(query)
+            intent_predict = intent.predict_class(query.strip())
             intent_name = intent.labels[intent_predict]
 
-            ner_predicts = [(x, 'B_STOCK') if (x in code_to_event or x in code_to_event.values()) and y != 'B_STOCK' else (x, y) for x, y in [(a, 'O') if a not in code_to_event.values() and b == 'B_STOCK' else (a, b) for a, b in [(i, 'B_COUNT') if re.match(r'^\d+주$', i) != None and j != 'B_COUNT' else (i, j) for i, j in ner.predict(query)]]]
+            ner_predicts = [(x, 'B_STOCK') if (x in code_to_event or x in code_to_event.values()) and y != 'B_STOCK' else (x, y) for x, y in [(a, 'O') if a not in code_to_event.values(
+            ) and b == 'B_STOCK' else (a, b) for a, b in [(i, 'B_COUNT') if re.match(r'^\d+주$', i) != None and j != 'B_COUNT' else (i, j) for i, j in ner.predict(query.strip())]]]
             ner_tags = [j for i, j in ner_predicts if j == 'B_STOCK' or j == 'B_COUNT']
-
 
         print("의도 :", intent_name)
         print("개체명 :", ner_predicts)
@@ -252,7 +270,7 @@ def to_client(conn, addr, params):
             answer = "DB에서 정보를 찾을 수 없다 냥!!!!!"
 
         send_json_data_str = {
-            "Query": query,
+            "Query": query.strip(),
             "Answer": answer
         }
 
@@ -310,14 +328,13 @@ def to_client(conn, addr, params):
                             )
 
             elif intent_name == '환율 계산':
-                send_json_data_str["eor"] = crawl.eor()
+                send_json_data_str["Answer"] = "원하는 환율을 선택해달라 냥"
+                send_json_data_str["eor_finder"] = crawl.eor_finder()
 
-                sql = '''
-                    INSERT chatbot_eor(eor) 
-                    values(
-                    '%s'
-                    )
-                ''' % (send_json_data_str["eor"])
+                message = json.dumps(send_json_data_str)
+
+                conn.send(message.encode())
+                return
 
             elif intent_name == '오늘의 증시 조회':
                 send_json_data_str["stock_today"] = crawl.stock_today()
