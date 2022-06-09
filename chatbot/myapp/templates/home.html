@@ -31,11 +31,18 @@
     .container tbody td {
         padding-top:15px;
     }
+    .modal-content {
+        box-shadow: 5px 5px 5px 5px gray;
+    }
+    .rounded {
+        border-radius: 1.25rem!important;
+        border:7px solid #000000c7;
+    }
 </style>
 {% endblock %}
 
 {% block contents %}
-<body class="container bg-dark" style='overflow: hidden;'>
+<body class="container" style='overflow: hidden;'>
     <div class='modal fade' id='modal2'>
         <div class='modal-dialog'>
             <div class='modal-content'>
