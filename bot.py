@@ -83,12 +83,34 @@ def to_client(conn, addr, params):
         send_json_data_str = {}
 
         if 'Eor' in recv_json_data:
-            sql = '''
-                INSERT chatbot_eor(country, eor) 
-                values(
-                '%s', '%s'
-                )
-            ''' % (query, recv_json_data['Eor'])
+            database = pymysql.connect(
+                host=DB_HOST,
+                user=DB_USER,
+                passwd=DB_PASSWORD,
+                db=DB_NAME,
+                charset='utf8'
+            )
+            try:
+                sql = '''
+                    INSERT chatbot_eor(country, eor) 
+                    values(
+                    '%s', '%s'
+                    )
+                ''' % (query, recv_json_data['Eor'])
+
+                sql = sql.replace("'None'", "null")
+
+                with database.cursor() as cursor:
+                    cursor.execute(sql)
+                    print('저장')
+                    database.commit()
+            
+            except Exception as e:
+                print(e)
+
+            finally:
+                if database is not None:
+                    database.close()
 
             send_json_data_str['country'] = re.sub('[0-9|A-Z| ]*', '', query)
             send_json_data_str['Answer'] = send_json_data_str['country'] + ' 환율이다 냥'
