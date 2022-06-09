@@ -15,8 +15,8 @@
 }
 .container::after
 {
-  
-    background-color:#a3c1c57a;
+  background-color:#000000c7;
+    background-color:#77a4af69;
     z-index: -1;
     animation : backglow2 15s ease infinite;
 }
