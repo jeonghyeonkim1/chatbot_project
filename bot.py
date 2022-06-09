@@ -276,6 +276,7 @@ def to_client(conn, addr, params):
 
             conn.send(message.encode())
             return
+            
         elif ner_tags.count('B_COUNT') > 1:
             message = json.dumps({"Answer": "갯수를 하나만 입력해달라 냥!!!"})
 
