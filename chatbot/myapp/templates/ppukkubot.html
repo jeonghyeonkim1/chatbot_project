@@ -3,41 +3,10 @@
 {% block src %}
     {% load static %}
     <script>
-        window.onload = function() {
-            $chatbox = $("#chatbox");
-            const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + '안냥 :D 내가 너의 주식라이프에 도움을 줄꺼다냥~' + "</span></div></div>";
-            $chatbox.append(bottext);
-        }
-
-        $(function() {
-            $(".nav-button").click(function() {
-              $(this).parent().parent().toggleClass("closed");
-            });
-
-            // SEND
-            $("#sendbtn").click(function() {
-                send_message();
-                $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
-            }); 
-
-            // ENTER
-            $("#chattext").keyup(function(event) {
-                if(event.keyCode == 13) {
-                    send_message();
-                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
-                }
-            })
-        })
-
-        function waiter() {
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
-            $chatbox.append(botwait);
-            $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
-        }
 
         function ajaxing(jsonData) {
             $.ajax({
-                url: 'http://127.0.0.10:5000/query/ruby',
+                url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
                 type: "POST",
                 data: JSON.stringify(jsonData),
                 dataType: "JSON",
@@ -45,44 +14,133 @@
                 crossDomain: true,
 
                 success: function(response){
-                    $chatbox = $("#chatbox");
-
-                    $("#wait").remove();
-
-                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
-                    $chatbox.append(bottext);
+                    res = response['responseSet']['result']
+                    session_id = res['session_id']
+                    ins_id = res['ins_id']
                     
-                    // 스크롤 조정하기
-                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
+                    if (res['chatflow_id'] == 'FLOW1653963618000') {
+                        for (let i in res['result']) {
+                            $("#chatbox").append(`<div><h1>${res['result'][i]['message']}</h1></div>`)
+                        }
+                        $("#chatbox").append(`<div><select class='select_genre' onchange='genre_ajax($(this).val())'></select></div>`)
+                        for (let i in res['result'][1]['optionList']) {
+                            $(".select_genre").append(`<option>${res['result'][1]['optionList'][i]['label']}</option>`)
+                        }
+                    }
                 }
             })
         }
 
-        function send_message() {
-            const chattext = $("#chattext").val().trim();
-
-            // 입력한 메세지가 없으면 리턴
-            if(chattext == "") {
-                $("#chattext").focus();
-                return;
+        function genre_ajax(genre_val) {
+            jsonData = {
+                "user_id": "s97741875@gamil.com",
+                "input_sentence": `${genre_val}`,
+                "ins_id": ins_id,
+                "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                "node_id": "SlotNode_1654326104100",
+                "param_id": "장르",
+                "chatflow_id": "FLOW1653963618000",
+                "postBackFlag": true,
+                "session_id": session_id
             }
 
-            // 입력한 채팅 화면에 출력
-            $("#wait").remove();
-            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#b8d7ff88;border-radius:3px;'>" + chattext + "</span></div>";
-            $("#chatbox").append(addtext);
+            $.ajax({
+                url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
+                type: "POST",
+                data: JSON.stringify(jsonData),
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
 
-            // 답변 대기시간동안 로딩 말풍선 띄우기
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
-            $chatbox.append(botwait);
+                success: function(response){
+                    res = response['responseSet']['result']
+                    ins_id = res['ins_id']
 
-            // 먼저 입력했던 것은 지우기
-            $("#chattext").val("");
-            $("#chattext").focus();
-
-            // ajax
-            ajaxing({query: chattext})
+                    for (let i in res['result']) {
+                        $("#chatbox").append(`<div><h1>${res['result'][i]['message']}</h1></div>`)
+                    }
+                    $("#chatbox").append(`<div><select class='select_genre_two' onchange='genre_ajax_two($(this).val())'></select></div>`)
+                    for (let i in res['result'][0]['optionList']) {
+                        $(".select_genre_two").append(`<option>${res['result'][0]['optionList'][i]['label']}</option>`)
+                        
+                    }
+                }
+            })
         }
+
+        function genre_ajax_two(genre_val) {
+            jsonData = {
+                "user_id": "s97741875@gamil.com",
+                "input_sentence": `${genre_val}`,
+                "ins_id": ins_id,
+                "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                "node_id": "SlotNode_1654326218844",
+                "param_id": "지역",
+                "chatflow_id": "FLOW1653963618000",
+                "postBackFlag": true,
+                "session_id": session_id
+            }
+
+            $.ajax({
+                url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
+                type: "POST",
+                data: JSON.stringify(jsonData),
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+
+                success: function(response){
+                    res = response['responseSet']['result']
+
+                    console.log(res)
+                    
+                    carousel = ''
+                    carousel_indicators = ''
+                    for (let i in res['result'][0]['carouselList']) {
+                        if (i == 0) {
+                            carousel += `<div class="carousel-item active"><img src="${res['result'][0]['carouselList'][i]['imgRoute']}" class="d-block w-100" alt="맛집ㅎㅎ"><a href='${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'><h1>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</h1></a><a href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'><h1>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</h1></a></div>`
+                            carousel_indicators += `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i + 1}"></button>`
+                        } else {
+                            carousel += `<div class="carousel-item"><img src="${res['result'][0]['carouselList'][i]['imgRoute']}" class="d-block w-100" alt="맛집ㅎㅎ"><a href='${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'><h1>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</h1></a><a href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'><h1>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</h1></a></div>`
+                            carousel_indicators += `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" aria-label="Slide ${i + 1}"></button>`
+                            
+                        }
+                    }
+
+                    $("#chatbox").append(`
+                        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-indicators">
+                                ${carousel_indicators}
+                            </div>
+                            <div class="carousel-inner">
+                                ${carousel}
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    `)
+                    
+                    $("#chatbox").append(`<div><h1>${res['result'][1]['message']}</h1></div>`)
+                }
+            })
+        }
+
+        $(function() {
+            $('input').keyup(function(e) {
+                if (e.keyCode == 13) {
+                    ajaxing({
+                        "user_id": "s97741875@gamil.com",
+                        "input_sentence": `${$(this).val()}`
+                    })
+                }
+            })
+        })
     </script>
     <style>
         
@@ -90,48 +148,10 @@
 {% endblock %}
 
 {% block contents %}
-    <body class='container' style='overflow: hidden; margin-top: -1%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;'>
-        <div 'position: relative;'>
-            <nav class='menu'>
-                <ul class="drop-down closed" style='position: fixed'>
-                  <li><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
-                  <li><a href="{% url 'myapp:home' %}">Home</a></li>
-                  <li><a href="{% url 'myapp:storage' %}">My Storage</a></li>
-                </ul>
-            </nav>
-        </div>
+    <body>
+        <div id='chatbox'></div>
+        <input id='en_event'>
     
-        <div style="padding:5px; background-color:rgba(94, 94, 94, 0.164);" class='con h-100'>
-            <div class="chatheader">
-                <div width="100%" border="0">
-                    <div style='padding-left: 47%;'>
-                        <div width="50%" align="left" class='icon'>
-                            <i class="fa-solid fa-robot fa-bounce"></i>
-                        </div>
-                        <div class='dotcon'>
-                            <div class="dot-elastic"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="chatbox">
-            </div>
-            <div class="chatfooter">
-                <table width="100%">
-                    <tr>
-                        <td width="88%">
-                            <input type='text' id="chattext" style="padding:5px 0;width:100%;border:none;">
-                            <div class="line-box">
-                                <div class="line"></div>
-                              </div>
-                        </td>
-                        <td width="10%" style='padding-right:10px;'>
-                            <button type='button' class="btn btn-dark" id="sendbtn" style="padding:5px 0;width:100%;" >send</button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-          
+    </input>
     </body>
 {% endblock %}
