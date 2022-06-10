@@ -3,6 +3,7 @@
 {% block src %}
     {% load static %}
     <script>
+
         window.onload = function() {
             $chatbox = $("#chatbox");
             const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>" + '안녕 :) 너의 맛있는 푸드 라이프를 책임질 뿌꾸야' + "</span></div></div>";
@@ -74,7 +75,7 @@
                 "session_id": session_id
             }
 
-<<<<<<< HEAD
+
             // 입력한 채팅 화면에 출력
             $("#wait").remove();
             const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#f1f1f1;border-radius:3px;'>" + chattext + "</span></div>";
@@ -83,7 +84,7 @@
             // 답변 대기시간동안 로딩 말풍선 띄우기
             const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
-=======
+
             $.ajax({
                 url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
                 type: "POST",
@@ -95,7 +96,6 @@
                 success: function(response){
                     res = response['responseSet']['result']
                     ins_id = res['ins_id']
->>>>>>> 666248d6eb16ef41e9cccff6bf5f796e8676bbe4
 
                     for (let i in res['result']) {
                         $("#chatbox").append(`<div><h1>${res['result'][i]['message']}</h1></div>`)
@@ -150,6 +150,7 @@
                 }
             })
         }
+
     </script>
     <style>
         input:focus::placeholder{
@@ -276,7 +277,6 @@
 {% endblock %}
 
 {% block contents %}
-<<<<<<< HEAD
     <body class='container' style='overflow: hidden; margin-top: -1%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;'>
         <div 'position: relative;'>
             <nav class='menu' id='men1'>
@@ -320,12 +320,12 @@
             </div>
         </div>
           
-=======
+
     <body>
         <div id='chatbox'></div>
         <input id='en_event'>
     
     </input>
->>>>>>> 666248d6eb16ef41e9cccff6bf5f796e8676bbe4
     </body>
+
 {% endblock %}
