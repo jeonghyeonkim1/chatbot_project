@@ -97,6 +97,11 @@ def storage(req):
 
     return render(req, 'storage.html', content)
 
+
+def ppukku_storage(req):
+
+    return 
+
 def del_view(req, table):
     database = None
     try:

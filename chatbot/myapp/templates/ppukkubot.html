@@ -3,6 +3,16 @@
 {% block src %}
     {% load static %}
     <script>
+        $(function() {
+            $('input').keyup(function(e) {
+                if (e.keyCode == 13) {
+                    ajaxing({
+                        "user_id": "s97741875@gamil.com",
+                        "input_sentence": `${$(this).val()}`
+                    })
+                }
+            })
+        })
 
         function ajaxing(jsonData) {
             $.ajax({
@@ -17,6 +27,8 @@
                     res = response['responseSet']['result']
                     session_id = res['session_id']
                     ins_id = res['ins_id']
+
+                    console.log(response)
                     
                     if (res['chatflow_id'] == 'FLOW1653963618000') {
                         for (let i in res['result']) {
@@ -91,56 +103,24 @@
 
                 success: function(response){
                     res = response['responseSet']['result']
-
-                    console.log(res)
-                    
-                    carousel = ''
-                    carousel_indicators = ''
+                    table = '<table class="table table-dark text-center" style="vertical-align: middle;">'
+                    table += '<thead><tr><th>매장사진<th><th>매장정보</th></tr></thead><tbody>'
                     for (let i in res['result'][0]['carouselList']) {
-                        if (i == 0) {
-                            carousel += `<div class="carousel-item active"><img src="${res['result'][0]['carouselList'][i]['imgRoute']}" class="d-block w-100" alt="맛집ㅎㅎ"><a href='${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'><h1>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</h1></a><a href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'><h1>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</h1></a></div>`
-                            carousel_indicators += `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" class="active" aria-current="true" aria-label="Slide ${i + 1}"></button>`
-                        } else {
-                            carousel += `<div class="carousel-item"><img src="${res['result'][0]['carouselList'][i]['imgRoute']}" class="d-block w-100" alt="맛집ㅎㅎ"><a href='${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'><h1>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</h1></a><a href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'><h1>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</h1></a></div>`
-                            carousel_indicators += `<button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="${i}" aria-label="Slide ${i + 1}"></button>`
-                            
-                        }
+                        table += '<tr>'
+                        table += `<td rowspan='4'><img src="${res['result'][0]['carouselList'][i]['imgRoute']}" alt="맛집ㅎㅎ"></td>`
+                        table += '<td><i class="fa-solid fa-utensils"></i></td>'
+                        table += `<td>${res['result'][0]['carouselList'][i]['cardTitle']}</td>`
+                        table += '</tr>'
+                        table += `<tr><td><i class="fa-solid fa-house-chimney"></i></td><td>${res['result'][0]['carouselList'][i]['subCardTitle']}</td></tr>`
+                        table += `<tr><td><i class="fa-solid fa-phone"></i></td><td><a href='tel:${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</a></td></tr>`
+                        table += `<tr><td><i class="fa-solid fa-map-location-dot"></i></td><td><a href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</a></td></tr>`
                     }
-
-                    $("#chatbox").append(`
-                        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-indicators">
-                                ${carousel_indicators}
-                            </div>
-                            <div class="carousel-inner">
-                                ${carousel}
-                            </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
-                        </div>
-                    `)
+                    table += '</tbody></table>'
                     
-                    $("#chatbox").append(`<div><h1>${res['result'][1]['message']}</h1></div>`)
+                    $("#chatbox").append(`<div><h1>${res['result'][1]['message']}</h1></div>${table}`)
                 }
             })
         }
-
-        $(function() {
-            $('input').keyup(function(e) {
-                if (e.keyCode == 13) {
-                    ajaxing({
-                        "user_id": "s97741875@gamil.com",
-                        "input_sentence": `${$(this).val()}`
-                    })
-                }
-            })
-        })
     </script>
     <style>
         
