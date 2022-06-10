@@ -8,5 +8,6 @@ urlpatterns = [
     path('rubybot/', views.rubybot, name='rubybot'),
     path('ppukkubot/', views.ppukkubot, name='ppukkubot'),
     path('storage/', views.storage, name='storage'),
+    path('pstorage/', views.pstorage, name='pstorage'),
     path('del_view/<table>', views.del_view, name='del_view')
 ]

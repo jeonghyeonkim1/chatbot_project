@@ -5,7 +5,7 @@
     <script>
         window.onload = function() {
             $chatbox = $("#chatbox");
-            const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + '안냥 :D 내가 너의 주식라이프에 도움을 줄꺼다냥~' + "</span></div></div>";
+            const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#d9eaff;border-radius:3px;'>" + '안냥 :D 내가 너의 주식라이프에 도움을 줄꺼다냥~' + "</span></div></div>";
             $chatbox.append(bottext);
         }
         $(function() {
@@ -106,7 +106,7 @@
         }
 
         function waiter() {
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#d9eaff;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
             $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
         }
@@ -211,7 +211,7 @@
                         table += "</table>"
                     }
 
-                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
+                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#d9eaff;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
                     $chatbox.append(bottext);
                     
                     // 스크롤 조정하기
@@ -237,11 +237,11 @@
 
             // 입력한 채팅 화면에 출력
             $("#wait").remove();
-            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#b8d7ff88;border-radius:3px;'>" + chattext + "</span></div>";
+            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#f1f1f1;border-radius:3px;'>" + chattext + "</span></div>";
             $("#chatbox").append(addtext);
 
             // 답변 대기시간동안 로딩 말풍선 띄우기
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#d9eaff;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
 
             // 먼저 입력했던 것은 지우기
@@ -356,7 +356,7 @@
             width: 97%;
             height: 2px;
           }
-          .line {
+        .line {
             position: absolute;
             width: 0%;
             height: 2px;
@@ -366,9 +366,12 @@
             background: rgba(37, 37, 37, 0.295);
             transition: ease .6s;
           }
-          input:focus + .line-box .line {
+        input:focus + .line-box .line {
             width: 97%;
           }
+        #men2{
+            left: -15.3%;
+        }
          
           
     </style>
@@ -377,8 +380,8 @@
 {% block contents %}
     
     <body class='container' style='overflow: hidden; margin-top: -1%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;'>
-        <div 'position: relative;'>
-            <nav class='menu'>
+        <div style='position: relative;'>
+            <nav class='menu' id='men2'>
                 <ul class="drop-down closed" style='position: fixed'>
                   <li><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
                   <li><a href="{% url 'myapp:home' %}">Home</a></li>

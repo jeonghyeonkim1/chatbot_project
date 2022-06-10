@@ -60,7 +60,7 @@
         clear: left;
     }
     .menu li:nth-child(1) button::before{
-        content: "\ea9b";
+        content: "\e625";
         margin: 0 20px 10px 0;
     }
     .menu li:nth-child(2) button::before{
@@ -71,19 +71,11 @@
         content: "\e6b1";
         margin: 0 20px 10px 0;
     }
-    .menu li:nth-child(4) button::before{
-        content: "\e263";
-        margin: 0 20px 10px 0;
-    }
-    .menu li:nth-child(5) button::before{
-        content: "\eb85";
-        margin: 0 20px 10px 0;
-    }
     .menu {
         display: block;
-        width: 230px;
+        width: 200px;
         border-radius: 20px;
-        padding: 2px;
+        padding: 10px;
         max-width: 249px;
     }
     .menu ul {
@@ -152,7 +144,7 @@
     .left-menu{
         float: right;
         position: relative;
-        left: -13%;
+        left: -9%;
         top: -15%;
         padding-top: 100px;
         
@@ -196,7 +188,9 @@
         margin-left: -30px; 
         margin-right: 5px;
       }
-   
+    #men-left{
+        left:-15.3%%
+    }
 
 </style>
 {% endblock %}
@@ -205,23 +199,21 @@
 <body class="container" style="overflow: hidden; margin-top: -1%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
     <div style='position: relative;'>
         <div class='left-menu' id='men-left'>
-            <ul class="drop-down closed" style='position: fixed; bottom:0; top:45px; left:68%; right:0;'>
+            <ul class="drop-down closed" style='position: fixed;  bottom:0; top:60px; left:68%; right:0;'>
               <li id='li1'><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
               <li><a href="{% url 'myapp:home' %}">Home</a></li>
-              <li><a href="{% url 'myapp:rubybot' %}">Chat</a></li>
+              <li><a href="{% url 'myapp:ppukkubot' %}">Chat</a></li>
             </ul>
         </div>
     </div>
     <div id='fixing' class="rounded m-3 p-3 d-flex justify-content-center align-items-center">
         <div class='contents'>
             <div class='d-flex align-items-center h-100'>
-                <div class="menu bg-dark w-30 p-2">
+                <div class="menu bg-dark w-25 p-2">
                     <ul id='item'>
-                        <li id='b1'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>조회 목록</h4></button></li>
-                        <li id='b2'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>보유 주식</h4></button></li>
-                        <li id='b3'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>거래 목록</h4></button></li>
-                        <li id='b4'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>환율 조회</h4></button></li>
-                        <li id='b5'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>최근 증시</h4></button></li>
+                        <li id='b1'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>대화내역</h4></button></li>
+                        <li id='b2'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>임시메뉴1</h4></button></li>
+                        <li id='b3'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>임시메뉴2</h4></button></li>
                     </ul>
                 </div>              
                 <div class='h-100 w-100' id='detail'>

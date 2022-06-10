@@ -5,10 +5,9 @@
     <script>
         window.onload = function() {
             $chatbox = $("#chatbox");
-            const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + '안냥 :D 내가 너의 주식라이프에 도움을 줄꺼다냥~' + "</span></div></div>";
+            const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>" + '안녕 :) 너의 맛있는 푸드 라이프를 책임질 뿌꾸야' + "</span></div></div>";
             $chatbox.append(bottext);
         }
-
         $(function() {
             $(".nav-button").click(function() {
               $(this).parent().parent().toggleClass("closed");
@@ -30,7 +29,7 @@
         })
 
         function waiter() {
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
             $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
         }
@@ -49,7 +48,7 @@
 
                     $("#wait").remove();
 
-                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
+                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
                     $chatbox.append(bottext);
                     
                     // 스크롤 조정하기
@@ -69,11 +68,11 @@
 
             // 입력한 채팅 화면에 출력
             $("#wait").remove();
-            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#b8d7ff88;border-radius:3px;'>" + chattext + "</span></div>";
+            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#f1f1f1;border-radius:3px;'>" + chattext + "</span></div>";
             $("#chatbox").append(addtext);
 
             // 답변 대기시간동안 로딩 말풍선 띄우기
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
 
             // 먼저 입력했던 것은 지우기
@@ -85,14 +84,133 @@
         }
     </script>
     <style>
-        
+        input:focus::placeholder{
+            color:transparent;
+        }
+        td, th {
+            vertical-align : middle;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .textcon{
+            padding: 20px 0 0 26px;
+        }
+        .imgcon{
+            width: 70px;
+            height: 70px; 
+            border-radius: 70%;
+            overflow: hidden;
+            float: left;
+            padding:5px;
+            margin-right: 15px;
+        }
+        img{
+            width: 90%;
+            height: 90%;
+            object-fit: cover;
+        }
+        .chatheader {
+            left: 0;
+            top: 0;
+            width: 100%;
+            color: #000;
+            text-align: center;
+            padding-top:10px;
+            border-radius: 7px;
+            height: 10%;
+        }
+        .chatfooter {
+            left: 0;
+            bottom: 0;
+            width: 93%;
+            padding:10px 0;
+            margin: 10px 0 45px 28px;
+            color: #000;
+            text-align: center;
+            background-color:#fff;
+            border-radius: 7px;
+        }
+        .con{
+            width:70%; 
+            margin:0 auto;
+            border-radius: 7px;
+            box-shadow: 2px 2px 2px 2px gray
+        }
+        body{
+            margin-top:2%;
+            text_align: center;
+            padding: 30px;
+        }
+        #chatbox{
+            border-radius: 7px;
+            background-color: #fff;
+            margin: 30px;
+            height:75%;
+            margin-top:20px;
+            padding:5px;
+            padding-right: 25px;
+            overflow-y:scroll;
+            overflow-x:hidden;
+            max-height:100vh;
+        }
+        #chatbox::-webkit-scrollbar {
+            width: 10px;
+        }
+        #chatbox::-webkit-scrollbar-thumb {
+            background-color: grey;
+            border-radius: 10px;
+        }
+        #chatbox::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #chattext{
+            padding:30px;
+        }
+        .icon{
+            text-align: center;
+            font-size:20px; 
+            padding: 10px; 
+            background-color:#fff;
+            width: 50px;
+            border-radius: 50%;
+        }
+        #chattext:focus {
+            margin-left:10px;
+            outline: none;
+            border: none;
+        }
+        .line-box {
+            position: relative;
+            width: 97%;
+            height: 2px;
+          }
+          .line {
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(37, 37, 37, 0.295);
+            transition: ease .6s;
+          }
+          input:focus + .line-box .line {
+            width: 97%;
+          }
+        #men1{
+            left: -15.3%;
+        }
+          
     </style>
 {% endblock %}
 
 {% block contents %}
     <body class='container' style='overflow: hidden; margin-top: -1%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;'>
         <div 'position: relative;'>
-            <nav class='menu'>
+            <nav class='menu' id='men1'>
                 <ul class="drop-down closed" style='position: fixed'>
                   <li><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
                   <li><a href="{% url 'myapp:home' %}">Home</a></li>
@@ -101,7 +219,7 @@
             </nav>
         </div>
     
-        <div style="padding:5px; background-color:rgba(94, 94, 94, 0.164);" class='con h-100'>
+        <div style="padding:5px; background-color: #98ca9eb9" class='con h-100'>
             <div class="chatheader">
                 <div width="100%" border="0">
                     <div style='padding-left: 47%;'>

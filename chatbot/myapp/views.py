@@ -23,6 +23,9 @@ def rubybot(req):
 def ppukkubot(req):
     return render(req, 'ppukkubot.html')
 
+def pstorage(req):
+    return render(req, 'pstorage.html')
+    
 def storage(req):
     content = {}
 
