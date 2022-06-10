@@ -82,6 +82,7 @@
                 const table = "<div class='input-group'><input type='number' placeholder='갯수를 입력해주세요.' class='cnt_input form-control text-center'><button class='btn btn-outline-secondary'>매수하기</button></div>"
                 const bottext = `<div class='removable' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매수할꺼냥?</span>${table}</div></div>`;
                 $("#chatbox").append(bottext);
+                $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
                 $(".cnt_input ~ button").on('click', function() {
                     stock_trade(event, $(".cnt_input").last().val(), intent)
                 })
@@ -89,6 +90,7 @@
                 const table = "<div class='input-group'><input type='number' placeholder='갯수를 입력해주세요.' class='cnt_input form-control text-center'><button class='btn btn-outline-secondary'>매도하기</button></div>"
                 const bottext = `<div class='removable' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#DDD;border-radius:3px;'>몇 개 매도할꺼냥?</span>${table}</div></div>`;
                 $("#chatbox").append(bottext);
+                $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
                 $(".cnt_input ~ button").on('click', function() {
                     stock_trade(event, $(".cnt_input").last().val(), intent)
                 })

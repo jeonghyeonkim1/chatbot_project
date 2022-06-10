@@ -17,14 +17,11 @@ crawl = Crawl()
 def home(req):
     return render(req, 'home.html')
 
-def test(req):
-    return render(req, 'test.html')
-
 def rubybot(req):
     return render(req, 'rubybot.html')
 
-def urambot(req):
-    return render(req, 'urambot.html')
+def ppukkubot(req):
+    return render(req, 'ppukkubot.html')
 
 def storage(req):
     content = {}

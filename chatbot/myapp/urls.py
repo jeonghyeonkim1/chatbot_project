@@ -6,7 +6,7 @@ app_name = 'myapp'
 urlpatterns = [
     path('', views.home, name='home'),
     path('rubybot/', views.rubybot, name='rubybot'),
-    path('urambot/', views.urambot, name='urambot'),
+    path('ppukkubot/', views.ppukkubot, name='ppukkubot'),
     path('storage/', views.storage, name='storage'),
     path('del_view/<table>', views.del_view, name='del_view')
 ]
