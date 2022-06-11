@@ -8,13 +8,12 @@
                 $(this).parent().parent().toggleClass('closed');
             })
         })
+
         window.onload = function() {
             $chatbox = $("#chatbox");
-            const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>" + '안녕 :) 너의 맛있는 푸드 라이프를 책임질 뿌꾸야' + "</span></div></div>";
+            const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>" + '안녕 :) 너의 맛있는 푸드 라이프를 책임질 뿌꾸야' + "</span></div></div>";
             $chatbox.append(bottext);
         }
-
-        
 
         $(function() {
             $(".nav-button").click(function() {
@@ -58,14 +57,53 @@
             $("#chattext").val("");
             $("#chattext").focus();
 
+            try {
+                console.log(chatflow)
+            } catch {
+                chatflow = ''
+                cnt = 0
+            }
+
+            if (cnt == 1) {
+                param = "food1"
+                node = "SlotNode_1654496397973"
+            } else if (cnt == 2) {
+                param = "food2"
+                node = "SlotNode_1654496441069"
+            } else if (cnt == 3) {
+                param = "food3"
+                node = "SlotNode_1654496556427"
+            } else if (cnt == 4) {
+                param = "food4"
+                node = "SlotNode_1654496689700801566"
+            } else if (cnt == 5) {
+                param = "food5"
+                node = "SlotNode_1654496696692225207"
+            }
+
+            if (chatflow == '메뉴 추천') {
+                data = {
+                    "user_id": "s97741875@gamil.com",
+                    "input_sentence": chattext,
+                    "chatflow_id": "FLOW1654495955000",
+                    "ins_id": ins_id,
+                    "intent_id": "a95d62d3-14af-418d-9446-18badadac937",
+                    "session_id": session_id,
+                    "node_id": node,
+                    "param_id": param
+                }
+            } else {
+                data = {
+                    "user_id": "s97741875@gamil.com",
+                    "input_sentence": chattext
+                }
+            }
+
             // ajax
             $.ajax({
                 url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
                 type: "POST",
-                data: JSON.stringify({
-                        "user_id": "s97741875@gamil.com",
-                        "input_sentence": chattext
-                    }),
+                data: JSON.stringify(data),
                 dataType: "JSON",
                 contentType: "application/json; charset=utf-8",
                 crossDomain: true,
@@ -92,8 +130,14 @@
 
                     } else if (res['chatflow_id'] == 'FLOW1654495955000') {
                         console.log(response)
+                        if (res['param_id'] == "수락여부") {
+                            chatflow = ''
+                            cnt = 0
+                        } else {
+                            chatflow = '메뉴 추천'
+                            cnt += 1
+                        }
                     }
-
                 }
             })
         }
@@ -318,7 +362,7 @@
                 <ul class="drop-down closed" style='position: fixed'>
                   <li><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
                   <li><a href="{% url 'myapp:home' %}">Home</a></li>
-                  <li><a href="{% url 'myapp:storage' %}">My Storage</a></li>
+                  <li><a href="{% url 'myapp:pstorage' %}">My Storage</a></li>
                 </ul>
             </nav>
         </div>
@@ -345,7 +389,7 @@
                             <input type='text' id="chattext" style="padding:5px 0;width:100%;border:none;">
                             <div class="line-box">
                                 <div class="line"></div>
-                              </div>
+                            </div>
                         </td>
                         <td width="10%" style='padding-right:10px;'>
                             <button type='button' class="btn btn-dark" id="sendbtn" style="padding:5px 0;width:100%;" >send</button>

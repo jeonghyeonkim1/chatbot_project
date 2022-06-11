@@ -127,3 +127,34 @@ def del_view(req, table):
             database.close()
 
     return render(req, 'storage.html')
+
+def send_ppukku(req):
+    content = {}
+
+    database = None
+    try:
+        database = pymysql.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            passwd=DB_PASSWORD,
+            db=DB_NAME,
+            charset='utf8'
+        )
+
+        # 주식 조회 목록
+        sql = f'''
+                select * from chatbot_view ORDER BY date DESC
+            '''
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            chatbot_view = cursor.fetchall()
+            content['chatbot_view'] = chatbot_view
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        if database is not None:
+            database.close()
+
+    return render(req, 'storage.html', content)
