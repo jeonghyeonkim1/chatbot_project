@@ -188,9 +188,7 @@
         margin-left: -30px; 
         margin-right: 5px;
       }
-    #men-left{
-        left:-15.3%%
-    }
+
 
 </style>
 {% endblock %}
@@ -199,7 +197,7 @@
 <body class="container" style="overflow: hidden; margin-top: -1%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
     <div style='position: relative;'>
         <div class='left-menu' id='men-left'>
-            <ul class="drop-down closed" style='position: fixed;  bottom:0; top:60px; left:68%; right:0;'>
+            <ul class="drop-down closed" style='position: fixed;  bottom:0; top:60px; left:69%; right:0;'>
               <li id='li1'><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
               <li><a href="{% url 'myapp:home' %}">Home</a></li>
               <li><a href="{% url 'myapp:ppukkubot' %}">Chat</a></li>
@@ -217,7 +215,7 @@
                     </ul>
                 </div>              
                 <div class='h-100 w-100' id='detail'>
-                    <div class='detail-container w-100 h-100 p-2 bg-dark ' id='m1'>
+                    <div class='detail-container w-100 h-100 p-2' id='m1'>
                         {% if not chatbot_view %}
                             <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
                         {% else %}

@@ -3,11 +3,18 @@
 {% block src %}
     {% load static %}
     <script>
+        $(function() {
+            $('.nav_button').click(function() {
+                $(this).parent().parent().toggleClass('closed');
+            })
+        })
         window.onload = function() {
             $chatbox = $("#chatbox");
             const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>" + '안녕 :) 너의 맛있는 푸드 라이프를 책임질 뿌꾸야' + "</span></div></div>";
             $chatbox.append(bottext);
         }
+
+        
 
         $(function() {
             $(".nav-button").click(function() {
