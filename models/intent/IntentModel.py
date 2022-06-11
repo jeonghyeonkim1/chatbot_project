@@ -39,7 +39,7 @@ class IntentModel:
 
         # 패딩처리
         padded_seqs = preprocessing.sequence.pad_sequences(
-            sequences, maxlen=15, padding='post')
+            sequences, maxlen=10, padding='post')
 
         predict = self.model.predict(padded_seqs)
 

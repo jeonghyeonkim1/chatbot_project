@@ -77,7 +77,10 @@
                     session_id = res['session_id']
                     ins_id = res['ins_id']
 
-                    answer = ''
+                    for (let i in res['result']) {
+                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][i]['message']}</span></div></div>`)
+                    }
+                    
                     if (res['chatflow_id'] == 'FLOW1653963618000') {
                         table = '<table class="table table-hover table-striped table-success text-center">'
                         for (let i in res['result'][1]['optionList']) {
@@ -85,12 +88,12 @@
                         }
                         table += '</table>'
 
-                        for (let i in res['result']) {
-                            $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][i]['message']}</span></div></div>`)
-                        }
-
                         $("#chatbox").append(`<div class='mb-2' style='margin:20px 0;text-align:left;'><div class='ml-3'>${table}</div></div>`)
+
+                    } else if (res['chatflow_id'] == 'FLOW1654495955000') {
+                        console.log(response)
                     }
+
                 }
             })
         }

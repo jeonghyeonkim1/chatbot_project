@@ -24,6 +24,7 @@ class Crawl:
             with db.cursor() as cursor:
                 cursor.execute(sql)
                 content = cursor.fetchall()
+                self.content = content
                 self.event_to_code = {c: a for a, b, c in content}
                 self.korea_name = [c for a, b, c in content if b == '국내주식']
                 self.korea_id = [a for a, b, c in content if b == '국내주식']

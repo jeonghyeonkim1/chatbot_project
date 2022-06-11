@@ -35,32 +35,7 @@ ner = NerModel(
 
 crawl = Crawl()
 
-try:
-    database = pymysql.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        passwd=DB_PASSWORD,
-        db=DB_NAME,
-        charset='utf8'
-    )
-
-    sql = '''
-        select * from chatbot_stock
-    '''
-
-    with database.cursor() as cursor:
-        cursor.execute(sql)
-        content = cursor.fetchall()
-        code_to_event = {a: c for a, b, c in content}
-        foreign_code = [a for a, b, c in content if b == '해외주식']
-
-except Exception as e:
-    print(e)
-
-
-finally:
-    if database is not None:
-        database.close()
+code_to_event = {b: a for a, b in crawl.event_to_code.items()}
 
 def to_client(conn, addr, params):
     db = params['db']
@@ -306,7 +281,6 @@ def to_client(conn, addr, params):
                 db=DB_NAME,
                 charset='utf8'
             )
-
             sql = ''
 
             if intent_name == '특정 주가 조회':
@@ -325,7 +299,7 @@ def to_client(conn, addr, params):
                         send_json_data_str["Answer"] = result
                     else:
                         if type(result) == list:
-                            result = crawl.search_engine([a for a, b, c in content if c == stock][0])
+                            result = crawl.search_engine([a for a, b, c in crawl.content if c == stock][0])
 
                         send_json_data_str["information"] = result
 
@@ -418,7 +392,7 @@ def to_client(conn, addr, params):
                         if type(result) == str:
                             send_json_data_str["Answer"] = result
                         elif type(result) == list:
-                            result = crawl.search_engine([a for a, b, c in content if c == b_stock[0]][0])
+                            result = crawl.search_engine([a for a, b, c in crawl.content if c == b_stock[0]][0])
                             
                         if intent_name == '매도':
                             sql = f'''
@@ -436,7 +410,7 @@ def to_client(conn, addr, params):
                                 return
                         
                         
-                        if result['코드'] not in foreign_code:
+                        if result['코드'] not in crawl.foreign_id:
                             sql = '''
                                 INSERT chatbot_order(code, name, amount, price) 
                                 values(
