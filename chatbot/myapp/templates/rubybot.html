@@ -53,17 +53,6 @@
             $(".usd_right").last().val((inputNum / eor).toFixed(3));
         }
 
-        function stChanger(e) {
-            $("#st_table").hide();
-
-            $("#st_img").attr('src', e[$("#st_selector").val()].그래프);
-            $("#st_number").text(e[$("#st_selector").val()].지수);
-            $("#st_change").text(e[$("#st_selector").val()].변화);
-            $("#st_change_per").text(e[$("#st_selector").val()].변화퍼센트);
-
-            $("#st_table").fadeIn('slow');
-        }
-
         function word_search(text) {
             waiter();
             ajaxing({query: text, word: text});
@@ -163,11 +152,12 @@
                         table += `<tr><td class='input-group'><input type='number' class='form-control text-center krw_left' onkeyup='krw_usd(${response.eor})'><span class="input-group-text">KRW</span></td><td><i class="fa-solid fa-arrow-right"></i></td><td class='input-group'><input type='number' class='form-control text-center usd_right' disabled><span class="input-group-text">${response.unit}${response.currency}</span></td><tr>`
                         table += "</tbody></table>"
                     } else if (response.stock_today != undefined) {
-                        table = "<table class='table text-center' id='st_table'>"
-                        table += `<tr><th><select onchange='stChanger(${JSON.stringify(response.stock_today)})' id='st_selector'><option selected><strong>KOSDAQ</strong></option><option><strong>KOSPI</strong></option><option><strong>KOSPI200</strong></option></select></th><td><img id='st_img' src='${response.stock_today['KOSDAQ'].그래프}'></td></tr>`
-                        table += `<tr><th>지수</th><td id='st_number'>${response.stock_today['KOSDAQ'].지수}</td></tr>`
-                        table += `<tr><th>변화</th><td id='st_change'>${response.stock_today['KOSDAQ'].변화}</td></tr>`
-                        table += `<tr><th>변화%</th><td id='st_change_per'>${response.stock_today['KOSDAQ'].변화퍼센트}</td></tr>`
+                        table = "<table class='table text-center'>"
+                        table += `<tr><th><input type='hidden' value='${JSON.stringify(response.stock_today)}'><select class='st_selector'><option selected><strong>KOSDAQ</strong></option><option><strong>KOSPI</strong></option><option><strong>KOSPI200</strong></option></select></th>`
+                        table += `<td><img src='${response.stock_today['KOSDAQ'].그래프}'></td></tr>`
+                        table += `<tr><th>지수</th><td>${response.stock_today['KOSDAQ'].지수}</td></tr>`
+                        table += `<tr><th>변화</th><td>${response.stock_today['KOSDAQ'].변화}</td></tr>`
+                        table += `<tr><th>변화%</th><td>${response.stock_today['KOSDAQ'].변화퍼센트}</td></tr>`
                         table += "</table>"
                     } else if (response.hot != undefined) {
                         table = "<table class='table table-hover text-center'>"
@@ -221,6 +211,19 @@
                         $(this).on('click', function() {
                             send_todo($(this).find('input').val(), $(this).text())
                         })
+                    })
+
+                    $(".st_selector").on('change', function() {
+                        const parse_val = JSON.parse($(this).parent().find('input').val())
+
+                        $(this).parent().parent().parent().parent().hide();
+
+                        $(this).parent().parent().find('img').attr('src', parse_val[$(this).val()].그래프)
+                        $(this).parent().parent().parent().find('tr:nth-child(2) td').text(parse_val[$(this).val()].지수)
+                        $(this).parent().parent().parent().find('tr:nth-child(3) td').text(parse_val[$(this).val()].변화)
+                        $(this).parent().parent().parent().find('tr:nth-child(4) td').text(parse_val[$(this).val()].변화퍼센트)
+
+                        $(this).parent().parent().parent().parent().fadeIn('slow');
                     })
                 }
             })

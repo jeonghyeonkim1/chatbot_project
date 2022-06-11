@@ -465,18 +465,22 @@ def to_client(conn, addr, params):
 
             elif intent_name == '주문 취소':
                 b_stock = [i for i, j in ner_predicts if j == 'B_STOCK']
-                sql = f'''
-                    select id, code, name, amount, price from chatbot_order where cancel = 0 and (name = '{b_stock[0]}' or code = '{b_stock[0]}')
-                '''
 
-                with database.cursor() as cursor:
-                    cursor.execute(sql)
-                    order_list = cursor.fetchall()
-                    if len(order_list) > 0:
-                        send_json_data_str['Answer'] = '취소하고 싶은 것을 선택해달라 냥'
-                        send_json_data_str['order_list'] = order_list
-                    else:
-                        send_json_data_str['Answer'] = f'{b_stock[0]}에서 취소할 수 있는 주문이 없다 냥'
+                if len(b_stock) < 1:
+                    send_json_data_str["Answer"] = "종목명을 정확하게 알려달라냥"
+                else:
+                    sql = f'''
+                        select id, code, name, amount, price from chatbot_order where cancel = 0 and (name = '{b_stock[0]}' or code = '{b_stock[0]}')
+                    '''
+
+                    with database.cursor() as cursor:
+                        cursor.execute(sql)
+                        order_list = cursor.fetchall()
+                        if len(order_list) > 0:
+                            send_json_data_str['Answer'] = '취소하고 싶은 것을 선택해달라 냥'
+                            send_json_data_str['order_list'] = order_list
+                        else:
+                            send_json_data_str['Answer'] = f'{b_stock[0]}에서 취소할 수 있는 주문이 없다 냥'
 
             
             if sql != '':

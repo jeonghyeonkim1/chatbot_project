@@ -227,7 +227,7 @@
                 <div class='h-100 w-100' id='detail'>
                     <div class='detail-container w-100 h-100 p-2 bg-dark ' id='m1'>
                         {% if not chatbot_view %}
-                            <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
+                            <div class='text-dark w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
                         {% else %}
                             <button onclick='del_table_data("chatbot_view", "m1")' class='btn btn-warning d-flex align-items-center justify-content-center w-100 mb-5 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
                             {% for view in chatbot_view %}
@@ -315,11 +315,11 @@
                             </thead>
                             <tbody>
                                 {% if not chatbot_order %}
-                                    <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
+                                    <div class='text-dark w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
                                 {% else %}
                                     <button onclick='del_table_data("chatbot_order", "m3")' class='btn btn-warning d-flex align-items-center justify-content-center w-100 mb-2 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
                                     {% for order in chatbot_order %}
-                                        <tr class='h3  {% if order.2 > 0 %}text-danger{% else %}text-primary{% endif %} {% if order.4 != 0 %}table-active{% endif %}'>
+                                        <tr class='h3 {% if order.2 > 0 %}text-danger{% else %}text-primary{% endif %} {% if order.4 != 0 %}table-active{% endif %}'>
                                             <td>{{ order.0 }}</td>
                                             <td>{{ order.1 }}</td>
                                             <td>{{ order.2 }}</td>
@@ -334,7 +334,7 @@
                     </div>
                     <div class='detail-container w-100 h-100 p-1' id='m4' style='display:none;'>
                         {% if not chatbot_eor %}
-                            <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
+                            <div class='text-dark w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
                         {% else %}
                             <button onclick='del_table_data("chatbot_eor", "m4")' class='btn btn-warning d-flex align-items-center justify-content-center w-100 mb-2 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
                             <table class='table table-dark table-striped text-center'>
@@ -351,7 +351,7 @@
                     </div>
                     <div class='detail-container w-100 h-100 p-1 d-flex flex-column' id='m5' style='display:none;'>
                         {% if not chatbot_stock_today %}
-                            <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
+                            <div class='text-dark w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
                         {% else %}
                             <button onclick='del_table_data("chatbot_stock_today", "m5")' class='btn btn-warning d-flex align-items-center justify-content-center w-100 mb-2 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
                                 {% for stock_today in chatbot_stock_today %}

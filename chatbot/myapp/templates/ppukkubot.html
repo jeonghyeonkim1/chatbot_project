@@ -3,7 +3,6 @@
 {% block src %}
     {% load static %}
     <script>
-
         window.onload = function() {
             $chatbox = $("#chatbox");
             const bottext = "<div style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>" + '안녕 :) 너의 맛있는 푸드 라이프를 책임질 뿌꾸야' + "</span></div></div>";
@@ -11,58 +10,88 @@
         }
 
         $(function() {
-            $('input').keyup(function(e) {
-                if (e.keyCode == 13) {
-                    ajaxing({
-                        "user_id": "s97741875@gamil.com",
-                        "input_sentence": `${$(this).val()}`
-                    })
+            $(".nav-button").click(function() {
+              $(this).parent().parent().toggleClass("closed");
+            });
+
+            // SEND
+            $("#sendbtn").click(function() {
+                send_message();
+                $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
+            }); 
+
+            // ENTER
+            $("#chattext").keyup(function(event) {
+                if(event.keyCode == 13) {
+                    send_message();
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
                 }
             })
         })
 
-        function waiter() {
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
-            $chatbox.append(botwait);
-            $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
-        }
+        function send_message() {
+            const chattext = $("#chattext").val().trim();
 
-        function ajaxing(jsonData) {
+            // 입력한 메세지가 없으면 리턴
+            if(chattext == "") {
+                $("#chattext").focus();
+                return;
+            }
+
+            // 입력한 채팅 화면에 출력
+            $("#wait").remove();
+            const addtext = "<div class='mb-5' style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#f1f1f1;border-radius:3px;'>" + chattext + "</span></div>";
+            $("#chatbox").append(addtext);
+
+            // 답변 대기시간동안 로딩 말풍선 띄우기
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
+
+            // 먼저 입력했던 것은 지우기
+            $("#chattext").val("");
+            $("#chattext").focus();
+
+            // ajax
             $.ajax({
                 url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
                 type: "POST",
-                data: JSON.stringify(jsonData),
+                data: JSON.stringify({
+                        "user_id": "s97741875@gamil.com",
+                        "input_sentence": chattext
+                    }),
                 dataType: "JSON",
                 contentType: "application/json; charset=utf-8",
                 crossDomain: true,
 
                 success: function(response){
+                    $("#wait").remove();
+
                     res = response['responseSet']['result']
                     session_id = res['session_id']
                     ins_id = res['ins_id']
 
-                    $("#wait").remove();
-
-                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
-                    $chatbox.append(bottext);
-
-                    console.log(response)
-
-                    
+                    answer = ''
                     if (res['chatflow_id'] == 'FLOW1653963618000') {
-                        for (let i in res['result']) {
-                            $("#chatbox").append(`<div><h1>${res['result'][i]['message']}</h1></div>`)
-                        }
-                        $("#chatbox").append(`<div><select class='select_genre' onchange='genre_ajax($(this).val())'></select></div>`)
+                        table = '<table class="table table-hover table-striped table-success text-center">'
                         for (let i in res['result'][1]['optionList']) {
-                            $(".select_genre").append(`<option>${res['result'][1]['optionList'][i]['label']}</option>`)
+                            table += `<tr><td style='cursor: pointer;' onclick="genre_ajax('${res['result'][1]['optionList'][i]['label']}')">${res['result'][1]['optionList'][i]['label']}</td></tr>`
                         }
+                        table += '</table>'
+
+                        for (let i in res['result']) {
+                            $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][i]['message']}</span></div></div>`)
+                        }
+
+                        $("#chatbox").append(`<div class='mb-2' style='margin:20px 0;text-align:left;'><div class='ml-3'>${table}</div></div>`)
                     }
                 }
             })
         }
 
         function genre_ajax(genre_val) {
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
+
             jsonData = {
                 "user_id": "s97741875@gamil.com",
                 "input_sentence": `${genre_val}`,
@@ -75,16 +104,6 @@
                 "session_id": session_id
             }
 
-
-            // 입력한 채팅 화면에 출력
-            $("#wait").remove();
-            const addtext = "<div style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#f1f1f1;border-radius:3px;'>" + chattext + "</span></div>";
-            $("#chatbox").append(addtext);
-
-            // 답변 대기시간동안 로딩 말풍선 띄우기
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#fdffd9;border-radius:3px;'>로딩중이다 냥&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
-            $chatbox.append(botwait);
-
             $.ajax({
                 url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
                 type: "POST",
@@ -94,17 +113,22 @@
                 crossDomain: true,
 
                 success: function(response){
+                    $("#wait").remove();
+
                     res = response['responseSet']['result']
                     ins_id = res['ins_id']
 
-                    for (let i in res['result']) {
-                        $("#chatbox").append(`<div><h1>${res['result'][i]['message']}</h1></div>`)
-                    }
-                    $("#chatbox").append(`<div><select class='select_genre_two' onchange='genre_ajax_two($(this).val())'></select></div>`)
+                    table = '<table class="table table-hover table-striped table-success text-center">'
                     for (let i in res['result'][0]['optionList']) {
-                        $(".select_genre_two").append(`<option>${res['result'][0]['optionList'][i]['label']}</option>`)
-                        
+                        table += `<tr><td style='cursor: pointer;' onclick="genre_ajax_two('${res['result'][0]['optionList'][i]['label']}')">${res['result'][0]['optionList'][i]['label']}</td></tr>`
                     }
+                    table += '</table>'
+
+                    for (let i in res['result']) {
+                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][i]['message']}</span></div></div>`)
+                    }
+
+                    $("#chatbox").append(`<div class='mb-2' style='margin:20px 0;text-align:left;'><div class='ml-3'>${table}</div></div>`)
                 }
             })
         }
@@ -132,7 +156,7 @@
 
                 success: function(response){
                     res = response['responseSet']['result']
-                    table = '<table class="table table-dark text-center" style="vertical-align: middle;">'
+                    table = '<table class="table table-success text-center" style="vertical-align: middle;">'
                     table += '<thead><tr><th>매장사진<th><th>매장정보</th></tr></thead><tbody>'
                     for (let i in res['result'][0]['carouselList']) {
                         table += '<tr>'
@@ -146,11 +170,10 @@
                     }
                     table += '</tbody></table>'
                     
-                    $("#chatbox").append(`<div><h1>${res['result'][1]['message']}</h1></div>${table}`)
+                    $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][1]['message']}</span></div></div>${table}`)
                 }
             })
         }
-
     </script>
     <style>
         input:focus::placeholder{
@@ -220,7 +243,7 @@
             height:75%;
             margin-top:20px;
             padding:5px;
-            padding-right: 25px;
+            padding-right: 15px;
             overflow-y:scroll;
             overflow-x:hidden;
             max-height:100vh;
@@ -256,7 +279,7 @@
             width: 97%;
             height: 2px;
           }
-          .line {
+        .line {
             position: absolute;
             width: 0%;
             height: 2px;
@@ -265,10 +288,12 @@
             transform: translateX(-50%);
             background: rgba(37, 37, 37, 0.295);
             transition: ease .6s;
-          }
-          input:focus + .line-box .line {
+        }
+
+        input:focus + .line-box .line {
             width: 97%;
-          }
+        }
+
         #men1{
             left: -15.3%;
         }
@@ -319,13 +344,5 @@
                 </table>
             </div>
         </div>
-          
-
-    <body>
-        <div id='chatbox'></div>
-        <input id='en_event'>
-    
-    </input>
     </body>
-
 {% endblock %}

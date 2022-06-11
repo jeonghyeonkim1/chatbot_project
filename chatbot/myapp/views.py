@@ -83,8 +83,8 @@ def storage(req):
             cursor.execute(sql)
             chatbot_own = cursor.fetchall()
             eor = float(crawl.eor())
-            List = reduce(lambda a, b: a.append(int(crawl.search_engine(b[0])['가격'].replace(',', '') if crawl.search_engine(b[0])['가격'].find(
-                ',') != -1 else int(float(crawl.search_engine(b[0])['가격']) * eor)) * int(b[2])) or a, chatbot_own, [])
+            List = reduce(lambda a, b: a.append(int(crawl.search_engine(b[0])['가격'].replace(',', '') if crawl.search_engine(b[0])['코드']
+                in crawl.korea_id else int(float(crawl.search_engine(b[0])['가격']) * eor)) * int(b[2])) or a, chatbot_own, [])
             content['chatbot_own'] = [(chatbot_own[i][0], chatbot_own[i][1], int(
                 chatbot_own[i][2]), int(chatbot_own[i][3]), List[i], f'{(List[i] / int(chatbot_own[i][3]) * 100) - 100:.2f}%') for i in range(len(chatbot_own))]
             content['chatbot_total'] = sum([int(total) for code, name, cnt, total in chatbot_own])
