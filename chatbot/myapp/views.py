@@ -5,7 +5,6 @@ from functools import reduce
 import sys
 sys.path.append('../')
 from crawl.crawl import Crawl
-from django.views.decorators.csrf import csrf_exempt
 
 DB_HOST = "localhost"
 DB_USER = "myuser118"
@@ -129,9 +128,8 @@ def del_view(req, table):
 
     return render(req, 'storage.html')
 
-@csrf_exempt
 def send_ppukku(req):
-    print(req.POST)
+    print(req.GET)
     # content = {}
     
     # if req['intent_id'] == 'a95d62d3-14af-418d-9446-18badadac937':

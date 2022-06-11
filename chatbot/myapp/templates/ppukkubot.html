@@ -157,13 +157,13 @@
         function db_ajax(json_data) {
             $.ajax({
                 url: 'http://127.0.0.1:8000/send_ppukku/',
-                type: 'POST',
+                type: 'GET',
                 data: json_data,
-                dataType: 'JSON',
+                dataType: 'json',
                 contentType: "application/json; charset=utf-8",
                 
-                success: function() {
-                    console.log('데이터삽입성공')
+                success: function(response) {
+                    console.log(response)
                 }
             })
         }
