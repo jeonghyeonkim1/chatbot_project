@@ -77,7 +77,7 @@ def storage(req):
 
         # 보유주 리스트
         sql = f'''
-                select code, name, sum(sum), sum(total) from (select code, name, sum(amount) as sum, sum(amount * price) as total from chatbot_order where amount > 0 and cancel = 0 group by name UNION select code, name, sum(amount), -1 * sum(amount * price) from chatbot_order where amount < 0 and cancel = 0 group by name) as a group by name
+                select code, name, sum(sum), sum(total) from (select code, name, sum(amount) as sum, sum(amount * price) as total from chatbot_order where amount > 0 and cancel = 0 group by name UNION select code, name, sum(amount), -1 * sum(amount * price) from chatbot_order where amount < 0 and cancel = 0 group by name) as a group by name having sum(sum) > 0
             '''
         with database.cursor() as cursor:
             cursor.execute(sql)

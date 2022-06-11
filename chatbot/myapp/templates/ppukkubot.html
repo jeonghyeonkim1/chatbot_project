@@ -169,11 +169,11 @@
                         table += '<tr>'
                         table += `<td rowspan='4'><img src="${res['result'][0]['carouselList'][i]['imgRoute']}" alt="맛집ㅎㅎ"></td>`
                         table += '<td><i class="fa-solid fa-utensils"></i></td>'
-                        table += `<td>${res['result'][0]['carouselList'][i]['cardTitle']}</td>`
+                        table += `<th>${res['result'][0]['carouselList'][i]['cardTitle']}</th>`
                         table += '</tr>'
-                        table += `<tr><td><i class="fa-solid fa-house-chimney"></i></td><td>${res['result'][0]['carouselList'][i]['subCardTitle']}</td></tr>`
-                        table += `<tr><td><i class="fa-solid fa-phone"></i></td><td><a href='tel:${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</a></td></tr>`
-                        table += `<tr><td><i class="fa-solid fa-map-location-dot"></i></td><td><a href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</a></td></tr>`
+                        table += `<tr><td><i class="fa-solid fa-house-chimney"></i></td><th>${res['result'][0]['carouselList'][i]['subCardTitle']}</th></tr>`
+                        table += `<tr><td><i class="fa-solid fa-phone"></i></td><th><a href='tel:${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</a></th></tr>`
+                        table += `<tr style='border-bottom: 2px solid #000'><td><i class="fa-solid fa-map-location-dot"></i></td><th><a href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</a></th></tr>`
                     }
                     table += '</tbody></table>'
                     
