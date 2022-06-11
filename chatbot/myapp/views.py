@@ -5,6 +5,7 @@ from functools import reduce
 import sys
 sys.path.append('../')
 from crawl.crawl import Crawl
+from django.views.decorators.csrf import csrf_exempt
 
 DB_HOST = "localhost"
 DB_USER = "myuser118"
@@ -128,33 +129,44 @@ def del_view(req, table):
 
     return render(req, 'storage.html')
 
+@csrf_exempt
 def send_ppukku(req):
-    content = {}
+    print(req.POST)
+    # content = {}
+    
+    # if req['intent_id'] == 'a95d62d3-14af-418d-9446-18badadac937':
+    #     intent = '메뉴추천'
+    # elif req['intent_id'] == '2fb157ca-7d1a-4751-894b-96d2eacf3bd7':
+    #     intent = '맛집추천'
+    # else:
+    #     intent = '인사'
 
-    database = None
-    try:
-        database = pymysql.connect(
-            host=DB_HOST,
-            user=DB_USER,
-            passwd=DB_PASSWORD,
-            db=DB_NAME,
-            charset='utf8'
-        )
 
-        # 주식 조회 목록
-        sql = f'''
-                select * from chatbot_view ORDER BY date DESC
-            '''
-        with database.cursor() as cursor:
-            cursor.execute(sql)
-            chatbot_view = cursor.fetchall()
-            content['chatbot_view'] = chatbot_view
+    # database = None
+    # try:
+    #     database = pymysql.connect(
+    #         host=DB_HOST,
+    #         user=DB_USER,
+    #         passwd=DB_PASSWORD,
+    #         db=DB_NAME,
+    #         charset='utf8'
+    #     )
 
-    except Exception as e:
-        print(e)
+    #     # 주식 조회 목록
+    #     sql = '''
+    #             INSERT INTO danbee_query VALUES ('%s', '%s', '%s', '%s')
+    #         ''' % (intent, req['input'], req['answer'], req['session_id'])
+            
+    #     with database.cursor() as cursor:
+    #         cursor.execute(sql)
+    #         print('저장')
+    #         database.commit()
 
-    finally:
-        if database is not None:
-            database.close()
+    # except Exception as e:
+    #     print(e)
 
-    return render(req, 'storage.html', content)
+    # finally:
+    #     if database is not None:
+    #         database.close()
+
+    return render(req, 'ppukkubot.html')
