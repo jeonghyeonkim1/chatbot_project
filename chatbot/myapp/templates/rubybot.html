@@ -45,12 +45,28 @@
 
         function usd_krw(eor) {
             const inputNum = $(".usd_left").last().val();
-            $(".krw_right").last().val((inputNum * eor).toFixed(0));
+
+            if (inputNum < 0) {
+                alert("1보다 큰 숫자만 입력해달라 냥!");
+                $(".usd_left").last().val('');
+                $(".usd_left")[0].focus();
+                $(".krw_right").last().val(0);
+            } else {
+                $(".krw_right").last().val((inputNum * eor).toFixed(0));
+            }
         }
 
         function krw_usd(eor) {
             const inputNum = $(".krw_left").last().val();
-            $(".usd_right").last().val((inputNum / eor).toFixed(3));
+
+            if (inputNum < 0) {
+                alert("1보다 큰 숫자만 입력해달라 냥!");
+                $(".krw_left").last().val('');
+                $(".krw_left")[0].focus();
+                $(".usd_right").last().val(0);
+            } else {
+                $(".usd_right").last().val((inputNum / eor).toFixed(3));
+            }
         }
 
         function word_search(text) {
@@ -73,7 +89,13 @@
                 $("#chatbox").append(bottext);
                 $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
                 $(".cnt_input ~ button").on('click', function() {
-                    stock_trade(event, $(".cnt_input").last().val(), intent)
+                    if ($(".cnt_input").last().val() <= 0) {
+                        alert("1 이상의 숫자를 기입해달라 냥!!");
+                        $(".cnt_input").last().val('');
+                        $(".cnt_input").last()[0].focus();
+                    } else {
+                        stock_trade(event, $(".cnt_input").last().val(), intent)
+                    }
                 })
             } else if (intent == '매도') {
                 const table = "<div class='input-group'><input type='number' placeholder='갯수를 입력해주세요.' class='cnt_input form-control text-center'><button class='btn btn-outline-secondary'>매도하기</button></div>"
@@ -81,7 +103,13 @@
                 $("#chatbox").append(bottext);
                 $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')})
                 $(".cnt_input ~ button").on('click', function() {
-                    stock_trade(event, $(".cnt_input").last().val(), intent)
+                    if ($(".cnt_input").last().val() <= 0) {
+                        alert("1 이상의 숫자를 기입해달라 냥!!")
+                        $(".cnt_input").last().val('')
+                        $(".cnt_input").last()[0].focus();
+                    } else {
+                        stock_trade(event, $(".cnt_input").last().val(), intent)
+                    }
                 })
             } else {    
                 waiter();

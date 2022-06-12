@@ -239,8 +239,8 @@ def to_client(conn, addr, params):
             intent_predict = intent.predict_class(query.strip())
             intent_name = intent.labels[intent_predict]
 
-            ner_predicts = [(x, 'B_STOCK') if (x in code_to_event or x in code_to_event.values()) and y != 'B_STOCK' else (x, y) for x, y in [(a, 'O') if a not in code_to_event.values(
-            ) and b == 'B_STOCK' else (a, b) for a, b in [(i, 'B_COUNT') if re.match(r'^\d+주$', i) != None and j != 'B_COUNT' else (i, j) for i, j in ner.predict(query.strip())]]]
+            ner_predicts = [(x, 'B_STOCK') if (x in crawl.foreign_id + crawl.foreign_name + crawl.korea_id + crawl.korea_name) and y != 'B_STOCK' else (x, y) for x, y in [(a, 'O') if a not in crawl.foreign_id + crawl.foreign_name +
+                                                                                                                                                                           crawl.korea_id + crawl.korea_name and b == 'B_STOCK' else (a, b) for a, b in [(i, 'B_COUNT') if re.match(r'^\d+주$', i) != None and j != 'B_COUNT' else (i, j) for i, j in ner.predict(query.strip())]]]
             ner_tags = [j for i, j in ner_predicts if j == 'B_STOCK' or j == 'B_COUNT']
 
         print("의도 :", intent_name)

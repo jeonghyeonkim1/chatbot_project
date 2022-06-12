@@ -17,15 +17,48 @@ crawl = Crawl()
 def home(req):
     return render(req, 'home.html')
 
+
 def rubybot(req):
     return render(req, 'rubybot.html')
+
 
 def ppukkubot(req):
     return render(req, 'ppukkubot.html')
 
+
 def pstorage(req):
-    return render(req, 'pstorage.html')
-    
+    content = {}
+
+    database = None
+    try:
+        database = pymysql.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            passwd=DB_PASSWORD,
+            db=DB_NAME,
+            charset='utf8'
+        )
+
+        # 대화 내역
+        sql = f'''
+                select * from danbee_query ORDER BY date DESC
+            '''
+
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            danbee_query = cursor.fetchall()
+            content['danbee_query'] = danbee_query
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        if database is not None:
+            database.close()
+
+    return render(req, 'pstorage.html', content)
+
+
 def storage(req):
     content = {}
 
@@ -84,12 +117,14 @@ def storage(req):
             chatbot_own = cursor.fetchall()
             eor = float(crawl.eor())
             List = reduce(lambda a, b: a.append(int(crawl.search_engine(b[0])['가격'].replace(',', '') if crawl.search_engine(b[0])['코드']
-                in crawl.korea_id else int(float(crawl.search_engine(b[0])['가격']) * eor)) * int(b[2])) or a, chatbot_own, [])
+                                                    in crawl.korea_id else int(float(crawl.search_engine(b[0])['가격']) * eor)) * int(b[2])) or a, chatbot_own, [])
             content['chatbot_own'] = [(chatbot_own[i][0], chatbot_own[i][1], int(
                 chatbot_own[i][2]), int(chatbot_own[i][3]), List[i], f'{(List[i] / int(chatbot_own[i][3]) * 100) - 100:.2f}%') for i in range(len(chatbot_own))]
-            content['chatbot_total'] = sum([int(total) for code, name, cnt, total in chatbot_own])
+            content['chatbot_total'] = sum(
+                [int(total) for code, name, cnt, total in chatbot_own])
             content['chatbot_current_total'] = sum(List)
-            content['chatbot_profit_loss'] = sum(List) - content['chatbot_total']
+            content['chatbot_profit_loss'] = sum(
+                List) - content['chatbot_total']
 
     except Exception as e:
         print(e)
@@ -99,6 +134,7 @@ def storage(req):
             database.close()
 
     return render(req, 'storage.html', content)
+
 
 def del_view(req, table):
     database = None
@@ -128,43 +164,81 @@ def del_view(req, table):
 
     return render(req, 'storage.html')
 
+
 def send_ppukku(req):
-    print(req.GET)
-    # content = {}
-    
-    # if req['intent_id'] == 'a95d62d3-14af-418d-9446-18badadac937':
-    #     intent = '메뉴추천'
-    # elif req['intent_id'] == '2fb157ca-7d1a-4751-894b-96d2eacf3bd7':
-    #     intent = '맛집추천'
-    # else:
-    #     intent = '인사'
+    if 'intent_id' in req.GET:
+        if req.GET['intent_id'] == 'a95d62d3-14af-418d-9446-18badadac937':
+            intent = '메뉴추천'
+        elif req.GET['intent_id'] == '2fb157ca-7d1a-4751-894b-96d2eacf3bd7':
+            intent = '맛집추천'
+        else:
+            intent = '인사'
 
+    database = None
+    try:
+        database = pymysql.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            passwd=DB_PASSWORD,
+            db=DB_NAME,
+            charset='utf8'
+        )
 
-    # database = None
-    # try:
-    #     database = pymysql.connect(
-    #         host=DB_HOST,
-    #         user=DB_USER,
-    #         passwd=DB_PASSWORD,
-    #         db=DB_NAME,
-    #         charset='utf8'
-    #     )
+        if 'genre' in req.GET:
+            sql = '''
+                INSERT INTO danbee_rest(ins_id, genre) VALUES ('%s', '%s')
+            ''' % (req.GET['ins_id'], req.GET['genre'])
 
-    #     # 주식 조회 목록
-    #     sql = '''
-    #             INSERT INTO danbee_query VALUES ('%s', '%s', '%s', '%s')
-    #         ''' % (intent, req['input'], req['answer'], req['session_id'])
-            
-    #     with database.cursor() as cursor:
-    #         cursor.execute(sql)
-    #         print('저장')
-    #         database.commit()
+        elif 'region' in req.GET:
+            sql = '''
+                UPDATE danbee_rest SET region = '%s' where ins_id = '%s'
+            ''' % (req.GET['region'], req.GET['ins_id'])
 
-    # except Exception as e:
-    #     print(e)
+        elif 'food1' in req.GET:
+            sql = '''
+                INSERT INTO danbee_menu(ins_id, food1) VALUES ('%s', '%s')
+            ''' % (req.GET['ins_id'], req.GET['food1'])
 
-    # finally:
-    #     if database is not None:
-    #         database.close()
+        elif 'food2' in req.GET:
+            sql = '''
+                UPDATE danbee_menu SET food2 = '%s' where ins_id = '%s'
+            ''' % (req.GET['food2'], req.GET['ins_id'])
+
+        elif 'food3' in req.GET:
+            sql = '''
+                UPDATE danbee_menu SET food3 = '%s' where ins_id = '%s'
+            ''' % (req.GET['food3'], req.GET['ins_id'])
+
+        elif 'food4' in req.GET:
+            sql = '''
+                UPDATE danbee_menu SET food4 = '%s' where ins_id = '%s'
+            ''' % (req.GET['food4'], req.GET['ins_id'])
+
+        elif 'food5' in req.GET:
+            sql = '''
+                UPDATE danbee_menu SET food5 = '%s' where ins_id = '%s'
+            ''' % (req.GET['food5'], req.GET['ins_id'])
+
+        elif 'food_result' in req.GET:
+            sql = '''
+                UPDATE danbee_menu SET food_result = '%s' where ins_id = '%s'
+            ''' % (req.GET['food_result'], req.GET['ins_id'])
+
+        else:
+            sql = '''
+                INSERT INTO danbee_query(ins_id, intent, query, answer) VALUES ('%s', '%s', '%s', '%s')
+            ''' % (req.GET['ins_id'], intent, req.GET['input'], req.GET['answer'])
+
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            print('저장')
+            database.commit()
+
+    except Exception as e:
+        print(e)
+
+    finally:
+        if database is not None:
+            database.close()
 
     return render(req, 'ppukkubot.html')
