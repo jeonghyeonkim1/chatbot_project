@@ -39,29 +39,35 @@
             return str.replace(/[^\w\sㄱ-힣!?]|[\_]/g, '')
         }
 
-        function pinpongDel(str) {
+        function pingpongDel(str) {
             return str.replace('(핑퐁[pingpong.us]에서 생성된 자동답변입니다)', '')
         }
 
         function send_message() {
             const chattext = $("#chattext").val().trim();
 
-            // 입력한 메세지가 없으면 리턴
-            if(chattext == "") {
+            if (chattext == "") {
                 $("#chattext").focus();
                 return;
+            } else if (chattext == "골라줘") {
+                console.log('chatflow:', chatflow)
+                console.log('ins_id:', ins_id)
+                console.log('cnt:', cnt)
+                try {
+                    console.log('node:', node)
+                } catch {}
+                try {
+                    console.log('param:', param)
+                } catch {}
             }
 
-            // 입력한 채팅 화면에 출력
             $("#wait").remove();
-            const addtext = "<div class='mb-5' style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#f1f1f1;border-radius:3px;'>" + chattext + "</span></div>";
+            const addtext = "<div class='mt-5 mb-5' style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#f1f1f1;border-radius:3px;'>" + chattext + "</span></div>";
             $("#chatbox").append(addtext);
 
-            // 답변 대기시간동안 로딩 말풍선 띄우기
             const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
 
-            // 먼저 입력했던 것은 지우기
             $("#chattext").val("");
             $("#chattext").focus();
 
@@ -134,84 +140,64 @@
             }
 
             try {
-                data = {
-                    "user_id": "s97741875@gamil.com",
-                    "input_sentence": "맞아",
-                    "chatflow_id": "FLOW1653963618000",
-                    "ins_id": ins_id,
-                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
-                    "session_id": session_id,
-                    "node_id": reserv4,
-                    "param_id": "예약저장"
-                }
+                if (node == 'SlotNode_1655013989375423472') {
+                    data = {
+                        "user_id": "s97741875@gamil.com",
+                        "input_sentence": "맞아",
+                        "chatflow_id": "FLOW1653963618000",
+                        "ins_id": ins_id,
+                        "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                        "session_id": session_id,
+                        "node_id": node,
+                        "param_id": "예약저장"
+                    }
 
-                delete reserv4
+                    delete node
+                }
             } catch {}
 
             try {
-                data = {
+                if (node == 'SlotNode_1655011730089') {
+                    data = {
                     "user_id": "s97741875@gamil.com",
-                    "input_sentence": chattext,
-                    "chatflow_id": "FLOW1653963618000",
-                    "ins_id": ins_id,
-                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
-                    "session_id": session_id,
-                    "node_id": reserv3,
-                    "param_id": "시간"
+                        "input_sentence": chattext,
+                        "chatflow_id": "FLOW1653963618000",
+                        "ins_id": ins_id,
+                        "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                        "session_id": session_id,
+                        "node_id": node,
+                        "param_id": "시간"
+                    }
+
+                    db_ajax({
+                        "ins_id": ins_id,
+                        "time": regFilter(chattext)
+                    })
+
+                    node = "SlotNode_1655013989375423472"
                 }
-
-                db_ajax({
-                    "ins_id": ins_id,
-                    "time": regFilter(chattext)
-                })
-
-                reserv4 = "SlotNode_1655013989375423472"
-
-                delete reserv3
             } catch {}
 
             try {
-                data = {
-                    "user_id": "s97741875@gamil.com",
-                    "input_sentence": chattext,
-                    "chatflow_id": "FLOW1653963618000",
-                    "ins_id": ins_id,
-                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
-                    "session_id": session_id,
-                    "node_id": reserv2,
-                    "param_id": "날짜"
+                if (node == 'SlotNode_1655013640752') {
+                    data = {
+                        "user_id": "s97741875@gamil.com",
+                        "input_sentence": chattext,
+                        "chatflow_id": "FLOW1653963618000",
+                        "ins_id": ins_id,
+                        "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                        "session_id": session_id,
+                        "node_id": node,
+                        "param_id": "날짜"
+                    }
+
+                    db_ajax({
+                        "ins_id": ins_id,
+                        "day": regFilter(chattext)
+                    })
+
+                    node = "SlotNode_1655011730089"
                 }
-
-                db_ajax({
-                    "ins_id": ins_id,
-                    "day": regFilter(chattext)
-                })
-
-                reserv3 = "SlotNode_1655011730089"
-
-                delete reserv2
-            } catch {}
-
-            try {
-                data = {
-                    "user_id": "s97741875@gamil.com",
-                    "input_sentence": chattext,
-                    "chatflow_id": "FLOW1653963618000",
-                    "ins_id": ins_id,
-                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
-                    "session_id": session_id,
-                    "node_id": reserv,
-                    "param_id": "예약"
-                }
-
-                db_ajax({
-                    "ins_id": ins_id,
-                    "place": regFilter(chattext)
-                })
-
-                reserv2 = "SlotNode_1655013640752"
-
-                delete reserv
             } catch {}
 
             // ajax
@@ -234,7 +220,7 @@
                     answer = ''
 
                     for (let i in res['result']) {
-                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${pinpongDel(res['result'][i]['message'])}</span></div></div>`)
+                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${pingpongDel(res['result'][i]['message'])}</span></div></div>`)
                         answer += res['result'][i]['message'] + ' '            
                     }
 
@@ -366,27 +352,29 @@
                     $("#wait").remove();
 
                     res = response['responseSet']['result']
+
                     table = '<table class="table table-success text-center" style="vertical-align: middle;">'
-                    table += '<thead><tr><th>매장사진<th><th>매장정보</th></tr></thead><tbody>'
+                    table += '<thead><tr><th>매장사진<th><th>매장정보</th><th>예약기능</th></tr></thead><tbody>'
                     for (let i in res['result'][0]['carouselList']) {
                         table += '<tr>'
                         table += `<td rowspan='4'><img src="${res['result'][0]['carouselList'][i]['imgRoute']}" alt="맛집ㅎㅎ"></td>`
                         table += '<td><i class="fa-solid fa-utensils"></i></td>'
                         table += `<th>${res['result'][0]['carouselList'][i]['cardTitle']}</th>`
+                        table += `<td rowspan="4"><button class="btn btn-outline-success" style='width: 80px;' onclick="reservation(${i})">예약</button></td>`
                         table += '</tr>'
                         table += `<tr><td><i class="fa-solid fa-house-chimney"></i></td><th>${res['result'][0]['carouselList'][i]['subCardTitle']}</th></tr>`
-                        table += `<tr><td><i class="fa-solid fa-phone"></i></td><th><a href='tel:${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</a></th></tr>`
-                        table += `<tr style='border-bottom: 2px solid #000'><td><i class="fa-solid fa-map-location-dot"></i></td><th><a href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</a></th></tr>`
+                        table += `<tr><td><i class="fa-solid fa-phone"></i></td><th><a class="link-info" href='tel:${res['result'][0]['carouselList'][i]['optionList'][0]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][0]['label']}</a></th></tr>`
+                        table += `<tr style='border-bottom: 2px solid #000'><td><i class="fa-solid fa-map-location-dot"></i></td><th><a class="link-info" href='${res['result'][0]['carouselList'][i]['optionList'][1]['value']}'>${res['result'][0]['carouselList'][i]['optionList'][1]['label']}</a></th></tr>`
                     }
-                    table += '</tbody></table>'
+                    table += '</tbody></table><div class="p-3"></div>'
                     
-                    $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][1]['message']}</span></div></div>${table}<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><button onclick='reservation()' class='btn btn-outline-info border-2 w-50 h-100'>예약하기</button><button onclick='go_first()' class='btn btn-outline-warning w-50 h-100'>처음으로</button></div>`)
+                    $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][1]['message']}</span></div></div>${table}`)
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
                 }
             })
         }
 
-        function reservation() {
+        function reservation(index) {
             const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
 
@@ -410,16 +398,22 @@
                 success: function(response) {
                     $("#wait").remove();
 
-                    res = response['responseSet']['result']
+                    $("#chatbox").append(`<div class='mb-5 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${response['responseSet']['result']['result'][0]['message'].replace('이 매장으로', "선택한 " + res['result'][0]['carouselList'][index]['cardTitle'] + " (으)로")}</span></div></div>`);
 
-                    for (let i in res['result']) {
-                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${pinpongDel(res['result'][i]['message'])}</span></div></div>`)
-                        answer += res['result'][i]['message'] + ' '            
-                    }
+                    db_ajax({
+                        "ins_id": ins_id,
+                        "img": res['result'][0]['carouselList'][index]['imgRoute'],
+                        "name": res['result'][0]['carouselList'][index]['cardTitle'],
+                        "adr": res['result'][0]['carouselList'][index]['subCardTitle'],
+                        "call": res['result'][0]['carouselList'][index]['optionList'][0]['value'],
+                        "loc": res['result'][0]['carouselList'][index]['optionList'][1]['value']
+                    })
+                    
+                    res = response['responseSet']['result'];
 
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
 
-                    reserv = "SlotNode_1655012030232"
+                    node = "SlotNode_1655013640752"
                 }
             })
         }
@@ -433,7 +427,12 @@
                 type: "POST",
                 data: JSON.stringify({
                     "user_id": "s97741875@gamil.com",
-                    "input_sentence": "처음으로"
+                    "input_sentence": "처음으로",
+                    "chatflow_id": res['chatflow_id'],
+                    "ins_id": res['ins_id'],
+                    "intent_id": res['intent_id'],
+                    "node_id": typeof node !== undefined ? node : res['node_id'],
+                    "param_id": typeof param !== undefined ? param : res['param_id']
                 }),
                 dataType: "JSON",
                 contentType: "application/json; charset=utf-8",
@@ -445,7 +444,7 @@
                     res = response['responseSet']['result']
 
                     for (let i in res['result']) {
-                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${pinpongDel(res['result'][i]['message'])}</span></div></div>`)
+                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${pingpongDel(res['result'][i]['message'])}</span></div></div>`)
                         answer += res['result'][i]['message'] + ' '            
                     }
 
