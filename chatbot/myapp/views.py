@@ -41,8 +41,26 @@ def pstorage(req):
 
         # 대화 내역
         sql = f'''
-                select * from danbee_query ORDER BY date DESC
-            '''
+            select * from danbee_query ORDER BY date DESC
+        '''
+
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            danbee_query = cursor.fetchall()
+            content['danbee_query'] = danbee_query
+
+        sql = f'''
+            select * from danbee_query ORDER BY date DESC
+        '''
+
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            danbee_query = cursor.fetchall()
+            content['danbee_query'] = danbee_query
+
+        sql = f'''
+            select * from danbee_query ORDER BY date DESC
+        '''
 
         with database.cursor() as cursor:
             cursor.execute(sql)
@@ -194,10 +212,10 @@ def send_ppukku(req):
                 UPDATE danbee_rest SET region = '%s' where ins_id = '%s'
             ''' % (req.GET['region'], req.GET['ins_id'])
 
-        elif 'place' in req.GET:
+        elif 'img' in req.GET:
             sql = '''
-                UPDATE danbee_rest SET place = '%s' where ins_id = '%s'
-            ''' % (req.GET['place'], req.GET['ins_id'])
+                UPDATE danbee_rest SET place_img = '%s', place_name = '%s', place_adr = '%s', place_call = '%s', place_loc = '%s' where ins_id = '%s'
+            ''' % (req.GET['img'], req.GET['name'], req.GET['adr'], req.GET['call'], req.GET['loc'], req.GET['ins_id'])
         
         elif 'day' in req.GET:
             sql = '''
