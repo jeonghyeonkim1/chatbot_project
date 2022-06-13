@@ -37,20 +37,20 @@ crawl = Crawl()
 
 code_to_event = {b: a for a, b in crawl.event_to_code.items()}
 
+
 def to_client(conn, addr, params):
     db = params['db']
     try:
         db.connect()
-        
+
         read = conn.recv(4096)
         print('===========================')
         print('Connection from: %s' % str(addr))
-        
+
         if read is None or not read:
             print('클라이언트 연결 끊어짐')
             exit(0)
 
-        
         recv_json_data = json.loads(read.decode())
         print("데이터 수신 :", recv_json_data)
         query = recv_json_data['Query']
@@ -79,7 +79,7 @@ def to_client(conn, addr, params):
                     cursor.execute(sql)
                     print('저장')
                     database.commit()
-            
+
             except Exception as e:
                 print(e)
 
@@ -128,7 +128,7 @@ def to_client(conn, addr, params):
             message = json.dumps(send_json_data_str)
             conn.send(message.encode())
             return
-            
+
         elif 'Word' in recv_json_data:
             database = None
             try:
@@ -171,7 +171,8 @@ def to_client(conn, addr, params):
 
         elif 'Trade' in recv_json_data:
             intent_name = recv_json_data['Intent']
-            ner_predicts = [(query.strip(), 'B_STOCK'), (recv_json_data['Trade'] + '개', 'B_COUNT')]
+            ner_predicts = [(query.strip(), 'B_STOCK'),
+                            (recv_json_data['Trade'] + '개', 'B_COUNT')]
             ner_tags = ['B_STOCK', 'B_COUNT']
 
         elif re.search(r'용어|단어', query.strip()) != None:
@@ -196,11 +197,11 @@ def to_client(conn, addr, params):
                 with database.cursor() as cursor:
                     cursor.execute(sql)
 
-                    send_json_data_str['word'] = [i[0] for i in cursor.fetchall()]
-            
+                    send_json_data_str['word'] = [i[0]
+                                                  for i in cursor.fetchall()]
+
             except Exception as e:
                 print(e)
-
 
             finally:
                 if database is not None:
@@ -241,7 +242,8 @@ def to_client(conn, addr, params):
 
             ner_predicts = [(x, 'B_STOCK') if (x in crawl.foreign_id + crawl.foreign_name + crawl.korea_id + crawl.korea_name) and y != 'B_STOCK' else (x, y) for x, y in [(a, 'O') if a not in crawl.foreign_id + crawl.foreign_name +
                                                                                                                                                                            crawl.korea_id + crawl.korea_name and b == 'B_STOCK' else (a, b) for a, b in [(i, 'B_COUNT') if re.match(r'^\d+주$', i) != None and j != 'B_COUNT' else (i, j) for i, j in ner.predict(query.strip())]]]
-            ner_tags = [j for i, j in ner_predicts if j == 'B_STOCK' or j == 'B_COUNT']
+            ner_tags = [j for i, j in ner_predicts if j ==
+                        'B_STOCK' or j == 'B_COUNT']
 
         print("의도 :", intent_name)
         print("개체명 :", ner_predicts)
@@ -251,13 +253,12 @@ def to_client(conn, addr, params):
 
             conn.send(message.encode())
             return
-            
+
         elif ner_tags.count('B_COUNT') > 1:
             message = json.dumps({"Answer": "갯수를 하나만 입력해달라 냥!!!"})
 
             conn.send(message.encode())
             return
-
 
         try:
             f = FindAnswer(db)
@@ -288,7 +289,7 @@ def to_client(conn, addr, params):
                 for word, cls in ner_predicts:
                     if cls == "B_STOCK" and stock == None:
                         stock = word
-                
+
                 if stock == None:
                     send_json_data_str["Answer"] = "종목명을 정확하게 알려달라냥"
 
@@ -299,7 +300,8 @@ def to_client(conn, addr, params):
                         send_json_data_str["Answer"] = result
                     else:
                         if type(result) == list:
-                            result = crawl.search_engine([a for a, b, c in crawl.content if c == stock][0])
+                            result = crawl.search_engine(
+                                [a for a, b, c in crawl.content if c == stock][0])
 
                         send_json_data_str["information"] = result
 
@@ -309,20 +311,20 @@ def to_client(conn, addr, params):
                             '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'
                             )
                         ''' % (
-                                result["코드"],
-                                result["종목"],
-                                result["가격"],
-                                result["고가"],
-                                result["저가"],
-                                result["전일종가"],
-                                result["시가"] if "시가" in result else "",
-                                result["시가총액"] if "시가총액" in result else "",
-                                result["거래대금"] if "거래대금" in result else "",
-                                result["상한가"] if "상한가" in result else "",
-                                result["하한가"] if "하한가" in result else "",
-                                result["거래량"],
-                                result["그래프"]
-                            )
+                            result["코드"],
+                            result["종목"],
+                            result["가격"],
+                            result["고가"],
+                            result["저가"],
+                            result["전일종가"],
+                            result["시가"] if "시가" in result else "",
+                            result["시가총액"] if "시가총액" in result else "",
+                            result["거래대금"] if "거래대금" in result else "",
+                            result["상한가"] if "상한가" in result else "",
+                            result["하한가"] if "하한가" in result else "",
+                            result["거래량"],
+                            result["그래프"]
+                        )
 
             elif intent_name == '환율 계산':
                 send_json_data_str["Answer"] = "원하는 환율을 선택해달라 냥"
@@ -379,10 +381,11 @@ def to_client(conn, addr, params):
 
                 elif len([i for i, j in ner_predicts if j == 'B_COUNT']) < 1:
                     send_json_data_str["Answer"] = "갯수를 정확하게 알려달라냥"
-                    
+
                 else:
                     result = crawl.search_engine(b_stock[0])
-                    b_count = [i for i, j in ner_predicts if j == 'B_COUNT'][0][:-1]
+                    b_count = [i for i, j in ner_predicts if j ==
+                               'B_COUNT'][0][:-1]
 
                     if not b_count.isdigit():
                         send_json_data_str["Answer"] = "정확한 숫자를 입력해달라 냥"
@@ -392,8 +395,9 @@ def to_client(conn, addr, params):
                         if type(result) == str:
                             send_json_data_str["Answer"] = result
                         elif type(result) == list:
-                            result = crawl.search_engine([a for a, b, c in crawl.content if c == b_stock[0]][0])
-                            
+                            result = crawl.search_engine(
+                                [a for a, b, c in crawl.content if c == b_stock[0]][0])
+
                         if intent_name == '매도':
                             sql = f'''
                                 select sum(amount) from chatbot_order where code = '{result['코드']}' and cancel = 0
@@ -403,13 +407,13 @@ def to_client(conn, addr, params):
                                 all_count = cursor.fetchone()[0]
 
                             if all_count == None or all_count < int(b_count):
-                                send_json_data_str = {"Answer": "보유주가 부족해서 매도가 불가능하다 냥!!"}
+                                send_json_data_str = {
+                                    "Answer": "보유주가 부족해서 매도가 불가능하다 냥!!"}
                                 message = json.dumps(send_json_data_str)
 
                                 conn.send(message.encode())
                                 return
-                        
-                        
+
                         if result['코드'] not in crawl.foreign_id:
                             sql = '''
                                 INSERT chatbot_order(code, name, amount, price) 
@@ -419,8 +423,10 @@ def to_client(conn, addr, params):
                             ''' % (
                                 result['코드'],
                                 result['종목'],
-                                int(b_count) if intent_name == '매수' else - 1 * int(b_count),
-                                int(re.sub('[^\d]', '', result['가격'])) if intent_name == '매수' else -1 * int(re.sub('[^\d]', '', result['가격']))
+                                int(b_count) if intent_name == '매수' else -
+                                1 * int(b_count),
+                                int(re.sub('[^\d]', '', result['가격'])) if intent_name == '매수' else -1 * int(
+                                    re.sub('[^\d]', '', result['가격']))
                             )
                         else:
                             eor = crawl.eor()
@@ -433,8 +439,10 @@ def to_client(conn, addr, params):
                             ''' % (
                                 result['코드'],
                                 result['종목'],
-                                int(b_count) if intent_name == '매수' else -1 * int(b_count),
-                                int(float(result['가격']) * float(eor)) if intent_name == '매수' else -1 * int(float(result['가격']) * float(eor))
+                                int(b_count) if intent_name == '매수' else -
+                                1 * int(b_count),
+                                int(float(result['가격']) * float(eor)) if intent_name == '매수' else -1 * int(
+                                    float(result['가격']) * float(eor))
                             )
 
             elif intent_name == '주문 취소':
@@ -456,7 +464,6 @@ def to_client(conn, addr, params):
                         else:
                             send_json_data_str['Answer'] = f'{b_stock[0]}에서 취소할 수 있는 주문이 없다 냥'
 
-            
             if sql != '':
                 sql = sql.replace("'None'", "null")
 
@@ -478,29 +485,29 @@ def to_client(conn, addr, params):
 
     except Exception as ex:
         print(ex)
-        
+
     finally:
         if db is not None:
             db.close()
         conn.close()
-        
-        
+
+
 if __name__ == '__main__':
     db = Database(
         host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db_name=DB_NAME
     )
     print("DB 접속")
-    
+
     port = 5050
     listen = 100
-    
+
     bot = BotServer(port, listen)
     bot.create_sock()
     print("bot start")
 
     while True:
         conn, addr = bot.ready_for_client()
-    
+
         params = {
             "db": db
         }
@@ -509,22 +516,5 @@ if __name__ == '__main__':
             addr,
             params
         ))
-        
+
         client.start()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

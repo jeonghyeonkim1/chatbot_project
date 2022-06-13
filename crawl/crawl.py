@@ -4,6 +4,7 @@ import pymysql.cursors
 from bs4 import BeautifulSoup
 import requests
 
+
 class Crawl:
     def __init__(self):
         self.url = 'https://finance.naver.com/'
@@ -34,15 +35,14 @@ class Crawl:
         except Exception as e:
             print(e)
 
-
         finally:
             if db is not None:
                 db.close()
-        
+
     def top_today(self):
         top = BeautifulSoup(requests.get(self.url).text,
-                              'html.parser').select_one("#_topItems1")
-    
+                            'html.parser').select_one("#_topItems1")
+
         cr_list = top.select('#_topItems1 > tr')
 
         dic = {}
@@ -55,7 +55,7 @@ class Crawl:
                 '변동': cr_lists.select_one('td ~ td span').text.strip(),
                 '변동퍼센트': cr_lists.select_one('td ~ td ~td').text.strip()
             }
-            
+
         return dic
 
     def stock_today(self):
@@ -117,27 +117,27 @@ class Crawl:
             url = f'https://search.naver.com/search.naver?query={alpa}+주가'
             response = requests.get(url)
             dom = BeautifulSoup(response.text, 'html.parser')
-                        
-            if not dom.find('div', id = '_cs_root'):
+
+            if not dom.find('div', id='_cs_root'):
                 if query not in self.foreign_name or query in self.foreign_id:
                     return '검색 결과가 없다 냥'
-              
+
                 else:
                     query = Crawl().event_to_code[query]
                     url = f'https://search.naver.com/search.naver?query={query}+주가'
 
                     return Crawl().search_foriegn(url)
-                
+
             else:
                 return Crawl().search_foriegn(url)
 
-        else :
+        else:
             return '검색 결과가 없다 냥'
-            
+
     def search_korea(self, url):
         try:
             res = BeautifulSoup(requests.get(url).text, 'html.parser')
-            
+
             rate_info = res.select('.rate_info td span.blind')
 
             dic = {
@@ -158,15 +158,15 @@ class Crawl:
             return dic
         except:
             return "국내 주식 검색 중 오류가 났다 냥"
-        
+
     def search_foriegn(self, url):
-        try:           
+        try:
             response = requests.get(url)
             dom = BeautifulSoup(response.text, 'html.parser')
-            res = dom.find('div', id = '_cs_root')
+            res = dom.find('div', id='_cs_root')
             event_code = res.select_one('span.stk_nm ~ em.t_nm').text.replace('"', '').strip() if res.select_one(
                 'span.stk_nm ~ em.t_nm') != None else res.select_one('span.stk_nm ~ em.t_nm_s').text.replace('"', '').strip()
-            
+
             dic = {
                 '코드': event_code.split(" ")[0],
                 '종목': res.select_one('span.stk_nm').text.strip(),

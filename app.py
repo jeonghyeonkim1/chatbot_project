@@ -51,10 +51,6 @@ def query(bot_type):
             ret = get_answer_from_engine(bottype='루비', data=data)
             return jsonify(ret)
 
-        elif bot_type == 'uram':
-            ret = get_answer_from_engine(bottype='우람', data=data)
-            return jsonify(ret)
-
         elif bot_type == "bbuggu":
             ret = get_answer_from_engine(bottype='뿌꾸', data=data)
             return jsonify(ret)
