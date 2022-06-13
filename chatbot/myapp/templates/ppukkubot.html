@@ -49,31 +49,20 @@
             if (chattext == "") {
                 $("#chattext").focus();
                 return;
-            } else if (chattext == "골라줘") {
-                console.log('chatflow:', chatflow)
-                console.log('ins_id:', ins_id)
-                console.log('cnt:', cnt)
-                try {
-                    console.log('node:', node)
-                } catch {}
-                try {
-                    console.log('param:', param)
-                } catch {}
             }
 
             $("#wait").remove();
             const addtext = "<div class='mt-5 mb-5' style='margin:20px 0;text-align:right;'><span style='padding:10px; background-color:#f1f1f1;border-radius:3px;'>" + chattext + "</span></div>";
             $("#chatbox").append(addtext);
 
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
-            $chatbox.append(botwait);
-
             $("#chattext").val("");
             $("#chattext").focus();
 
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
 
             try {
-                console.log(chatflow)
+                chatflow
             } catch {
                 chatflow = ''
                 cnt = 0
@@ -83,42 +72,52 @@
                 param = "food1"
                 node = "SlotNode_1654496397973"
 
-                db_ajax({
-                    "ins_id": ins_id,
-                    "food1": regFilter(chattext)
-                })
+                if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                    db_ajax({
+                        "ins_id": ins_id,
+                        "food1": regFilter(chattext)
+                    })
+                }
             } else if (cnt == 2) {
                 param = "food2"
                 node = "SlotNode_1654496441069"
 
-                db_ajax({
-                    "ins_id": ins_id,
-                    "food2": regFilter(chattext)
-                })
+                if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                    db_ajax({
+                        "ins_id": ins_id,
+                        "food2": regFilter(chattext)
+                    })
+                }
             } else if (cnt == 3) {
                 param = "food3"
                 node = "SlotNode_1654496556427"
 
-                db_ajax({
-                    "ins_id": ins_id,
-                    "food3": regFilter(chattext)
-                })
+                if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                    db_ajax({
+                        "ins_id": ins_id,
+                        "food3": regFilter(chattext)
+                    })
+                }
             } else if (cnt == 4) {
                 param = "food4"
                 node = "SlotNode_1654496689700801566"
 
-                db_ajax({
-                    "ins_id": ins_id,
-                    "food4": regFilter(chattext)
-                })
+                if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                    db_ajax({
+                        "ins_id": ins_id,
+                        "food4": regFilter(chattext)
+                    })
+                }
             } else if (cnt == 5) {
                 param = "food5"
                 node = "SlotNode_1654496696692225207"
 
-                db_ajax({
-                    "ins_id": ins_id,
-                    "food5": regFilter(chattext)
-                })
+                if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                    db_ajax({
+                        "ins_id": ins_id,
+                        "food5": regFilter(chattext)
+                    })
+                }
             }
 
             if (chatflow == '메뉴 추천') {
@@ -140,67 +139,84 @@
             }
 
             try {
-                if (node == 'SlotNode_1655013989375423472') {
+                if (chattext != '처음으로' && chattext != '다시' ) {
+                    if (node == 'SlotNode_1655013640752') {
+                        data = {
+                            "user_id": "s97741875@gamil.com",
+                            "input_sentence": chattext,
+                            "chatflow_id": "FLOW1653963618000",
+                            "ins_id": ins_id,
+                            "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                            "session_id": session_id,
+                            "node_id": node,
+                            "param_id": param
+                        }
+
+                        if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                            db_ajax({
+                                "ins_id": ins_id,
+                                "day": regFilter(chattext)
+                            })
+                        }
+
+                        node = "SlotNode_1655011730089"
+                        param = "시간"
+                    } else if (node == 'SlotNode_1655011730089') {
+                        data = {
+                            "user_id": "s97741875@gamil.com",
+                            "input_sentence": chattext,
+                            "chatflow_id": "FLOW1653963618000",
+                            "ins_id": ins_id,
+                            "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                            "session_id": session_id,
+                            "node_id": node,
+                            "param_id": param
+                        }
+
+                        if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                            db_ajax({
+                                "ins_id": ins_id,
+                                "time": regFilter(chattext)
+                            })
+                        }
+
+                        node = "SlotNode_1655013989375423472"
+                        param = "예약저장"
+                    } else if (node == 'SlotNode_1655013989375423472') {
+                        data = {
+                            "user_id": "s97741875@gamil.com",
+                            "input_sentence": "맞아",
+                            "chatflow_id": "FLOW1653963618000",
+                            "ins_id": ins_id,
+                            "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                            "session_id": session_id,
+                            "node_id": node,
+                            "param_id": param
+                        }
+
+                        delete node
+                        delete param
+                    }
+
+                } else {
                     data = {
                         "user_id": "s97741875@gamil.com",
-                        "input_sentence": "맞아",
-                        "chatflow_id": "FLOW1653963618000",
+                        "input_sentence": "처음으로",
+                        "chatflow_id": res['chatflow_id'],
                         "ins_id": ins_id,
-                        "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                        "intent_id": intent_id,
                         "session_id": session_id,
                         "node_id": node,
-                        "param_id": "예약저장"
+                        "param_id": param
                     }
 
                     delete node
+                    delete param
+                    cnt = 0
+                    chatflow = ''
                 }
             } catch {}
-
-            try {
-                if (node == 'SlotNode_1655011730089') {
-                    data = {
-                    "user_id": "s97741875@gamil.com",
-                        "input_sentence": chattext,
-                        "chatflow_id": "FLOW1653963618000",
-                        "ins_id": ins_id,
-                        "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
-                        "session_id": session_id,
-                        "node_id": node,
-                        "param_id": "시간"
-                    }
-
-                    db_ajax({
-                        "ins_id": ins_id,
-                        "time": regFilter(chattext)
-                    })
-
-                    node = "SlotNode_1655013989375423472"
-                }
-            } catch {}
-
-            try {
-                if (node == 'SlotNode_1655013640752') {
-                    data = {
-                        "user_id": "s97741875@gamil.com",
-                        "input_sentence": chattext,
-                        "chatflow_id": "FLOW1653963618000",
-                        "ins_id": ins_id,
-                        "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
-                        "session_id": session_id,
-                        "node_id": node,
-                        "param_id": "날짜"
-                    }
-
-                    db_ajax({
-                        "ins_id": ins_id,
-                        "day": regFilter(chattext)
-                    })
-
-                    node = "SlotNode_1655011730089"
-                }
-            } catch {}
-
-            // ajax
+            
             $.ajax({
                 url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
                 type: "POST",
@@ -226,7 +242,7 @@
 
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
 
-                    if (cnt == 0) {
+                    if (cnt == 0 && chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
                         danbee_query = {
                             "answer": answer,
                             "ins_id": ins_id,
@@ -269,6 +285,11 @@
         }
 
         function genre_ajax(genre_val) {
+            if (genre_val == "처음으로" || genre_val == "다시") {
+                escape("처음으로")
+                return
+            }
+
             const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
             $chatbox.append(botwait);
 
@@ -320,6 +341,11 @@
         }
 
         function region_ajax(region_val) {
+            if (region_val == "처음으로" || region_val == "다시") {
+                escape("처음으로")
+                return
+            }
+
             jsonData = {
                 "user_id": "s97741875@gamil.com",
                 "input_sentence": region_val,
@@ -414,25 +440,23 @@
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
 
                     node = "SlotNode_1655013640752"
+                    param = "날짜"
                 }
             })
         }
 
-        function go_first() {
-            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
-            $chatbox.append(botwait);
-
+        function escape(query, node=res['node_id'], param=res['param_id']) {
             $.ajax({
                 url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
                 type: "POST",
                 data: JSON.stringify({
                     "user_id": "s97741875@gamil.com",
-                    "input_sentence": "처음으로",
+                    "input_sentence": query,
                     "chatflow_id": res['chatflow_id'],
                     "ins_id": res['ins_id'],
                     "intent_id": res['intent_id'],
-                    "node_id": typeof node !== undefined ? node : res['node_id'],
-                    "param_id": typeof param !== undefined ? param : res['param_id']
+                    "node_id": node,
+                    "param_id": param
                 }),
                 dataType: "JSON",
                 contentType: "application/json; charset=utf-8",
