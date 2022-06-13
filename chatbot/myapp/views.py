@@ -41,31 +41,17 @@ def pstorage(req):
 
         # 대화 내역
         sql = f'''
-            select * from danbee_query ORDER BY date DESC
-        '''
+
+                select * from danbee_query as a , danbee_menu as b where a.ins_id = b.ins_id;
+            '''
+
+       
+
 
         with database.cursor() as cursor:
             cursor.execute(sql)
-            danbee_query = cursor.fetchall()
-            content['danbee_query'] = danbee_query
-
-        sql = f'''
-            select * from danbee_query ORDER BY date DESC
-        '''
-
-        with database.cursor() as cursor:
-            cursor.execute(sql)
-            danbee_query = cursor.fetchall()
-            content['danbee_query'] = danbee_query
-
-        sql = f'''
-            select * from danbee_query ORDER BY date DESC
-        '''
-
-        with database.cursor() as cursor:
-            cursor.execute(sql)
-            danbee_query = cursor.fetchall()
-            content['danbee_query'] = danbee_query
+            danbee_menu = cursor.fetchall()
+            content['danbee_menu'] = danbee_menu
 
     except Exception as e:
         print(e)
