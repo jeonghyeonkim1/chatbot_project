@@ -41,17 +41,23 @@ def pstorage(req):
 
         # 대화 내역
         sql = f'''
-
                 select * from danbee_query as a , danbee_menu as b where a.ins_id = b.ins_id;
             '''
-
-       
-
 
         with database.cursor() as cursor:
             cursor.execute(sql)
             danbee_menu = cursor.fetchall()
             content['danbee_menu'] = danbee_menu
+
+        # 대화 내역
+        sql = f'''
+                select * from danbee_query as a , danbee_rest as b where a.ins_id = b.ins_id;
+            '''
+
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            danbee_rest = cursor.fetchall()
+            content['danbee_rest'] = danbee_rest
 
     except Exception as e:
         print(e)
