@@ -10,7 +10,7 @@
     })
     
 
-    $(function() {
+$(function() {
         $("#item li").children().each(function() {
             len = $("#item li").children().length
             $(this).click(function() {
@@ -28,7 +28,7 @@
             })
         })
     })
-    
+{% comment %} 
     function del_table_data(table, id) {
         $.ajax({
             url: `http://127.0.0.1:8000/del_view/${table}`,
@@ -41,7 +41,7 @@
                 $(`#${id}`).append("<div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>");
             }
         })
-    }
+    } {% endcomment %}
 </script>
 <style>
     input[type="number"]::-webkit-outer-spin-button,
@@ -188,7 +188,12 @@
         margin-left: -30px; 
         margin-right: 5px;
       }
-
+    table,td,thead {
+        border:1px solid black;
+    }
+    thead {
+        border-radius:10px;
+    }
 
 </style>
 {% endblock %}
@@ -209,40 +214,25 @@
             <div class='d-flex align-items-center h-100'>
                 <div class="menu bg-dark w-25 p-2">
                     <ul id='item'>
-                        <li id='b1'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>대화내역</h4></button></li>
-                        <li id='b2'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>임시메뉴1</h4></button></li>
-                        <li id='b3'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>임시메뉴2</h4></button></li>
+                        <li id='b1'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>맛집추천</h4></button></li>
+                        <li id='b2'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>메뉴추천</h4></button></li>
                     </ul>
                 </div>              
                 <div class='h-100 w-100' id='detail'>
                     <div class='detail-container w-100 h-100 p-2' id='m1'>
-                        {% if not chatbot_view %}
-                            <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>
+                        {% if not danbee_query %}
+                            <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 대화목록이 없습니다.</h1></div>
                         {% else %}
                             <button onclick='del_table_data("chatbot_view", "m1")' class='btn btn-warning d-flex align-items-center justify-content-center w-100 mb-5 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
-                            {% for view in chatbot_view %}
+                            {% for view in danbee_query %}
                                 <table class='table table-striped table-dark text-center' style='border-top:2px solid white;'>
                                     <tbody>
-                                        <tr><td colspan='2' class='display-5 border-0'>{{view.1}}</td></tr>
+                                        {% comment %} <tr><td colspan='2' class='display-5 border-0'>{{view.1}}</td></tr> {% endcomment %}
                                         <tr><td colspan='2'><img src="{{view.12}}" alt=""></td></tr>
-                                        <tr><td>종목코드</td><td>{{view.0}}</td></tr>
-                                        {% if view.2 > view.5 %}
-                                            <tr><td>가격</td><td class='text-danger'>▲{{view.2}}</td></tr>
-                                        {% elif view.2 < view.5 %}
-                                            <tr><td>가격</td><td class='text-primary'>▼{{view.2}}</td></tr>
-                                        {% else %}
-                                            <tr><td>가격</td><td>{{view.2}}</td></tr>
-                                        {% endif %}
-                                        <tr><td>고가</td><td>{{view.3}}</td></tr>
-                                        <tr><td>저가</td><td>{{view.4}}</td></tr>
-                                        <tr><td>전일종가</td><td>{{view.5}}</td></tr>
-                                        <tr><td>시가</td><td>{{view.6}}</td></tr>
-                                        <tr><td>시가총액</td><td>{{view.7}}</td></tr>
-                                        <tr><td>거래대금</td><td>{{view.8}}</td></tr>
-                                        <tr><td>상한가</td><td>{{view.9}}</td></tr>
-                                        <tr><td>하한가</td><td>{{view.10}}</td></tr>
-                                        <tr><td>거래량</td><td>{{view.11}}</td></tr>
-                                        <tr><td>조회날짜</td><td>{{view.13}}</td></tr>
+                                        <tr><td>날짜</td><td>{{view.4}}</td></tr>
+                                        <tr><td>테마</td><td>{{view.2}}</td></tr>
+                                        <tr><td>테마</td><td>{{view.0}}</td></tr>
+                                        <tr><td>뿌꾸</td><td>{{view.3}}</td></tr>
                                     </tbody>
                                 </table>
                             {% endfor %}
@@ -250,47 +240,23 @@
                     </div>
                     <div class='detail-container w-100 h-100 p-1' id='m2' style='display:none;'>
                         <table class='table table-dark table-striped text-center'>
-                            <thead>
-                                <tr style='border-radius:10px;'>
-                                    <th>총 투자액</th>
-                                    <th>평가 총 자산</th>
-                                    <th>평가손익</th>
-                                </tr>
-                            </thead>
                             <tbody>
-                                <tr>
-                                    <th>{{ chatbot_total }}</th>
-                                    <th>{{ chatbot_current_total }}</th>
-                                    {% if chatbot_profit_loss > 0 %}
-                                        <th class='text-danger'>+{{ chatbot_profit_loss }}</th>
-                                    {% elif chatbot_profit_loss < 0 %}
-                                        <th class='text-primary'>{{ chatbot_profit_loss }}</th>
-                                    {% else %}
-                                        <th>{{ chatbot_profit_loss }}</th>
-                                    {% endif %}
+                                <tr>   
                                 </tr>
                             </tbody>
                         </table>
-                        <table class='table table-dark table-striped text-center'>
+                        <table class='table table table-striped text-center' style='solid-radius:10px'>
                             <thead>
-                                <tr><th colspan='6' class='display-5'>보유현황</th></tr>
-                                <tr><th>종목명</th><th>보유수량</th><th>총 가격</th><th>구매금액</th><th>평가금액</th><th>손익률</th></tr>
+                                <tr><th colspan='7' class='display-5'>메뉴추천 리스트</th></tr>
+                                <tr><th>답변ID</th><th>추천 결과</th><th>날짜</th><th>
                             </thead>
                             <tbody>
-                                {% for own in chatbot_own %}
+                                {% for i in danbee_menu %}
+                                    <tr></tr>
                                     <tr>
-                                        <td>{{ own.0 }}</td>
-                                        <td>{{ own.1 }}</td>
-                                        <td>{{ own.2 }}</td>
-                                        <td>{{ own.3 }}</td>
-                                        <td>{{ own.4 }}</td>
-                                        {% if own.3 < own.4 %}
-                                            <td class='text-danger'>+{{ own.5 }}</td>
-                                        {% elif own.3 > own.4 %}
-                                            <td class='text-primary'>{{ own.5 }}</td>
-                                        {% else %}
-                                            <td>{{ own.5 }}</td>
-                                        {% endif %}
+                                        <td>{{ i.1 }}</td>
+                                        <td>{{ i.11 }}</td>
+                                        <td>{{ i.4 }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
