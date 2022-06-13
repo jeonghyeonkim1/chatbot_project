@@ -39,6 +39,10 @@
             return str.replace(/[^\w\sㄱ-힣!?]|[\_]/g, '')
         }
 
+        function pinpongDel(str) {
+            return str.replace('(핑퐁[pingpong.us]에서 생성된 자동답변입니다)', '')
+        }
+
         function send_message() {
             const chattext = $("#chattext").val().trim();
 
@@ -129,6 +133,87 @@
                 }
             }
 
+            try {
+                data = {
+                    "user_id": "s97741875@gamil.com",
+                    "input_sentence": "맞아",
+                    "chatflow_id": "FLOW1653963618000",
+                    "ins_id": ins_id,
+                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                    "session_id": session_id,
+                    "node_id": reserv4,
+                    "param_id": "예약저장"
+                }
+
+                delete reserv4
+            } catch {}
+
+            try {
+                data = {
+                    "user_id": "s97741875@gamil.com",
+                    "input_sentence": chattext,
+                    "chatflow_id": "FLOW1653963618000",
+                    "ins_id": ins_id,
+                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                    "session_id": session_id,
+                    "node_id": reserv3,
+                    "param_id": "시간"
+                }
+
+                db_ajax({
+                    "ins_id": ins_id,
+                    "time": regFilter(chattext)
+                })
+
+                reserv4 = "SlotNode_1655013989375423472"
+
+                delete reserv3
+            } catch {}
+
+            try {
+                data = {
+                    "user_id": "s97741875@gamil.com",
+                    "input_sentence": chattext,
+                    "chatflow_id": "FLOW1653963618000",
+                    "ins_id": ins_id,
+                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                    "session_id": session_id,
+                    "node_id": reserv2,
+                    "param_id": "날짜"
+                }
+
+                db_ajax({
+                    "ins_id": ins_id,
+                    "day": regFilter(chattext)
+                })
+
+                reserv3 = "SlotNode_1655011730089"
+
+                delete reserv2
+            } catch {}
+
+            try {
+                data = {
+                    "user_id": "s97741875@gamil.com",
+                    "input_sentence": chattext,
+                    "chatflow_id": "FLOW1653963618000",
+                    "ins_id": ins_id,
+                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                    "session_id": session_id,
+                    "node_id": reserv,
+                    "param_id": "예약"
+                }
+
+                db_ajax({
+                    "ins_id": ins_id,
+                    "place": regFilter(chattext)
+                })
+
+                reserv2 = "SlotNode_1655013640752"
+
+                delete reserv
+            } catch {}
+
             // ajax
             $.ajax({
                 url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
@@ -149,9 +234,11 @@
                     answer = ''
 
                     for (let i in res['result']) {
-                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][i]['message']}</span></div></div>`)
+                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${pinpongDel(res['result'][i]['message'])}</span></div></div>`)
                         answer += res['result'][i]['message'] + ' '            
                     }
+
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
 
                     if (cnt == 0) {
                         danbee_query = {
@@ -166,13 +253,15 @@
                     
 
                     if (res['chatflow_id'] == 'FLOW1653963618000') {
-                        table = '<table class="table table-hover table-striped table-success text-center">'
-                        for (let i in res['result'][1]['optionList']) {
-                            table += `<tr><td style='cursor: pointer;' onclick="genre_ajax('${res['result'][1]['optionList'][i]['label']}')">${res['result'][1]['optionList'][i]['label']}</td></tr>`
-                        }
-                        table += '</table>'
+                        try {
+                            table = '<table class="table table-hover table-striped table-success text-center">'
+                            for (let i in res['result'][1]['optionList']) {
+                                table += `<tr><td style='cursor: pointer;' onclick="genre_ajax('${res['result'][1]['optionList'][i]['label']}')">${res['result'][1]['optionList'][i]['label']}</td></tr>`
+                            }
+                            table += '</table>'
 
-                        $("#chatbox").append(`<div class='mb-2' style='margin:20px 0;text-align:left;'><div class='ml-3'>${table}</div></div>`)
+                            $("#chatbox").append(`<div class='mb-2' style='margin:20px 0;text-align:left;'><div class='ml-3'>${table}</div></div>`)
+                        } catch {}
 
                     } else if (res['chatflow_id'] == 'FLOW1654495955000') {
                         if (res['param_id'] == "수락여부") {
@@ -239,6 +328,7 @@
                     }
 
                     $("#chatbox").append(`<div class='mb-2' style='margin:20px 0;text-align:left;'><div class='ml-3'>${table}</div></div>`)
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
                 }
             })
         }
@@ -261,6 +351,9 @@
                 "region": region_val
             })
 
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
+
             $.ajax({
                 url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
                 type: "POST",
@@ -270,6 +363,8 @@
                 crossDomain: true,
 
                 success: function(response){
+                    $("#wait").remove();
+
                     res = response['responseSet']['result']
                     table = '<table class="table table-success text-center" style="vertical-align: middle;">'
                     table += '<thead><tr><th>매장사진<th><th>매장정보</th></tr></thead><tbody>'
@@ -285,7 +380,76 @@
                     }
                     table += '</tbody></table>'
                     
-                    $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][1]['message']}</span></div></div>${table}`)
+                    $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${res['result'][1]['message']}</span></div></div>${table}<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><button onclick='reservation()' class='btn btn-outline-info border-2 w-50 h-100'>예약하기</button><button onclick='go_first()' class='btn btn-outline-warning w-50 h-100'>처음으로</button></div>`)
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
+                }
+            })
+        }
+
+        function reservation() {
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
+
+            $.ajax({
+                url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
+                type: "POST",
+                data: JSON.stringify({
+                    "user_id": "s97741875@gamil.com",
+                    "chatflow_id": "FLOW1653963618000",
+                    "input_sentence": "예약해줘",
+                    "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                    "node_id": "SlotNode_1654583628179",
+                    "param_id": "마무리",
+                    "session_id": session_id,
+                    "ins_id": ins_id
+                }),
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+
+                success: function(response) {
+                    $("#wait").remove();
+
+                    res = response['responseSet']['result']
+
+                    for (let i in res['result']) {
+                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${pinpongDel(res['result'][i]['message'])}</span></div></div>`)
+                        answer += res['result'][i]['message'] + ' '            
+                    }
+
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
+
+                    reserv = "SlotNode_1655012030232"
+                }
+            })
+        }
+
+        function go_first() {
+            const botwait = "<div id='wait' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>로딩중이니 조금만 기달려줘 꼬북!&nbsp;<i class='fa-solid fa-spinner fa-spin-pulse'></i></span></div></div>";
+            $chatbox.append(botwait);
+
+            $.ajax({
+                url: 'https://danbee.ai/chatflow/chatbot/v2.0/3904a8c1-fdcd-4328-89ac-da6d1dad1cd7/message.do',
+                type: "POST",
+                data: JSON.stringify({
+                    "user_id": "s97741875@gamil.com",
+                    "input_sentence": "처음으로"
+                }),
+                dataType: "JSON",
+                contentType: "application/json; charset=utf-8",
+                crossDomain: true,
+
+                success: function(response) {
+                    $("#wait").remove();
+
+                    res = response['responseSet']['result']
+
+                    for (let i in res['result']) {
+                        $("#chatbox").append(`<div class='mb-2 d-flex align-items-center' style='height:60px;margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/pukkbot.jpg'></div><span style='padding:10px 20px;background-color:#f1ffd3;border-radius:3px;'>${pinpongDel(res['result'][i]['message'])}</span></div></div>`)
+                        answer += res['result'][i]['message'] + ' '            
+                    }
+
+                    $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
                 }
             })
         }

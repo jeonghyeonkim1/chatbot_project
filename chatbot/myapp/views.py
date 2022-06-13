@@ -194,6 +194,21 @@ def send_ppukku(req):
                 UPDATE danbee_rest SET region = '%s' where ins_id = '%s'
             ''' % (req.GET['region'], req.GET['ins_id'])
 
+        elif 'place' in req.GET:
+            sql = '''
+                UPDATE danbee_rest SET place = '%s' where ins_id = '%s'
+            ''' % (req.GET['place'], req.GET['ins_id'])
+        
+        elif 'day' in req.GET:
+            sql = '''
+                UPDATE danbee_rest SET day = '%s' where ins_id = '%s'
+            ''' % (req.GET['day'], req.GET['ins_id'])
+        
+        elif 'time' in req.GET:
+            sql = '''
+                UPDATE danbee_rest SET time = '%s' where ins_id = '%s'
+            ''' % (req.GET['time'], req.GET['ins_id'])
+
         elif 'food1' in req.GET:
             sql = '''
                 INSERT INTO danbee_menu(ins_id, food1) VALUES ('%s', '%s')
