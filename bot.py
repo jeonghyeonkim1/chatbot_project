@@ -452,7 +452,7 @@ def to_client(conn, addr, params):
                     send_json_data_str["Answer"] = "종목명을 정확하게 알려달라냥"
                 else:
                     sql = f'''
-                        select id, code, name, amount, price from chatbot_order where cancel = 0 and (name = '{b_stock[0]}' or code = '{b_stock[0]}')
+                        select id, code, name, amount, price from chatbot_order where cancel = 0 and 0 <= (select sum(amount) from chatbot_order where (name = '{b_stock[0]}' or code = '{b_stock[0]}')) - amount and (name = '{b_stock[0]}' or code = '{b_stock[0]}')
                     '''
 
                     with database.cursor() as cursor:
