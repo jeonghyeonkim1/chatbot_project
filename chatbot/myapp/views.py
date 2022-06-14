@@ -118,22 +118,22 @@ def storage(req):
             content['chatbot_order'] = chatbot_order
 
         # 보유주 리스트
-        # sql = f'''
-        #         select code, name, sum(sum), sum(total) from (select code, name, sum(amount) as sum, sum(amount * price) as total from chatbot_order where amount > 0 and cancel = 0 group by name UNION select code, name, sum(amount), -1 * sum(amount * price) from chatbot_order where amount < 0 and cancel = 0 group by name) as a group by name having sum(sum) > 0
-        #     '''
-        # with database.cursor() as cursor:
-        #     cursor.execute(sql)
-        #     chatbot_own = cursor.fetchall()
-        #     eor = float(crawl.eor())
-        #     List = reduce(lambda a, b: a.append(int(crawl.search_engine(b[0])['가격'].replace(',', '') if crawl.search_engine(b[0])['코드']
-        #                                             in crawl.korea_id else int(float(crawl.search_engine(b[0])['가격']) * eor)) * int(b[2])) or a, chatbot_own, [])
-        #     content['chatbot_own'] = [(chatbot_own[i][0], chatbot_own[i][1], int(
-        #         chatbot_own[i][2]), int(chatbot_own[i][3]), List[i], f'{(List[i] / int(chatbot_own[i][3]) * 100) - 100:.2f}%') for i in range(len(chatbot_own))]
-        #     content['chatbot_total'] = sum(
-        #         [int(total) for code, name, cnt, total in chatbot_own])
-        #     content['chatbot_current_total'] = sum(List)
-        #     content['chatbot_profit_loss'] = sum(
-        #         List) - content['chatbot_total']
+        sql = f'''
+                select code, name, sum(sum), sum(total) from (select code, name, sum(amount) as sum, sum(amount * price) as total from chatbot_order where amount > 0 and cancel = 0 group by name UNION select code, name, sum(amount), -1 * sum(amount * price) from chatbot_order where amount < 0 and cancel = 0 group by name) as a group by name having sum(sum) > 0
+            '''
+        with database.cursor() as cursor:
+            cursor.execute(sql)
+            chatbot_own = cursor.fetchall()
+            eor = float(crawl.eor())
+            List = reduce(lambda a, b: a.append(int(crawl.search_engine(b[0])['가격'].replace(',', '') if crawl.search_engine(b[0])['코드']
+                                                    in crawl.korea_id else int(float(crawl.search_engine(b[0])['가격']) * eor)) * int(b[2])) or a, chatbot_own, [])
+            content['chatbot_own'] = [(chatbot_own[i][0], chatbot_own[i][1], int(
+                chatbot_own[i][2]), int(chatbot_own[i][3]), List[i], f'{(List[i] / int(chatbot_own[i][3]) * 100) - 100:.2f}%') for i in range(len(chatbot_own))]
+            content['chatbot_total'] = sum(
+                [int(total) for code, name, cnt, total in chatbot_own])
+            content['chatbot_current_total'] = sum(List)
+            content['chatbot_profit_loss'] = sum(
+                List) - content['chatbot_total']
 
     except Exception as e:
         print(e)
