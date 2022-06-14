@@ -175,7 +175,7 @@ class Crawl:
                 '고가': res.select_one('li.hp dd').text.strip(),
                 '거래량': res.select_one('li.vl dd').text.strip(),
                 '저가': res.select_one('li.lp dd').text.strip(),
-                '시가총액': res.select_one('li.mc dl dd').text.strip(),
+                '시가총액': res.select_one('li.cp dl span.spt_con strong').text.strip(),
                 '그래프': res.select_one('img._stock_chart').attrs['src']
             }
 

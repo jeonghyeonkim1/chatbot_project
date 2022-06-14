@@ -38,11 +38,11 @@ $(function() {
 
             success: function() {
                 $(`#${id}`).empty();
-                $(`#${id}`).append("<div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>");
+                $(`#${id}`).append("<div class='text-dark w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>");
             }
         })
     }
-    
+
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
@@ -73,10 +73,9 @@ $(function() {
     }
     .menu {
         display: block;
-        width: 200px;
         border-radius: 20px;
         padding: 10px;
-        max-width: 249px;
+        max-width: 220px;
     }
     .menu ul {
         list-style: none;
@@ -123,10 +122,6 @@ $(function() {
         border-radius:10px 10px 0 0;
     }
 
-    #m1{
-        border-radius:9px;
-        border:3px solid black;
-    }
     @media(max-width:1400px) {
         li h4{
             display: none;
@@ -144,7 +139,7 @@ $(function() {
     .left-menu{
         float: right;
         position: relative;
-        left: -9%;
+        left: -13%;
         top: -15%;
         padding-top: 100px;
         
@@ -214,8 +209,8 @@ $(function() {
 {% block contents %}
 <body class="container" style="overflow: hidden; margin-top: -1%; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
     <div style='position: relative;'>
-        <div class='left-menu' id='men-left'>
-            <ul class="drop-down closed" style='position: fixed;  bottom:0; top:60px; left:69%; right:0;'>
+        <div class='left-menu'>
+            <ul class="drop-down closed" style='position: fixed; bottom:0; top:45px; left:68%; right:0;'>
               <li id='li1'><a href="#" class="nav-button"><i class="fa-solid fa-angle-down"></i></a></li>
               <li><a href="{% url 'myapp:home' %}">Home</a></li>
               <li><a href="{% url 'myapp:ppukkubot' %}">Chat</a></li>
@@ -232,11 +227,11 @@ $(function() {
                     </ul>
                 </div>              
                 <div class='h-100 w-100' id='detail'>
-                    <div class='detail-container w-100 h-100 p-2 bg-white' id='m1'>
+                    <div class='detail-container w-100 h-100 p-2' id='m1'>
                         {% if not danbee_rest %}
-                            <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 대화목록이 없습니다.</h1></div>
+                            <div class='text-black w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 대화목록이 없습니다.</h1></div>
                         {% else %}
-                            <button onclick='del_table_data("chatbot_view", "m1")' class='btn btn-secondary d-flex align-items-center justify-content-center w-100 mb-5 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
+                            <button onclick='del_table_data("danbee_rest", "m1")' class='btn btn-secondary d-flex align-items-center justify-content-center w-100 mb-2 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
                             <table class='table table-striped text-center' style='border-radius:10px;'>
                                 <thead>
                                     <tr>
@@ -280,11 +275,11 @@ $(function() {
                         {% endif %}
                     </div>
                     <div class='h-100 w-100' id='detail'>
-                        <div class='detail-container w-100 h-100 p-2 bg-white' id='m2'>
-                            {% if not danbee_rest %}
-                                <div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 대화목록이 없습니다.</h1></div>
+                        <div class='detail-container w-100 h-100 p-2' id='m2'>
+                            {% if not danbee_menu %}
+                                <div class='text-black w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 대화목록이 없습니다.</h1></div>
                             {% else %}
-                                <button onclick='del_table_data("chatbot_view", "m1")' class='btn btn-secondary d-flex align-items-center justify-content-center w-100 mb-5 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
+                                <button onclick='del_table_data("danbee_menu", "m2")' class='btn btn-secondary d-flex align-items-center justify-content-center w-100 mb-2 pt-3'><h2><i class="fa-solid fa-triangle-exclamation fa-fade p-1 pe-3"></i><strong>초기화</strong><i class="fa-solid fa-triangle-exclamation fa-fade p-1 ps-3"></i></h2></button>
                                 <table class='table table table-striped text-center' style='solid-radius:10px'>
                                     <thead>
                                         <tr><th colspan='7' class='display-5'>메뉴추천 리스트</th></tr>
@@ -295,7 +290,7 @@ $(function() {
                                             <tr></tr>
                                             <tr>
                                                 <td>{{ i.1 }}</td>
-                                                <td data-toggle="tooltip" data-placement="right" title="'{{i.6}}/{{i.7}}/{{i.8}}/{{i.9}}/{{i.10}}' 중 '{{ i.11 }}' 추천!">{{ i.11 }}</td>
+                                                <td data-toggle="tooltip" data-placement="right" title="선택한 음식: {% if i.6 != None %}{{i.6}}{% endif %}{% if i.7 != None %}/{{i.7}}{% endif %}{% if i.8 != None %}/{{i.8}}{% endif %}{% if i.9 != None %}/{{i.9}}{% endif %}{% if i.10 != None %}/{{i.10}}{% endif %}">{% if i.11 != None %}{{ i.11 }}{% else %}고르지 않음{% endif %}</td>
                                                 <td>{{ i.4 }}</td>
                                             </tr>
                                         {% endfor %}
