@@ -28,7 +28,7 @@ $(function() {
             })
         })
     })
-{% comment %} 
+
     function del_table_data(table, id) {
         $.ajax({
             url: `http://127.0.0.1:8000/del_view/${table}`,
@@ -41,7 +41,8 @@ $(function() {
                 $(`#${id}`).append("<div class='text-white w-100 h-100 d-flex justify-content-center align-items-center'><h1>표시할 종목이 없습니다.</h1></div>");
             }
         })
-    } {% endcomment %}
+    }
+    
     $(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
     });
