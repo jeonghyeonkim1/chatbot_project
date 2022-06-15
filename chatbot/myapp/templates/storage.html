@@ -212,7 +212,7 @@
             <div class='d-flex align-items-center h-100'>
                 <div class="menu bg-dark w-25 p-2">
                     <ul id='item'>
-                        <li id='b1'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>조회 목록</h4></button></li>
+                        <li id='b1'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark' style='background-color: #fff; color: #212529'><h4>조회 목록</h4></button></li>
                         <li id='b2'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>보유 주식</h4></button></li>
                         <li id='b3'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>거래 목록</h4></button></li>
                         <li id='b4'><button class='mb-1 btn btn-outline-light p-6 w-100 d-flex align-items-center justify-content-center border-dark'><h4>환율 조회</h4></button></li>
@@ -338,7 +338,7 @@
                                 </thead>
                                 <tbody>
                                     {% for eor in chatbot_eor %}
-                                        <tr class='h2'><td>{{eor.0}}</td><td>{{eor.1}} ￦</td><td>{{eor.2}}</td></tr>
+                                        <tr class='h2'><td>{{eor.0}}</td><td>{{eor.1}} ￦</td><td>{{eor.2|date:"Y년 M d일"}}</td></tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
