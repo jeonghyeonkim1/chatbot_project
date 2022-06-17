@@ -140,7 +140,29 @@
 
             try {
                 if (chattext != '처음으로' && chattext != '다시' ) {
-                    if (node == 'SlotNode_1655013640752') {
+                    if (node == 'SlotNode_165543532653655989') {
+                        data = {
+                            "user_id": "s97741875@gamil.com",
+                            "input_sentence": chattext,
+                            "chatflow_id": "FLOW1653963618000",
+                            "ins_id": ins_id,
+                            "intent_id": "2fb157ca-7d1a-4751-894b-96d2eacf3bd7",
+                            "session_id": session_id,
+                            "node_id": node,
+                            "param_id": param
+                        }
+
+                        if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                            db_ajax({
+                                "ins_id": ins_id,
+                                "population": regFilter(chattext)
+                            })
+                        }
+
+                        node = "SlotNode_1655013640752"
+                        param = "날짜"
+                        
+                    } else if (node == 'SlotNode_1655013640752') {
                         data = {
                             "user_id": "s97741875@gamil.com",
                             "input_sentence": chattext,
@@ -192,6 +214,13 @@
                             "session_id": session_id,
                             "node_id": node,
                             "param_id": param
+                        }
+
+                        if (chattext != "처음으로" && chattext != "다시" && chattext != "골라줘") {
+                            db_ajax({
+                                "ins_id": ins_id,
+                                "reservation": regFilter(chattext)
+                            })
                         }
 
                         delete node
@@ -439,8 +468,8 @@
 
                     $chatbox.animate({scrollTop: $chatbox.prop('scrollHeight')});
 
-                    node = "SlotNode_1655013640752"
-                    param = "날짜"
+                    node = "SlotNode_165543532653655989"
+                    param = "인원수"
                 }
             })
         }

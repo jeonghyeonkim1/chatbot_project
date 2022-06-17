@@ -207,6 +207,11 @@ def send_ppukku(req):
             sql = '''
                 UPDATE danbee_rest SET place_img = '%s', place_name = '%s', place_adr = '%s', place_call = '%s', place_loc = '%s' where ins_id = '%s'
             ''' % (req.GET['img'], req.GET['name'], req.GET['adr'], req.GET['call'], req.GET['loc'], req.GET['ins_id'])
+
+        elif 'population' in req.GET:
+            sql = '''
+                UPDATE danbee_rest SET population = '%s' where ins_id = '%s'
+            ''' % (req.GET['population'], req.GET['ins_id'])
         
         elif 'day' in req.GET:
             sql = '''
@@ -217,6 +222,11 @@ def send_ppukku(req):
             sql = '''
                 UPDATE danbee_rest SET time = '%s' where ins_id = '%s'
             ''' % (req.GET['time'], req.GET['ins_id'])
+
+        elif 'reservation' in req.GET:
+            sql = '''
+                UPDATE danbee_rest SET reservation = '%s' where ins_id = '%s'
+            ''' % (True, req.GET['ins_id'])
 
         elif 'food1' in req.GET:
             sql = '''

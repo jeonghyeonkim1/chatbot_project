@@ -3,6 +3,7 @@ import json
 import re
 import pymysql
 import pymysql.cursors
+from sqlalchemy import true
 
 from config.DatabaseConfig import *
 from utils.Database import Database
@@ -54,6 +55,8 @@ def to_client(conn, addr, params):
         recv_json_data = json.loads(read.decode())
         print("데이터 수신 :", recv_json_data)
         query = recv_json_data['Query']
+
+        trade_ok = False
 
         send_json_data_str = {}
 
@@ -409,6 +412,7 @@ def to_client(conn, addr, params):
                             if all_count == None or all_count < int(b_count):
                                 send_json_data_str = {
                                     "Answer": "보유주가 부족해서 매도가 불가능하다 냥!!"}
+                                
                                 message = json.dumps(send_json_data_str)
 
                                 conn.send(message.encode())
@@ -428,6 +432,9 @@ def to_client(conn, addr, params):
                                 int(re.sub('[^\d]', '', result['가격'])) if intent_name == '매수' else -1 * int(
                                     re.sub('[^\d]', '', result['가격']))
                             )
+
+                            trade_ok = True
+                            
                         else:
                             eor = crawl.eor()
 
@@ -439,11 +446,12 @@ def to_client(conn, addr, params):
                             ''' % (
                                 result['코드'],
                                 result['종목'],
-                                int(b_count) if intent_name == '매수' else -
-                                1 * int(b_count),
+                                int(b_count) if intent_name == '매수' else - 1 * int(b_count),
                                 int(float(result['가격']) * float(eor)) if intent_name == '매수' else -1 * int(
                                     float(result['가격']) * float(eor))
                             )
+
+                            trade_ok = True
 
             elif intent_name == '주문 취소':
                 b_stock = [i for i, j in ner_predicts if j == 'B_STOCK']
@@ -471,6 +479,16 @@ def to_client(conn, addr, params):
                     cursor.execute(sql)
                     print('저장')
                     database.commit()
+
+            if trade_ok:
+                sql = f'''
+                    select code, name, sum(amount) from chatbot_order where code = '{result['코드']}' and name = '{result['종목']}'
+                '''
+
+                with database.cursor() as cursor:
+                    cursor.execute(sql)
+                    send_json_data_str['show_me_own'] = [str(i) for i in cursor.fetchone(
+                    )] + [int(b_count) if intent_name == '매수' else - 1 * int(b_count)]
 
         except Exception as e:
             print(e)

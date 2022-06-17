@@ -227,9 +227,15 @@
                         }
                         table += "</tbody>"
                         table += "</table>"
+                    } else if (response.show_me_own != undefined) {
+                        if (response.show_me_own[3] > 0) {
+                            table += `<table class='table text-center removable'><thead><tr><td>종목코드</td><td>종목명</td><td>총 보유 갯수</td></tr></thead><tbody><tr><td>${response.show_me_own[0]}</td><td>${response.show_me_own[1]}</td><td class='text-danger'>${response.show_me_own[2]}(+${response.show_me_own[3]})</td></tr></tbody></table>`
+                        } else {
+                            table += `<table class='table text-center removable'><thead><tr><td>종목코드</td><td>종목명</td><td>총 보유 갯수</td></tr></thead><tbody><tr><td>${response.show_me_own[0]}</td><td>${response.show_me_own[1]}</td><td class='text-primary'>${response.show_me_own[2]}(${response.show_me_own[3]})</td></tr></tbody></table>`
+                        }
                     }
 
-                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#d9eaff;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>";
+                    const bottext = "<div class='mb-5' style='margin:20px 0;text-align:left;'><div class='imgcon'><img src='/static/rubybot.jpg'></div><div class='textcon'><span style='padding:10px 20px;background-color:#d9eaff;border-radius:3px;'>" + response.Answer + "</span><div class='ml-3'>" + table + "</div></div></div>"
                     $chatbox.append(bottext);
                     
                     // 스크롤 조정하기
